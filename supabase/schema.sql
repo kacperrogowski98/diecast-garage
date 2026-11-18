@@ -301,7 +301,11 @@ begin
     coalesce(x.item->'modelSnapshot'->>'canonical_name', x.item->>'name', 'Hot Wheels model'),
     x.item->>'condition',
     nullif(x.item->>'date', '')::date,
-    case when coalesce(x.item->>'price', '') ~ '^[0-9]+([.][0-9]{1,2})?
+    case
+      when coalesce(x.item->>'price', '') ~ '^[0-9]+([.][0-9]{1,2})?$'
+      then (x.item->>'price')::numeric
+      else null
+    end,
     'PLN',
     x.item->>'notes',
     x.item->>'photo',
@@ -331,160 +335,11 @@ begin
     x.item->>'collectionId',
     coalesce(x.item->'modelSnapshot'->>'canonical_name', x.item->>'name', 'Hot Wheels model'),
     greatest(0, least(5, coalesce(nullif(x.item->>'priority', '')::smallint, 0))),
-    case when coalesce(x.item->>'targetPrice', '') ~ '^[0-9]+([.][0-9]{1,2})?
-    x.item->>'notes',
-    x.item,
-    v_now
-  from jsonb_array_elements(p_items) as x(item)
-  where x.item->>'status' = 'wishlist'
-    and nullif(x.item->>'collectionId', '') is not null
-  on conflict (user_id, client_item_id) do update set
-    custom_name = excluded.custom_name,
-    priority = excluded.priority,
-    target_price = excluded.target_price,
-    notes = excluded.notes,
-    item_data = excluded.item_data,
-    updated_at = excluded.updated_at;
-
-  get diagnostics v_wishlist_count = row_count;
-
-  delete from public.user_garage_items g
-  where g.user_id = v_user_id
-    and not (g.client_item_id = any(v_garage_ids));
-
-  delete from public.user_wishlist_items w
-  where w.user_id = v_user_id
-    and not (w.client_item_id = any(v_wishlist_ids));
-
-  return query select v_now, v_garage_count, v_wishlist_count;
-end;
-$$;
-
-revoke all on function public.sync_diecast_garage(jsonb, jsonb, timestamptz) from public, anon;
-grant execute on function public.sync_diecast_garage(jsonb, jsonb, timestamptz) to authenticated;
- then (x.item->>'price')::numeric else null end,
-    'PLN',
-    x.item->>'notes',
-    x.item->>'photo',
-    x.item,
-    v_now
-  from jsonb_array_elements(p_items) as x(item)
-  where x.item->>'status' = 'owned'
-    and nullif(x.item->>'collectionId', '') is not null
-  on conflict (user_id, client_item_id) do update set
-    custom_name = excluded.custom_name,
-    condition = excluded.condition,
-    purchase_date = excluded.purchase_date,
-    purchase_price = excluded.purchase_price,
-    purchase_currency = excluded.purchase_currency,
-    notes = excluded.notes,
-    photo_url = excluded.photo_url,
-    item_data = excluded.item_data,
-    updated_at = excluded.updated_at;
-
-  get diagnostics v_garage_count = row_count;
-
-  insert into public.user_wishlist_items(
-    user_id, client_item_id, custom_name, priority, target_price, notes, item_data, updated_at
-  )
-  select
-    v_user_id,
-    x.item->>'collectionId',
-    coalesce(x.item->'modelSnapshot'->>'canonical_name', x.item->>'name', 'Hot Wheels model'),
-    greatest(0, least(5, coalesce(nullif(x.item->>'priority', '')::smallint, 0))),
-    nullif(x.item->>'targetPrice', '')::numeric,
-    x.item->>'notes',
-    x.item,
-    v_now
-  from jsonb_array_elements(p_items) as x(item)
-  where x.item->>'status' = 'wishlist'
-    and nullif(x.item->>'collectionId', '') is not null
-  on conflict (user_id, client_item_id) do update set
-    custom_name = excluded.custom_name,
-    priority = excluded.priority,
-    target_price = excluded.target_price,
-    notes = excluded.notes,
-    item_data = excluded.item_data,
-    updated_at = excluded.updated_at;
-
-  get diagnostics v_wishlist_count = row_count;
-
-  delete from public.user_garage_items g
-  where g.user_id = v_user_id
-    and not (g.client_item_id = any(v_garage_ids));
-
-  delete from public.user_wishlist_items w
-  where w.user_id = v_user_id
-    and not (w.client_item_id = any(v_wishlist_ids));
-
-  return query select v_now, v_garage_count, v_wishlist_count;
-end;
-$$;
-
-revoke all on function public.sync_diecast_garage(jsonb, jsonb, timestamptz) from public, anon;
-grant execute on function public.sync_diecast_garage(jsonb, jsonb, timestamptz) to authenticated;
- then (x.item->>'targetPrice')::numeric else null end,
-    x.item->>'notes',
-    x.item,
-    v_now
-  from jsonb_array_elements(p_items) as x(item)
-  where x.item->>'status' = 'wishlist'
-    and nullif(x.item->>'collectionId', '') is not null
-  on conflict (user_id, client_item_id) do update set
-    custom_name = excluded.custom_name,
-    priority = excluded.priority,
-    target_price = excluded.target_price,
-    notes = excluded.notes,
-    item_data = excluded.item_data,
-    updated_at = excluded.updated_at;
-
-  get diagnostics v_wishlist_count = row_count;
-
-  delete from public.user_garage_items g
-  where g.user_id = v_user_id
-    and not (g.client_item_id = any(v_garage_ids));
-
-  delete from public.user_wishlist_items w
-  where w.user_id = v_user_id
-    and not (w.client_item_id = any(v_wishlist_ids));
-
-  return query select v_now, v_garage_count, v_wishlist_count;
-end;
-$$;
-
-revoke all on function public.sync_diecast_garage(jsonb, jsonb, timestamptz) from public, anon;
-grant execute on function public.sync_diecast_garage(jsonb, jsonb, timestamptz) to authenticated;
- then (x.item->>'price')::numeric else null end,
-    'PLN',
-    x.item->>'notes',
-    x.item->>'photo',
-    x.item,
-    v_now
-  from jsonb_array_elements(p_items) as x(item)
-  where x.item->>'status' = 'owned'
-    and nullif(x.item->>'collectionId', '') is not null
-  on conflict (user_id, client_item_id) do update set
-    custom_name = excluded.custom_name,
-    condition = excluded.condition,
-    purchase_date = excluded.purchase_date,
-    purchase_price = excluded.purchase_price,
-    purchase_currency = excluded.purchase_currency,
-    notes = excluded.notes,
-    photo_url = excluded.photo_url,
-    item_data = excluded.item_data,
-    updated_at = excluded.updated_at;
-
-  get diagnostics v_garage_count = row_count;
-
-  insert into public.user_wishlist_items(
-    user_id, client_item_id, custom_name, priority, target_price, notes, item_data, updated_at
-  )
-  select
-    v_user_id,
-    x.item->>'collectionId',
-    coalesce(x.item->'modelSnapshot'->>'canonical_name', x.item->>'name', 'Hot Wheels model'),
-    greatest(0, least(5, coalesce(nullif(x.item->>'priority', '')::smallint, 0))),
-    nullif(x.item->>'targetPrice', '')::numeric,
+    case
+      when coalesce(x.item->>'targetPrice', '') ~ '^[0-9]+([.][0-9]{1,2})?$'
+      then (x.item->>'targetPrice')::numeric
+      else null
+    end,
     x.item->>'notes',
     x.item,
     v_now
