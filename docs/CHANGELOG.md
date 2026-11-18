@@ -7,6 +7,7 @@
 - Preserved complete item data and private photo paths in normalized JSONB records.
 - Added a legacy JSON fallback for projects that have not applied the atomic sync migration.
 - Added direct migration instructions and a read-only Supabase setup verification script.
+- Expanded Chromium smoke testing to verify PWA install assets and offline shell startup.
 - Added edit support for user-created multipacks.
 - Expanded Chromium smoke coverage to create, edit and delete a custom multipack.
 - Bumped the PWA shell cache to v1.7.0.
