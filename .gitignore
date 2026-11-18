@@ -1,0 +1,10 @@
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+
+# Local exports and temporary files
+exports/
+tmp/
