@@ -24,7 +24,7 @@ A static Pages deployment does not itself provide a shared database. To sync a c
 5. Create an account and sign in on each device with the same account.
 6. Use Wyślij tę kolekcję do chmury on the source device; use Pobierz kolekcję z chmury on the other device.
 
-The current v1.5 UI uses the legacy diecast_garage_data JSON payload table and manual push/pull. The normalized garage/wishlist tables are defined in SQL but are not yet integrated into the UI. The app does not yet provide automatic background synchronization.
+The current v1.6 UI uses the legacy diecast_garage_data JSON payload table and manual push/pull. The normalized garage/wishlist tables are defined in SQL but are not yet integrated into the UI. The app does not yet provide automatic background synchronization.
 
 ## Security
 
