@@ -7,6 +7,7 @@ const html = fs.readFileSync('index.html', 'utf8');
 const manifest = JSON.parse(fs.readFileSync('manifest.webmanifest', 'utf8'));
 const schema = fs.readFileSync('supabase/schema.sql', 'utf8');
 const syncMigration = fs.readFileSync('supabase/migrations/20261118_atomic_collection_sync.sql', 'utf8');
+const syncVerification = fs.readFileSync('supabase/verify_sync_setup.sql', 'utf8');
 const serviceWorker = fs.readFileSync('sw.js', 'utf8');
 
 assert.match(html, /<html lang="pl">/i, 'Polish document language is present');
@@ -35,6 +36,8 @@ assert.ok(html.includes("rpc('sync_diecast_garage'"), 'Client must use the atomi
 assert.ok(syncMigration.includes('pg_advisory_xact_lock'), 'Atomic sync must serialize writes per user');
 assert.ok(syncMigration.includes('is distinct from p_expected_updated_at'), 'Atomic sync must reject stale snapshots');
 assert.ok(schema.endsWith(syncMigration), 'Full schema and incremental sync migration must stay aligned');
+assert.match(syncVerification, /has_function_privilege/, 'Supabase verification script must check RPC permissions');
+assert.match(syncVerification, /relrowsecurity/, 'Supabase verification script must check row-level security');
 assert.match(html, /p_expected_updated_at/, 'Atomic sync must compare the cloud snapshot version');
 
 const inlineScripts = [...html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)]
