@@ -27,6 +27,10 @@ assert.match(schema, /auth\.uid\(\)\s*=\s*user_id/i, 'User rows must be scoped t
 assert.match(schema, /client_item_id text not null/i, 'Normalized sync tables need stable client IDs');
 assert.match(schema, /Users read own Diecast Garage photos/i, 'Private photo bucket must have owner-scoped read policy');
 assert.match(schema, /bucket_id = 'diecast-photos'/i, 'Photo policies must be restricted to the private bucket');
+assert.match(schema, /function public\\.sync_diecast_garage/i, 'Schema must expose atomic snapshot and normalized item sync');
+assert.match(schema, /item_data jsonb not null/i, 'Normalized rows must preserve complete client item data');
+assert.match(html, /rpc\\('sync_diecast_garage'/, 'Client must use the atomic sync RPC when available');
+assert.match(html, /p_expected_updated_at/, 'Atomic sync must compare the cloud snapshot version');
 
 const inlineScripts = [...html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)]
   .filter(([, attrs, body]) => !/\bsrc\s*=/.test(attrs) && body.trim());
