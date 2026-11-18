@@ -1,24 +1,39 @@
 # Hosting and phone access
 
-The target is an installable PWA served over HTTPS. The Mac must not be running for the app to work.
+The app is hosted in the cloud. The Mac does not need to be running.
 
-## GitHub Pages setup
+## Live deployment
 
-1. Open repository Settings → Pages.
-2. Under Build and deployment, choose **GitHub Actions**.
-3. Pushes to `main` will run `.github/workflows/pages.yml`.
-4. GitHub will publish the repository root as a static site.
+- App: https://kacperrogowski98.github.io/diecast-garage/
+- Hosting: GitHub Pages.
+- Deployment workflow: .github/workflows/pages.yml.
+- Deployment is triggered by pushes to main and can also be run manually from GitHub Actions.
 
-The workflow is prepared, but the app cannot be considered deployed until the real application entry point and all referenced assets are committed and a successful Pages deployment is visible.
+## PWA installation
 
-## Before enabling production
+Open the live HTTPS URL on the phone. On iPhone, use Safari → Share → Add to Home Screen. On Android, use the browser's Install app / Add to Home screen option when offered. The exact prompt varies by browser. The service worker caches the app shell; catalogue and collection persistence are handled separately by IndexedDB and local storage.
 
-- Verify the app uses relative asset paths that work under the GitHub Pages project subpath.
-- Configure Supabase URL and public anon key in the app (never a service-role key).
-- Apply `supabase/schema.sql` and verify Row Level Security.
-- Add authentication, then test that two devices signed into the same account see the same collection.
-- Confirm offline shell caching and app update behavior on iOS and Android.
+## Supabase setup still required for cloud collection sync
 
-## Important
+A static Pages deployment does not itself provide a shared database. To sync a collection between devices:
 
-A static Pages deployment does not itself provide a shared database. Supabase (or another backend) is required for cross-device collection sync and a centrally maintained catalogue.
+1. Create or select a Supabase project.
+2. Apply supabase/schema.sql in the Supabase SQL Editor.
+3. Create the private Storage bucket diecast-photos and configure owner-scoped policies for upload, download and deletion.
+4. In the app, open Konto / synchronizacja and enter the Project URL and public anon/publishable key.
+5. Create an account and sign in on each device with the same account.
+6. Use Wyślij tę kolekcję do chmury on the source device; use Pobierz kolekcję z chmury on the other device.
+
+The current v1.5 UI uses the legacy diecast_garage_data JSON payload table and manual push/pull. The normalized garage/wishlist tables are defined in SQL but are not yet integrated into the UI. The app does not yet provide automatic background synchronization.
+
+## Security
+
+- Only the public anon/publishable key belongs in browser configuration. Never use a service-role key in the frontend.
+- Keep RLS enabled and test with two different user accounts to confirm each can access only their own data.
+- Keep the photo bucket private and apply owner-scoped Storage policies before relying on photo sync.
+- The GitHub repository is public; never commit credentials, personal backups or collection exports.
+
+## Known limitations
+
+- The catalogue is currently fetched from the public upstream diecastDb scan index and cached in each browser's IndexedDB. It is not yet served from the app's own Supabase catalogue tables.
+- A successful Pages deployment confirms hosting, not full browser compatibility, sync correctness or catalogue completeness. Those checks remain on the roadmap.
