@@ -1,0 +1,89 @@
+import http from 'node:http';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import assert from 'node:assert/strict';
+import { chromium } from 'playwright';
+
+const root = process.cwd();
+const mime = {
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.webmanifest': 'application/manifest+json',
+  '.svg': 'image/svg+xml',
+  '.png': 'image/png',
+  '.css': 'text/css; charset=utf-8'
+};
+
+const server = http.createServer(async (req, res) => {
+  try {
+    const pathname = decodeURIComponent(new URL(req.url, 'http://127.0.0.1').pathname);
+    const relative = pathname === '/' ? 'index.html' : pathname.replace(/^\/+/, '');
+    const target = path.resolve(root, relative);
+    if (target !== root && !target.startsWith(root + path.sep)) {
+      res.writeHead(403).end('Forbidden');
+      return;
+    }
+    const body = await fs.readFile(target);
+    res.writeHead(200, {
+      'Content-Type': mime[path.extname(target)] || 'application/octet-stream',
+      'Cache-Control': 'no-store'
+    });
+    res.end(body);
+  } catch {
+    res.writeHead(404).end('Not found');
+  }
+});
+
+await new Promise(resolve => server.listen(4173, '127.0.0.1', resolve));
+const browser = await chromium.launch({ headless: true, args: ['--no-sandbox'] });
+const pageErrors = [];
+
+try {
+  const page = await browser.newPage();
+  page.setDefaultTimeout(20000);
+  page.on('pageerror', error => pageErrors.push(error.message));
+
+  await page.goto('http://127.0.0.1:4173/', { waitUntil: 'domcontentloaded' });
+
+  await page.waitForFunction(
+    () => document.querySelector('#catalogStatus')?.textContent.includes('Pobrano indeks online'),
+    null,
+    { timeout: 120000 }
+  );
+
+  const status = await page.locator('#catalogStatus').textContent();
+  assert.match(status, /Pobrano indeks online:\s*[\d\s.,]+\s+wydań/i, 'Online catalogue index should import successfully');
+
+  await page.locator('.tab[data-view="catalog"]').click();
+  await page.locator('#search').fill('Ferrari');
+  await page.waitForFunction(() => document.querySelectorAll('#content .car').length > 0);
+  const visibleCars = await page.locator('#content .car').count();
+  assert.ok(visibleCars > 0, 'Searching the imported catalogue for Ferrari should return model cards');
+
+  await page.locator('#content .car').first().getByRole('button', { name: /Szczegóły/ }).click();
+  await page.locator('#modalRoot .modal h3').waitFor();
+  await page.locator('#modalRoot .modal').getByRole('button', { name: '✕' }).click();
+
+  await page.locator('#content .car').first().getByRole('button', { name: /Garaż/ }).click();
+  await page.locator('.tab[data-view="garage"]').click();
+  await page.waitForFunction(() => document.querySelector('#ownedCount')?.textContent === '1');
+
+  await page.locator('.tab[data-view="packs"]').click();
+  await page.getByRole('button', { name: /Dodaj własny multipack/ }).click();
+  await page.locator('#customPackName').fill('E2E Test 5-Pack');
+  await page.locator('#customPackYear').fill('2026');
+  await page.locator('#customPackContents').fill('Ferrari F40\nLamborghini Countach');
+  await page.getByRole('button', { name: 'Zapisz zestaw' }).click();
+  await page.locator('#content .car').filter({ hasText: 'E2E Test 5-Pack' }).waitFor();
+
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('diecast_garage_mvp_02')));
+  assert.equal(saved.items.length, 1, 'Owned model should persist in local collection state');
+  assert.equal(saved.customPacks.length, 1, 'Custom multipack should persist in local collection state');
+  assert.deepEqual(pageErrors, [], 'The browser should not emit uncaught JavaScript errors');
+
+  console.log('Browser smoke test passed: online catalogue, search, details, add-to-garage and custom multipack.');
+} finally {
+  await browser.close();
+  await new Promise(resolve => server.close(resolve));
+}
