@@ -102,8 +102,10 @@ try {
   await page.reload({ waitUntil: 'domcontentloaded' });
   await page.locator('#content').waitFor();
   assert.match(await page.title(), /Diecast Garage/, 'The cached PWA shell should reopen offline');
+  await page.waitForFunction(() => document.querySelector('#ownedCount')?.textContent === '1');
+  assert.equal(await page.locator('#ownedCount').textContent(), '1', 'The garage collection should persist after an offline restart');
 
-  console.log('Browser smoke test passed: PWA manifest/icons, offline shell, online catalogue, search, details, garage and custom multipack CRUD.');
+  console.log('Browser smoke test passed: PWA manifest/icons, offline shell, local persistence, online catalogue, search, details, garage and custom multipack CRUD.');
 } finally {
   await browser.close();
   await new Promise(resolve => server.close(resolve));
