@@ -1,5 +1,79 @@
--- Diecast Garage: private per-user collection sync.
--- Run in Supabase SQL Editor. This is a starter schema, not yet connected to the app.
+-- Diecast Garage shared catalogue + private collection sync.
+-- Apply in Supabase SQL Editor. No service-role key belongs in the browser.
+
+create extension if not exists pgcrypto;
+
+-- Shared reference catalogue. Public read; trusted importer writes with service role.
+create table if not exists public.brands (
+  id uuid primary key default gen_random_uuid(),
+  name text not null unique,
+  slug text not null unique,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.castings (
+  id uuid primary key default gen_random_uuid(),
+  brand_id uuid references public.brands(id),
+  name text not null,
+  casting_name text not null,
+  vehicle_type text not null default 'unknown'
+    check (vehicle_type in ('supercar','hypercar','real_car','fantasy','racing','other','unknown')),
+  is_fantasy boolean,
+  description text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.releases (
+  id uuid primary key default gen_random_uuid(),
+  casting_id uuid not null references public.castings(id) on delete cascade,
+  release_year integer,
+  series text,
+  assortment text,
+  collector_number text,
+  release_name text,
+  country text,
+  source_name text not null,
+  source_record_id text,
+  source_url text,
+  image_url text,
+  verification_status text not null default 'unverified'
+    check (verification_status in ('unverified','source_matched','verified','conflicting')),
+  created_at timestamptz not null default now(),
+  unique (source_name, source_record_id)
+);
+
+create table if not exists public.variants (
+  id uuid primary key default gen_random_uuid(),
+  release_id uuid not null references public.releases(id) on delete cascade,
+  color text,
+  wheel_type text,
+  tampo text,
+  base_code text,
+  notes text,
+  source_record_id text,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.packs (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  pack_type text not null default 'multipack',
+  release_year integer,
+  assortment text,
+  source_name text,
+  source_record_id text,
+  source_url text,
+  image_url text,
+  unique (source_name, source_record_id)
+);
+
+create table if not exists public.pack_contents (
+  pack_id uuid not null references public.packs(id) on delete cascade,
+  release_id uuid not null references public.releases(id) on delete cascade,
+  quantity integer not null default 1 check (quantity > 0),
+  primary key (pack_id, release_id)
+);
 
 create table if not exists public.diecast_garage_data (
   user_id uuid primary key references auth.users(id) on delete cascade,
@@ -7,25 +81,40 @@ create table if not exists public.diecast_garage_data (
   updated_at timestamptz not null default now()
 );
 
+alter table public.brands enable row level security;
+alter table public.castings enable row level security;
+alter table public.releases enable row level security;
+alter table public.variants enable row level security;
+alter table public.packs enable row level security;
+alter table public.pack_contents enable row level security;
 alter table public.diecast_garage_data enable row level security;
 
+-- Catalogue is readable by everyone, but writes are reserved for trusted server-side imports.
+drop policy if exists "Public can read brands" on public.brands;
+create policy "Public can read brands" on public.brands for select to anon, authenticated using (true);
+drop policy if exists "Public can read castings" on public.castings;
+create policy "Public can read castings" on public.castings for select to anon, authenticated using (true);
+drop policy if exists "Public can read releases" on public.releases;
+create policy "Public can read releases" on public.releases for select to anon, authenticated using (true);
+drop policy if exists "Public can read variants" on public.variants;
+create policy "Public can read variants" on public.variants for select to anon, authenticated using (true);
+drop policy if exists "Public can read packs" on public.packs;
+create policy "Public can read packs" on public.packs for select to anon, authenticated using (true);
+drop policy if exists "Public can read pack contents" on public.pack_contents;
+create policy "Public can read pack contents" on public.pack_contents for select to anon, authenticated using (true);
+
+-- Each signed-in user can read and write only their own collection/wishlist payload.
 drop policy if exists "Users can read their own Diecast Garage data" on public.diecast_garage_data;
-create policy "Users can read their own Diecast Garage data"
-  on public.diecast_garage_data for select
-  to authenticated
-  using (auth.uid() = user_id);
-
+create policy "Users can read their own Diecast Garage data" on public.diecast_garage_data
+  for select to authenticated using (auth.uid() = user_id);
 drop policy if exists "Users can insert their own Diecast Garage data" on public.diecast_garage_data;
-create policy "Users can insert their own Diecast Garage data"
-  on public.diecast_garage_data for insert
-  to authenticated
-  with check (auth.uid() = user_id);
-
+create policy "Users can insert their own Diecast Garage data" on public.diecast_garage_data
+  for insert to authenticated with check (auth.uid() = user_id);
 drop policy if exists "Users can update their own Diecast Garage data" on public.diecast_garage_data;
-create policy "Users can update their own Diecast Garage data"
-  on public.diecast_garage_data for update
-  to authenticated
-  using (auth.uid() = user_id)
-  with check (auth.uid() = user_id);
+create policy "Users can update their own Diecast Garage data" on public.diecast_garage_data
+  for update to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
--- No public/anon access policies. Each authenticated user can access only their own row.
+create index if not exists castings_name_idx on public.castings using gin (to_tsvector('simple', name));
+create index if not exists releases_year_idx on public.releases (release_year);
+create index if not exists releases_casting_idx on public.releases (casting_id);
+create index if not exists variants_release_idx on public.variants (release_id);
