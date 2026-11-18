@@ -33,7 +33,7 @@ const start = html.indexOf('const DG_BRANDS=');
 const end = html.indexOf('async function dgReadCatalogFile', start);
 assert.ok(start >= 0 && end > start, 'Catalogue normalizer source must be present');
 const context = {};
-vm.runInNewContext(html.slice(start, end) + '\nglobalThis.testNormalize = dgNormalizeRecord; globalThis.testExtract = dgExtractRows;', context);
+vm.runInNewContext(html.slice(start, end) + '\nglobalThis.testNormalize = dgNormalizeRecord; globalThis.testExtract = dgExtractRows; globalThis.testClassify = dgClassify;', context);
 
 const sample = {
   id: 'JBB06_1',
@@ -58,6 +58,6 @@ const extracted = context.testExtract({
   cars: [['JBB06_1', "'15 LAND ROVER DEFENDER DOUBLE CAB", '2025', 'mainline', 'JBB06', '179', 'HW Dirt', '', 1, 'Dark Red']]
 }, 'scan-index.json');
 assert.equal(extracted.rows.length, 1, 'Compact scan index row must be expanded');
-assert.equal(extracted.rows[0].title, sample.title, 'Compact scan index columns must map by field name');
+assert.equal(extracted.rows[0].title, sample.title, 'Compact scan index columns must map by field name');\nassert.equal(context.testClassify('Ferrari 812 Competizione', 'Ferrari', ''), 'supercar_hypercar', 'Known supercar models must enter the Supercar/Hypercar filter');\nassert.equal(context.testClassify('Ferrari 499P', 'Ferrari', ''), 'racing', 'Le Mans prototype castings must remain in Racing, not Supercar/Hypercar');
 
 console.log('Diecast Garage checks passed: HTML, inline JavaScript, PWA paths, RLS markers and catalogue adapter.');
