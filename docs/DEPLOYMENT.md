@@ -6,25 +6,25 @@ The app is hosted in the cloud. The Mac does not need to be running.
 
 - App: https://kacperrogowski98.github.io/diecast-garage/
 - Hosting: GitHub Pages.
-- Deployment workflow: .github/workflows/pages.yml.
-- Deployment is triggered by pushes to main and can also be run manually from GitHub Actions.
+- Deployment workflow: `.github/workflows/pages.yml`.
+- Deployment is triggered by pushes to `main`.
 
 ## PWA installation
 
-Open the live HTTPS URL on the phone. On iPhone, use Safari → Share → Add to Home Screen. On Android, use the browser's Install app / Add to Home screen option when offered. The exact prompt varies by browser. The service worker caches the app shell; catalogue and collection persistence are handled separately by IndexedDB and local storage.
+Open the live HTTPS URL on the phone. On iPhone, use Safari → Share → Add to Home Screen. On Android, use the browser's Install app / Add to Home screen option when offered. The service worker caches the app shell; catalogue and collection persistence are handled separately by IndexedDB and local storage.
 
-## Supabase setup still required for cloud collection sync
+## Supabase setup
 
 A static Pages deployment does not itself provide a shared database. To sync a collection between devices:
 
 1. Create or select a Supabase project.
-2. Apply supabase/schema.sql in the Supabase SQL Editor.
-3. Create the private Storage bucket diecast-photos and configure owner-scoped policies for upload, download and deletion.
+2. For a new project, apply `supabase/schema.sql` in the Supabase SQL Editor. For an existing project created from the earlier schema, apply `supabase/migrations/20261118_atomic_collection_sync.sql`.
+3. In Supabase Authentication settings, add `https://kacperrogowski98.github.io/diecast-garage/` to the allowed redirect URLs.
 4. In the app, open Konto / synchronizacja and enter the Project URL and public anon/publishable key.
 5. Create an account and sign in on each device with the same account.
 6. Use Wyślij tę kolekcję do chmury on the source device; use Pobierz kolekcję z chmury on the other device.
 
-The current v1.6 UI uses the legacy diecast_garage_data JSON payload table and manual push/pull. The normalized garage/wishlist tables are defined in SQL but are not yet integrated into the UI. The app does not yet provide automatic background synchronization.
+The photo bucket and owner-scoped Storage policies are created by `supabase/schema.sql`. Keep the bucket private. The atomic migration makes garage/wishlist sync transactional and protects against stale writes. If the migration is missing, the app reports and uses the older JSON fallback.
 
 ## Security
 
@@ -35,5 +35,7 @@ The current v1.6 UI uses the legacy diecast_garage_data JSON payload table and m
 
 ## Known limitations
 
-- The catalogue is currently fetched from the public upstream diecastDb scan index and cached in each browser's IndexedDB. It is not yet served from the app's own Supabase catalogue tables.
-- A successful Pages deployment confirms hosting. The repository now runs automated Chromium smoke tests for online catalogue import, search, details, garage add and custom multipack creation. Manual iOS/Android installation, Supabase sync correctness and catalogue completeness still require separate validation.
+- The catalogue is fetched from the public upstream diecastDb scan index and cached in each browser's IndexedDB. It is not yet served from the app's own Supabase catalogue tables.
+- Automated Chromium smoke tests cover catalogue import, search, details, garage add and custom multipack create/edit/delete.
+- Manual iOS/Android installation, live Supabase cross-device sync, RLS isolation and private photo access still require validation.
+
