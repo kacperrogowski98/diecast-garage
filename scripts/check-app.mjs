@@ -32,7 +32,7 @@ for (let i = 0; i < inlineScripts.length; i++) {
 const start = html.indexOf('const DG_BRANDS=');
 const end = html.indexOf('async function dgReadCatalogFile', start);
 assert.ok(start >= 0 && end > start, 'Catalogue normalizer source must be present');
-const context = { location: { href: 'https://app.test/' } };
+const context = { location: { href: 'https://app.test/' }, URL };
 vm.runInNewContext(html.slice(start, end) + '\nglobalThis.testNormalize = dgNormalizeRecord; globalThis.testExtract = dgExtractRows; globalThis.testClassify = dgClassify; globalThis.testSafeUrl = dgSafeHttpUrl;', context);
 
 const sample = {
