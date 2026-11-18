@@ -47,7 +47,8 @@ const sample = {
   color: 'Dark Red'
 };
 const normalized = context.testNormalize(sample, 'diecastdb', 0, {});
-assert.equal(normalized.brand, 'Land Rover', 'Brand inference must recognize model names with a year prefix');\nassert.equal(context.testNormalize({title: \"Custom '70 Honda N600\", year: '1970', assortment: 'mainline'}, 'diecastdb', 1, {}).brand, 'Honda', 'Brand inference must find OEM names after custom prefixes');
+assert.equal(normalized.brand, 'Land Rover', 'Brand inference must recognize model names with a year prefix');
+assert.equal(context.testNormalize({title: \"Custom '70 Honda N600\", year: '1970', assortment: 'mainline'}, 'diecastdb', 1, {}).brand, 'Honda', 'Brand inference must find OEM names after custom prefixes');
 assert.equal(normalized.release_year, 2025, 'Year must map from scan-index year field');
 assert.equal(normalized.assortment, 'mainline', 'Collection key must be retained');
 assert.equal(normalized.source_record_id, 'JBB06_1', 'Upstream source ID must be retained');
