@@ -10,7 +10,8 @@
 - [x] Optional Supabase Auth and manual JSON-payload collection sync in the UI.
 - [x] Optional private photo upload/download flow in the UI.
 - [x] Online scan-index importer for the upstream diecastDb catalogue.
-- [ ] Verify live app boot and primary flows in desktop/mobile browsers.
+- [x] Add automated Chromium smoke coverage for online catalogue import, search, details, garage add and custom multipack creation.
+- [ ] Verify manual installation and primary flows on iOS/Android.
 - [ ] Validate the online catalogue mapping against upstream scan-index and year files.
 - [ ] Improve casting/release/variant deduplication and data provenance.
 - [ ] Expand multipack catalogue beyond the current Ferrari seed.
