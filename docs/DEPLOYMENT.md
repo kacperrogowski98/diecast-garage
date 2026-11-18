@@ -36,4 +36,4 @@ The current v1.6 UI uses the legacy diecast_garage_data JSON payload table and m
 ## Known limitations
 
 - The catalogue is currently fetched from the public upstream diecastDb scan index and cached in each browser's IndexedDB. It is not yet served from the app's own Supabase catalogue tables.
-- A successful Pages deployment confirms hosting, not full browser compatibility, sync correctness or catalogue completeness. Those checks remain on the roadmap.
+- A successful Pages deployment confirms hosting. The repository now runs automated Chromium smoke tests for online catalogue import, search, details, garage add and custom multipack creation. Manual iOS/Android installation, Supabase sync correctness and catalogue completeness still require separate validation.
