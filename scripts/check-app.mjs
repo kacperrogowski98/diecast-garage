@@ -1,10 +1,12 @@
 import fs from 'node:fs';
 import vm from 'node:vm';
+import { spawnSync } from 'node:child_process';
 import assert from 'node:assert/strict';
 
 const html = fs.readFileSync('index.html', 'utf8');
 const manifest = JSON.parse(fs.readFileSync('manifest.webmanifest', 'utf8'));
 const schema = fs.readFileSync('supabase/schema.sql', 'utf8');
+const serviceWorker = fs.readFileSync('sw.js', 'utf8');
 
 assert.match(html, /<html lang="pl">/i, 'Polish document language is present');
 assert.match(html, /id="content"/, 'Main app content mount exists');
@@ -15,6 +17,8 @@ assert.match(html, /navigator\.serviceWorker\.register\('\.\/sw\.js'\)/, 'PWA se
 assert.equal(manifest.start_url, './', 'PWA start URL must work under a GitHub Pages subpath');
 assert.equal(manifest.scope, './', 'PWA scope must work under a GitHub Pages subpath');
 assert.ok(manifest.icons.some(icon => icon.src === './icon-192.png' && icon.sizes === '192x192'), 'PWA manifest must include a 192px PNG icon');
+assert.ok(fs.existsSync('icon-192.png'), 'PWA raster icon file must exist');
+assert.match(serviceWorker, /icon-192\\.png/, 'Service worker must cache the raster install icon');
 assert.match(schema, /enable row level security/ig, 'RLS must be enabled in the schema');
 assert.match(schema, /auth\.uid\(\)\s*=\s*user_id/i, 'User rows must be scoped to the authenticated user');
 assert.match(schema, /client_item_id text not null/i, 'Normalized sync tables need stable client IDs');
@@ -27,10 +31,12 @@ assert.ok(inlineScripts.length >= 2, 'Expected app and service-worker inline scr
 for (let i = 0; i < inlineScripts.length; i++) {
   const tmp = `/tmp/diecast-garage-inline-${i}.js`;
   fs.writeFileSync(tmp, inlineScripts[i][2]);
-  const { spawnSync } = await import('node:child_process');
   const check = spawnSync(process.execPath, ['--check', tmp], { encoding: 'utf8' });
   assert.equal(check.status, 0, `Inline script ${i} has a syntax error: ${check.stderr}`);
 }
+
+const swCheck = spawnSync(process.execPath, ['--check', 'sw.js'], { encoding: 'utf8' });
+assert.equal(swCheck.status, 0, `Service worker has a syntax error: ${swCheck.stderr}`);
 
 const start = html.indexOf('const DG_BRANDS=');
 const end = html.indexOf('async function dgReadCatalogFile', start);
