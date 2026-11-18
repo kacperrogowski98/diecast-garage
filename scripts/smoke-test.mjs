@@ -84,6 +84,11 @@ try {
   assert.equal(saved.customPacks.length, 1, 'Custom multipack should persist in local collection state');
 
   await customPackCard.getByRole('button', { name: 'Zawartość' }).click();
+  await page.getByRole('button', { name: 'Edytuj' }).click();
+  await page.locator('#customPackName').fill('E2E Edited 5-Pack');
+  await page.getByRole('button', { name: 'Zapisz zmiany' }).click();
+  await page.locator('#content .car').filter({ hasText: 'E2E Edited 5-Pack' }).waitFor();
+  await page.locator('#content .car').filter({ hasText: 'E2E Edited 5-Pack' }).getByRole('button', { name: 'Zawartość' }).click();
   await page.getByRole('button', { name: 'Usuń własny zestaw' }).click();
   await page.waitForFunction(() => JSON.parse(localStorage.getItem('diecast_garage_mvp_02')).customPacks.length === 0);
   assert.deepEqual(pageErrors, [], 'The browser should not emit uncaught JavaScript errors');
