@@ -9,6 +9,8 @@ const schema = fs.readFileSync('supabase/schema.sql', 'utf8');
 assert.match(html, /<html lang="pl">/i, 'Polish document language is present');
 assert.match(html, /id="content"/, 'Main app content mount exists');
 assert.match(html, /dgFetchOnlineCatalog/, 'Online catalogue importer is wired');
+assert.match(html, /dgSyncMeta\(\)/, 'Cloud sync metadata must be tracked per user');
+assert.match(html, /W chmurze są zmiany nowsze/, 'Cloud push must warn before overwriting a newer snapshot');
 assert.match(html, /navigator\.serviceWorker\.register\('\.\/sw\.js'\)/, 'PWA service worker is registered');
 assert.equal(manifest.start_url, './', 'PWA start URL must work under a GitHub Pages subpath');
 assert.equal(manifest.scope, './', 'PWA scope must work under a GitHub Pages subpath');
