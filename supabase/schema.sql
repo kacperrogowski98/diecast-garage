@@ -118,3 +118,55 @@ create index if not exists castings_name_idx on public.castings using gin (to_ts
 create index if not exists releases_year_idx on public.releases (release_year);
 create index if not exists releases_casting_idx on public.releases (casting_id);
 create index if not exists variants_release_idx on public.variants (release_id);
+
+
+-- Optional normalized collection tables for the next app integration step.
+-- The existing JSON payload table remains available for backward-compatible v1 sync.
+
+create table if not exists public.user_garage_items (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  release_id uuid references public.releases(id) on delete set null,
+  casting_id uuid references public.castings(id) on delete set null,
+  custom_name text,
+  condition text,
+  purchase_date date,
+  purchase_price numeric(10,2),
+  purchase_currency text default 'PLN',
+  notes text,
+  photo_url text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  check (release_id is not null or casting_id is not null or custom_name is not null)
+);
+
+create table if not exists public.user_wishlist_items (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  release_id uuid references public.releases(id) on delete cascade,
+  casting_id uuid references public.castings(id) on delete cascade,
+  custom_name text,
+  priority smallint not null default 0 check (priority between 0 and 5),
+  target_price numeric(10,2),
+  notes text,
+  created_at timestamptz not null default now(),
+  check (release_id is not null or casting_id is not null or custom_name is not null)
+);
+
+alter table public.user_garage_items enable row level security;
+alter table public.user_wishlist_items enable row level security;
+
+drop policy if exists "Users manage only their own garage items" on public.user_garage_items;
+create policy "Users manage only their own garage items" on public.user_garage_items
+  for all to authenticated
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+drop policy if exists "Users manage only their own wishlist items" on public.user_wishlist_items;
+create policy "Users manage only their own wishlist items" on public.user_wishlist_items
+  for all to authenticated
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+create index if not exists user_garage_items_user_idx on public.user_garage_items (user_id);
+create index if not exists user_wishlist_items_user_idx on public.user_wishlist_items (user_id);
