@@ -107,8 +107,8 @@ begin
     coalesce(x.item->'modelSnapshot'->>'canonical_name', x.item->>'name', 'Hot Wheels model'),
     greatest(0, least(5, coalesce(nullif(x.item->>'priority', '')::smallint, 0))),
     case
-      when coalesce(x.item->>'targetPrice', '') ~ '^[0-9]+([.][0-9]{1,2})?$'
-      then (x.item->>'targetPrice')::numeric
+      when coalesce(x.item->>'targetPrice', x.item->>'price', '') ~ '^[0-9]+([.][0-9]{1,2})?$'
+      then coalesce(x.item->>'targetPrice', x.item->>'price')::numeric
       else null
     end,
     x.item->>'notes',
