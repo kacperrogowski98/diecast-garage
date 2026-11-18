@@ -43,6 +43,7 @@ try {
   const page = await browser.newPage();
   page.setDefaultTimeout(20000);
   page.on('pageerror', error => pageErrors.push(error.message));
+  page.on('dialog', dialog => dialog.accept());
 
   await page.goto('http://127.0.0.1:4173/', { waitUntil: 'domcontentloaded' });
 
@@ -75,11 +76,16 @@ try {
   await page.locator('#customPackYear').fill('2026');
   await page.locator('#customPackContents').fill('Ferrari F40\nLamborghini Countach');
   await page.getByRole('button', { name: 'Zapisz zestaw' }).click();
-  await page.locator('#content .car').filter({ hasText: 'E2E Test 5-Pack' }).waitFor();
+  const customPackCard = page.locator('#content .car').filter({ hasText: 'E2E Test 5-Pack' });
+  await customPackCard.waitFor();
 
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('diecast_garage_mvp_02')));
   assert.equal(saved.items.length, 1, 'Owned model should persist in local collection state');
   assert.equal(saved.customPacks.length, 1, 'Custom multipack should persist in local collection state');
+
+  await customPackCard.getByRole('button', { name: 'Zawartość' }).click();
+  await page.getByRole('button', { name: 'Usuń własny zestaw' }).click();
+  await page.waitForFunction(() => JSON.parse(localStorage.getItem('diecast_garage_mvp_02')).customPacks.length === 0);
   assert.deepEqual(pageErrors, [], 'The browser should not emit uncaught JavaScript errors');
 
   console.log('Browser smoke test passed: online catalogue, search, details, add-to-garage and custom multipack.');
