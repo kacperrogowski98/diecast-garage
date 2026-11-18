@@ -1,5 +1,7 @@
-const CACHE_NAME = 'diecast-garage-shell-v1.5';
-const APP_SHELL = ['/', '/index.html', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png'];
+const CACHE_NAME = 'diecast-garage-shell-v1.5.1';
+const base = self.registration.scope;
+const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png']
+  .map(path => new URL(path, base).toString());
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)));
@@ -26,6 +28,6 @@ self.addEventListener('fetch', event => {
         caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
       }
       return response;
-    }).catch(() => caches.match('/index.html')))
+    }).catch(() => caches.match(new URL('./index.html', base).toString())))
   );
 });
