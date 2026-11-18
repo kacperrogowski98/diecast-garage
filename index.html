@@ -176,12 +176,10 @@ async function dgCloudPush(){
   dgCloudStatus='Przygotowuję kolekcję i zdjęcia…';dgRenderCloudPanel();
   const payload=await dgPrepareCloudValue({...state,brands:[...new Set(state.brands||[])]},new Map());
   const expectedUpdatedAt=remote?.updated_at||null;
-  let syncMode='legacy';
   const {data:atomicData,error:atomicError}=await dgSupabaseClient.rpc('sync_diecast_garage',{
    p_payload:payload,p_items:Array.isArray(payload.items)?payload.items:[],p_expected_updated_at:expectedUpdatedAt
   });
   if(!atomicError){
-   syncMode='atomic';
   }else if(dgIsMissingSyncRpc(atomicError)||dgIsMissingNormalizedColumn(atomicError)){
    const updatedAt=new Date().toISOString();
    const {error}=await dgSupabaseClient.from('diecast_garage_data').upsert({user_id:dgCloudUser.id,payload,updated_at:updatedAt},{onConflict:'user_id'});
@@ -208,7 +206,8 @@ async function dgCloudPull(){
   const {data,error}=await dgSupabaseClient.from('diecast_garage_data').select('payload,updated_at').eq('user_id',dgCloudUser.id).maybeSingle();
   if(error)throw error;
   if(!data){toast('W chmurze nie ma jeszcze kolekcji. Najpierw wyślij ją z urządzenia źródłowego.');dgCloudStatus='W chmurze nie ma jeszcze kolekcji.';dgRenderCloudPanel();return}
-  const restored=await dgRestoreCloudValue(data.payload,new Map());
+  const restoreCache=new Map();
+  const restored=await dgRestoreCloudValue(data.payload,restoreCache);
   let normalizedMode=false;
   const [garageResult,wishlistResult]=await Promise.all([
    dgSupabaseClient.from('user_garage_items').select('client_item_id,item_data').eq('user_id',dgCloudUser.id),
@@ -218,7 +217,7 @@ async function dgCloudPull(){
   if(!normalizedError){
    const normalizedItems=[...(garageResult.data||[]),...(wishlistResult.data||[])].map(row=>row.item_data).filter(item=>item&&typeof item==='object');
    if(normalizedItems.length||!Array.isArray(restored.items)||restored.items.length===0){
-    restored.items=await dgRestoreCloudValue(normalizedItems,new Map());normalizedMode=true;
+    restored.items=await dgRestoreCloudValue(normalizedItems,restoreCache);normalizedMode=true;
    }
   }else if(!dgIsMissingNormalizedColumn(normalizedError))throw normalizedError;
   state=normalizeBackup({app:'Diecast Garage',state:restored});
