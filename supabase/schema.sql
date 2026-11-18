@@ -126,6 +126,7 @@ create index if not exists variants_release_idx on public.variants (release_id);
 create table if not exists public.user_garage_items (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
+  client_item_id text not null default gen_random_uuid()::text,
   release_id uuid references public.releases(id) on delete set null,
   casting_id uuid references public.castings(id) on delete set null,
   custom_name text,
@@ -143,6 +144,7 @@ create table if not exists public.user_garage_items (
 create table if not exists public.user_wishlist_items (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
+  client_item_id text not null default gen_random_uuid()::text,
   release_id uuid references public.releases(id) on delete cascade,
   casting_id uuid references public.castings(id) on delete cascade,
   custom_name text,
@@ -150,6 +152,7 @@ create table if not exists public.user_wishlist_items (
   target_price numeric(10,2),
   notes text,
   created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
   check (release_id is not null or casting_id is not null or custom_name is not null)
 );
 
@@ -170,3 +173,54 @@ create policy "Users manage only their own wishlist items" on public.user_wishli
 
 create index if not exists user_garage_items_user_idx on public.user_garage_items (user_id);
 create index if not exists user_wishlist_items_user_idx on public.user_wishlist_items (user_id);
+
+
+-- Stable client-side IDs allow safe upserts when the UI is migrated to normalized sync.
+-- These ALTERs also make this schema safe to re-run on projects created with an earlier draft.
+alter table public.user_garage_items
+  add column if not exists client_item_id text not null default gen_random_uuid()::text;
+alter table public.user_wishlist_items
+  add column if not exists client_item_id text not null default gen_random_uuid()::text;
+alter table public.user_wishlist_items
+  add column if not exists updated_at timestamptz not null default now();
+
+create unique index if not exists user_garage_items_client_item_idx
+  on public.user_garage_items (user_id, client_item_id);
+create unique index if not exists user_wishlist_items_client_item_idx
+  on public.user_wishlist_items (user_id, client_item_id);
+
+-- Private photo bucket used by the current browser app. Object paths must start with the
+-- authenticated user's UUID: <auth.uid()>/<generated-file-name>.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'diecast-photos',
+  'diecast-photos',
+  false,
+  12582912,
+  array['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+)
+on conflict (id) do update
+set public = false,
+    file_size_limit = excluded.file_size_limit,
+    allowed_mime_types = excluded.allowed_mime_types;
+
+drop policy if exists "Users read own Diecast Garage photos" on storage.objects;
+create policy "Users read own Diecast Garage photos" on storage.objects
+  for select to authenticated
+  using (bucket_id = 'diecast-photos' and (storage.foldername(name))[1] = auth.uid()::text);
+
+drop policy if exists "Users upload own Diecast Garage photos" on storage.objects;
+create policy "Users upload own Diecast Garage photos" on storage.objects
+  for insert to authenticated
+  with check (bucket_id = 'diecast-photos' and (storage.foldername(name))[1] = auth.uid()::text);
+
+drop policy if exists "Users update own Diecast Garage photos" on storage.objects;
+create policy "Users update own Diecast Garage photos" on storage.objects
+  for update to authenticated
+  using (bucket_id = 'diecast-photos' and (storage.foldername(name))[1] = auth.uid()::text)
+  with check (bucket_id = 'diecast-photos' and (storage.foldername(name))[1] = auth.uid()::text);
+
+drop policy if exists "Users delete own Diecast Garage photos" on storage.objects;
+create policy "Users delete own Diecast Garage photos" on storage.objects
+  for delete to authenticated
+  using (bucket_id = 'diecast-photos' and (storage.foldername(name))[1] = auth.uid()::text);
