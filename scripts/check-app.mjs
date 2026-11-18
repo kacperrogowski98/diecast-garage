@@ -13,6 +13,7 @@ assert.match(html, /id="content"/, 'Main app content mount exists');
 assert.match(html, /dgFetchOnlineCatalog/, 'Online catalogue importer is wired');
 assert.ok(html.includes('function addCustomPack()'), 'Collectors must be able to create custom multipacks');
 assert.ok(html.includes('function removeCustomPack('), 'Collectors must be able to delete custom multipacks');
+assert.ok(html.includes('function editCustomPack('), 'Collectors must be able to edit custom multipacks');
 assert.ok(html.includes('customPacks=Array.isArray'), 'Custom multipacks must survive local state and backup normalization');
 assert.match(html, /dgSyncMeta\(\)/, 'Cloud sync metadata must be tracked per user');
 assert.match(html, /W chmurze są zmiany nowsze/, 'Cloud push must warn before overwriting a newer snapshot');
