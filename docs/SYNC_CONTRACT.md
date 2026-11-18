@@ -8,20 +8,20 @@ The personal collection is private and scoped to the authenticated Supabase user
 - user_wishlist_items: wanted cars, priority, target price and notes.
 - diecast_garage_data: legacy v1.5 JSON snapshot used by the current app's manual push/pull flow.
 
-The normalized tables now include a stable client_item_id per user and updated_at fields so a future client can safely upsert and detect concurrent edits. The current v1.5 interface has not yet migrated to those tables.
+The normalized tables include a stable client_item_id per user, updated_at and item_data JSONB so complete item details (including model snapshots and private photo paths) survive sync. The app now uses the sync_diecast_garage RPC when the migration is installed. The RPC writes the compatibility snapshot and normalized garage/wishlist rows in one transaction, removes stale normalized rows, and rejects stale writes using an expected updated_at value.
 
-## Current v1.5 behavior
+## Current sync behavior
 
 1. Local edits are saved to browser localStorage.
 2. Catalogue releases are cached separately in IndexedDB.
-3. The user explicitly pushes a complete JSON snapshot to diecast_garage_data.
-4. A second device explicitly pulls that snapshot and replaces its local state after a confirmation prompt.
+3. The user explicitly pushes the collection. With the atomic migration installed, one RPC transaction writes the compatibility JSON snapshot plus normalized garage/wishlist rows.
+4. A second device explicitly pulls the snapshot and normalized rows, preferring normalized item records, then replaces its local state after a confirmation prompt.
 5. Photos are uploaded to the private diecast-photos bucket before the JSON snapshot is written; the payload stores a user-scoped storage path.
-6. The UI does not yet perform automatic background sync or item-level conflict resolution.
+6. If the migration is not installed, the UI falls back to legacy JSON snapshot sync and clearly reports that atomic normalized sync is unavailable.\n7. Sync remains user-triggered; it is not background or real-time sync.
 
-A push overwrites the user's previous cloud snapshot. The app warns the user to use backups and does not merge simultaneous edits. Do not describe this as real-time synchronization.
+With the migration installed, a push uses a per-user advisory lock and exact updated_at compare-and-swap; concurrent stale writes are rejected. The client still asks the user before replacing a newer remote snapshot. Legacy fallback retains the previous best-effort guard and is not atomic. Do not describe manual sync as real-time synchronization.
 
-## Target normalized sync behavior
+## Remaining sync work
 
 1. Require sign-in before enabling cloud sync.
 2. Load only rows belonging to auth.uid().
