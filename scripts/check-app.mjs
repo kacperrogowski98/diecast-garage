@@ -14,6 +14,9 @@ assert.equal(manifest.start_url, './', 'PWA start URL must work under a GitHub P
 assert.equal(manifest.scope, './', 'PWA scope must work under a GitHub Pages subpath');
 assert.match(schema, /enable row level security/ig, 'RLS must be enabled in the schema');
 assert.match(schema, /auth\.uid\(\)\s*=\s*user_id/i, 'User rows must be scoped to the authenticated user');
+assert.match(schema, /client_item_id text not null/i, 'Normalized sync tables need stable client IDs');
+assert.match(schema, /Users read own Diecast Garage photos/i, 'Private photo bucket must have owner-scoped read policy');
+assert.match(schema, /bucket_id = 'diecast-photos'/i, 'Photo policies must be restricted to the private bucket');
 
 const inlineScripts = [...html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)]
   .filter(([, attrs, body]) => !/\bsrc\s*=/.test(attrs) && body.trim());
