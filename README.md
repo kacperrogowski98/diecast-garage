@@ -36,7 +36,9 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 - index.html — application.
 - manifest.webmanifest, sw.js, icon.svg, icon-192.png — PWA shell.
 - .github/workflows/pages.yml — GitHub Pages deployment.
-- supabase/schema.sql — full database schema, RLS policies and atomic sync RPC.\n- supabase/migrations/ — incremental SQL migrations for existing Supabase projects.\n- supabase/verify_sync_setup.sql — read-only checks for the Supabase sync setup.
+- supabase/schema.sql — full database schema, RLS policies and atomic sync RPC.
+- supabase/migrations/ — incremental SQL migrations for existing Supabase projects.
+- supabase/verify_sync_setup.sql — read-only checks for the Supabase sync setup.
 - docs/ — catalogue, sync, deployment and implementation notes.
 
 ## Catalogue sources and provenance
