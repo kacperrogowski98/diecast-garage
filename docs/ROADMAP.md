@@ -2,7 +2,7 @@
 
 ## Current baseline
 
-- [x] Single-file v1.5 app committed as index.html.
+- [x] Single-file v1.6 app committed as index.html.
 - [x] PWA manifest, service worker and app icons committed.
 - [x] GitHub Pages configured for GitHub Actions.
 - [x] Successful live deployment: https://kacperrogowski98.github.io/diecast-garage/
