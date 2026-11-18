@@ -46,6 +46,11 @@ try {
   page.on('dialog', dialog => dialog.accept());
 
   await page.goto('http://127.0.0.1:4173/', { waitUntil: 'domcontentloaded' });
+  const manifestResponse = await page.request.get('http://127.0.0.1:4173/manifest.webmanifest');
+  assert.equal(manifestResponse.status(), 200, 'PWA manifest should be served');
+  const iconResponse = await page.request.get('http://127.0.0.1:4173/icon-192.png');
+  assert.equal(iconResponse.status(), 200, 'PWA install icon should be served');
+  await page.waitForFunction(() => !!navigator.serviceWorker?.controller, null, { timeout: 20000 });
 
   await page.waitForFunction(
     () => document.querySelector('#catalogStatus')?.textContent.includes('Pobrano indeks online'),
@@ -93,7 +98,12 @@ try {
   await page.waitForFunction(() => JSON.parse(localStorage.getItem('diecast_garage_mvp_02')).customPacks.length === 0);
   assert.deepEqual(pageErrors, [], 'The browser should not emit uncaught JavaScript errors');
 
-  console.log('Browser smoke test passed: online catalogue, search, details, add-to-garage and custom multipack.');
+  await page.context().setOffline(true);
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.locator('#content').waitFor();
+  assert.match(await page.title(), /Diecast Garage/, 'The cached PWA shell should reopen offline');
+
+  console.log('Browser smoke test passed: PWA manifest/icons, offline shell, online catalogue, search, details, garage and custom multipack CRUD.');
 } finally {
   await browser.close();
   await new Promise(resolve => server.close(resolve));
