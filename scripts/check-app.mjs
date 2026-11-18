@@ -18,7 +18,7 @@ assert.equal(manifest.start_url, './', 'PWA start URL must work under a GitHub P
 assert.equal(manifest.scope, './', 'PWA scope must work under a GitHub Pages subpath');
 assert.ok(manifest.icons.some(icon => icon.src === './icon-192.png' && icon.sizes === '192x192'), 'PWA manifest must include a 192px PNG icon');
 assert.ok(fs.existsSync('icon-192.png'), 'PWA raster icon file must exist');
-assert.match(serviceWorker, /icon-192\\.png/, 'Service worker must cache the raster install icon');
+assert.match(serviceWorker, /icon-192\.png/, 'Service worker must cache the raster install icon');
 assert.match(schema, /enable row level security/ig, 'RLS must be enabled in the schema');
 assert.match(schema, /auth\.uid\(\)\s*=\s*user_id/i, 'User rows must be scoped to the authenticated user');
 assert.match(schema, /client_item_id text not null/i, 'Normalized sync tables need stable client IDs');
