@@ -1,6 +1,6 @@
 # Diecast Garage
 
-Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.6**.
+Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.7**.
 
 ## Live app
 
