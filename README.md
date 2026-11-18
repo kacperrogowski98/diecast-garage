@@ -1,39 +1,57 @@
 # Diecast Garage
 
-Private collector app for Hot Wheels / diecast models. Current application baseline: **v1.5**.
+Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.5**.
 
-## Current status
+## Live app
 
-- The complete v1.5 single-file application is available as `index.html`.
-- PWA manifest, service worker and app icons are present at the site root.
-- The original v1.5 JavaScript passes a Node syntax check.
-- The app currently supports local browser storage and manual Supabase JSON-payload sync through `diecast_garage_data`.
-- Normalized catalogue tables and per-user garage / wishlist tables are defined in `supabase/schema.sql`; the v1.5 UI has not yet been migrated to those normalized tables.
-- Full catalogue import, browser end-to-end testing, cloud sync validation and public hosting are still pending.
+**https://kacperrogowski98.github.io/diecast-garage/**
 
-## Planned deployment
+The app is published through GitHub Pages. The Mac does not need to stay on: the site is hosted in the cloud and can be opened on desktop or phone. It is a static PWA shell; collection data remains local until the user configures Supabase and signs in.
 
-- Static HTTPS hosting for phone and desktop access. The GitHub Actions Pages workflow is present in `.github/workflows/pages.yml`.
-- GitHub Pages setup currently fails at the Configure Pages step. Enable Pages for this repository with **Settings → Pages → Build and deployment → Source: GitHub Actions**, if the repository plan/visibility supports it.
-- If Pages cannot be enabled for this private repository, use a static host such as Cloudflare Pages without making the source repository public.
-- Supabase Auth + database for private collection and wishlist sync.
-- PWA installation on iOS/Android.
+## Current capabilities
 
-## Data sources
+- Responsive single-page collector app (index.html) with Garage, Catalogue, Wishlist, Racing, Brands and Multipacks views.
+- Add/edit owned models, wishlist entries, multiple copies, purchase details, notes and photos.
+- Local collection persistence in browser storage, catalogue persistence in IndexedDB.
+- Backup export/import in JSON.
+- PWA manifest, service worker and app icons for installation on supported phones/desktops.
+- Optional Supabase Auth and manual collection sync through the legacy diecast_garage_data JSON payload table.
+- Private photo upload/download through the diecast-photos Supabase Storage bucket (requires correct bucket and policies).
+- Online catalogue index import from danyjoy/diecastDb (approximately 17,800 Mainline, Premium and Silver Series records according to its upstream documentation). The index is fetched by the browser and cached locally in IndexedDB; full details are loaded lazily from year/assortment files.
+- Manual JSON and folder import adapters for danyjoy/diecastDb and pvwnthem/Hotwheels-Data.
 
-- [danyjoy/diecastDb](https://github.com/danyjoy/diecastDb)
-- [pvwnthem/Hotwheels-Data](https://github.com/pvwnthem/Hotwheels-Data)
+## Important current limitations
 
-The catalogue data is third-party data and needs normalization and verification. Image URLs are referenced from their original sources; image assets are not copied into this repository.
+- The online index is a broad release-level catalogue, not a fully verified global Hot Wheels database. It covers the upstream dataset's collections and years; it does not mean every Hot Wheels product, multipack or variant worldwide is represented.
+- Brand and Supercar/Hypercar classification are partly heuristic and need review. Unknown values must remain unknown; do not treat automated classifications as verified facts.
+- The catalogue is currently stored per browser/device in IndexedDB. It is not yet served from the app's Supabase catalogue tables.
+- Collection sync is manual push/pull using the legacy JSON table. The normalized user_garage_items and user_wishlist_items tables exist in SQL but are not yet used by the v1.5 UI. Automatic background sync is not implemented.
+- Browser end-to-end testing on iOS/Android and real cross-device sync validation are still required.
+- Supabase configuration must be entered separately on each device. Only the public anon/publishable key belongs in the browser; never expose a service-role key.
+
+## Repository structure
+
+- index.html — application.
+- manifest.webmanifest, sw.js, icon.svg, icon-192.png — PWA shell.
+- .github/workflows/pages.yml — GitHub Pages deployment.
+- supabase/schema.sql — database schema and RLS policies.
+- docs/ — catalogue, sync, deployment and implementation notes.
+
+## Catalogue sources and provenance
+
+- danyjoy/diecastDb — structured year-based Mainline, Premium and Silver Series records; its README identifies findmyhw.com as its upstream public data source.
+- pvwnthem/Hotwheels-Data — secondary enrichment/import source.
+
+Data fields, images and trademarks belong to their respective rights holders. The app is an unofficial fan-made collector tool and does not claim ownership or affiliation with Mattel. Retain source provenance and respect upstream terms and takedown requests.
 
 ## Security
 
-Never commit Supabase service-role keys or other secrets. Browser apps must use only the public anon/publishable key with Row Level Security enabled.
+The repository is public, so source code is visible. User collection rows are not stored in GitHub; they are local to the browser or held in Supabase under user-scoped RLS. Never commit credentials or Supabase service-role keys. The security of the backend depends on correctly applying the SQL policies and Storage policies in the user's Supabase project.
 
 ## Next implementation steps
 
-1. Enable/configure hosting and confirm a working HTTPS URL.
-2. Run browser end-to-end checks on desktop and phone.
-3. Connect the app to the normalized catalogue, garage and wishlist tables.
-4. Build and validate the multi-source catalogue importer.
-5. Verify authentication, RLS and cross-device synchronization.
+1. Run automated checks and browser smoke tests against the live deployment.
+2. Validate the upstream index mapping and data counts, including brand inference and classification edge cases.
+3. Improve catalogue normalization/deduplication and pack/variant coverage without inventing missing records.
+4. Migrate app collection UI to normalized Supabase tables and implement safer conflict-aware sync.
+5. Validate Auth, RLS, Storage policies and cross-device behavior on phone and desktop.
