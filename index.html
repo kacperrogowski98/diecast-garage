@@ -148,8 +148,79 @@ async function dgPrepareCloudValue(value,cache){if(typeof value==='string'&&valu
 async function dgRestoreCloudValue(value,cache){if(typeof value==='string'&&value.startsWith(DG_STORAGE_PREFIX)){const path=value.slice(DG_STORAGE_PREFIX.length);if(cache.has(path))return cache.get(path);if(!path.startsWith(dgCloudUser.id+'/'))throw new Error('Zdjęcie ma nieprawidłową ścieżkę konta');const {data,error}=await dgSupabaseClient.storage.from(DG_PHOTO_BUCKET).download(path);if(error)throw error;const restored=await dgBlobToDataUrl(data);cache.set(path,restored);return restored}if(Array.isArray(value)){const out=[];for(const item of value)out.push(await dgRestoreCloudValue(item,cache));return out}if(value&&typeof value==='object'){const out={};for(const [k,v] of Object.entries(value))out[k]=await dgRestoreCloudValue(v,cache);return out}return value}
 function dgSyncMeta(){try{return JSON.parse(localStorage.getItem(DG_SYNC_META_KEY)||'{}')}catch(_){return {}}}
 function dgSetSyncMeta(updatedAt){if(!dgCloudUser)return;const meta=dgSyncMeta();meta[dgCloudUser.id]=updatedAt||new Date().toISOString();localStorage.setItem(DG_SYNC_META_KEY,JSON.stringify(meta))}
-async function dgCloudPush(){try{dgRequireUser();const {data:remote,error:readError}=await dgSupabaseClient.from('diecast_garage_data').select('updated_at').eq('user_id',dgCloudUser.id).maybeSingle();if(readError)throw readError;const lastSync=dgSyncMeta()[dgCloudUser.id]||null;if(remote?.updated_at){const remoteTime=Date.parse(remote.updated_at),lastTime=lastSync?Date.parse(lastSync):0;if(!lastSync||remoteTime>lastTime+1000){const warning=!lastSync?'W chmurze istnieje już kopia tej kolekcji, której to urządzenie wcześniej nie synchronizowało.':'W chmurze są zmiany nowsze niż ostatnia synchronizacja tego urządzenia.';if(!confirm(warning+'\\n\\nAnuluj, aby najpierw pobrać dane z chmury. OK oznacza świadome nadpisanie kopii chmurowej.')){dgCloudStatus='Wysyłanie anulowane — kopia chmurowa nie została zmieniona.';dgRenderCloudPanel();return}}}dgCloudStatus='Przygotowuję kolekcję i przesyłam zdjęcia…';dgRenderCloudPanel();const payload=await dgPrepareCloudValue({...state,brands:[...new Set(state.brands||[])]},new Map());const updatedAt=new Date().toISOString();const {error}=await dgSupabaseClient.from('diecast_garage_data').upsert({user_id:dgCloudUser.id,payload,updated_at:updatedAt},{onConflict:'user_id'});if(error)throw error;dgSetSyncMeta(updatedAt);dgCloudStatus='Kolekcja i zdjęcia wysłane do chmury: '+new Date(updatedAt).toLocaleString('pl-PL');toast('Kolekcja i zdjęcia zsynchronizowane');dgRenderCloudPanel()}catch(e){toast('Synchronizacja: '+e.message);dgCloudStatus='Błąd synchronizacji: '+e.message;dgRenderCloudPanel()}}
-async function dgCloudPull(){try{dgRequireUser();if(!confirm('Pobrać kolekcję z chmury i zastąpić dane na tym urządzeniu? Dla bezpieczeństwa najpierw pobierz backup obecnej kolekcji.'))return;dgCloudStatus='Pobieram kolekcję i zdjęcia…';dgRenderCloudPanel();const {data,error}=await dgSupabaseClient.from('diecast_garage_data').select('payload,updated_at').eq('user_id',dgCloudUser.id).maybeSingle();if(error)throw error;if(!data){toast('W chmurze nie ma jeszcze kolekcji. Najpierw wyślij ją z urządzenia źródłowego.');dgCloudStatus='W chmurze nie ma jeszcze kolekcji.';dgRenderCloudPanel();return}const restored=await dgRestoreCloudValue(data.payload,new Map());state=normalizeBackup({app:'Diecast Garage',state:restored});localStorage.setItem(KEY,JSON.stringify(state));dgSetSyncMeta(data.updated_at);render();dgCloudStatus='Pobrano kolekcję i zdjęcia ('+new Date(data.updated_at).toLocaleString('pl-PL')+').';toast('Kolekcja i zdjęcia pobrane');dgRenderCloudPanel()}catch(e){toast('Pobieranie: '+e.message);dgCloudStatus='Błąd pobierania: '+e.message;dgRenderCloudPanel()}}
+function dgIsMissingSyncRpc(error){const message=String(error?.message||'');return error?.code==='PGRST202'||error?.code==='42883'||/sync_diecast_garage.*(not found|schema cache)|could not find the function/i.test(message)}
+function dgIsMissingNormalizedColumn(error){const message=String(error?.message||'');return error?.code==='42703'||error?.code==='PGRST204'||error?.code==='PGRST205'||/item_data.*(does not exist|not found)|could not find the table/i.test(message)}
+async function dgCloudPush(){
+ try{
+  dgRequireUser();
+  const {data:remote,error:readError}=await dgSupabaseClient.from('diecast_garage_data').select('updated_at').eq('user_id',dgCloudUser.id).maybeSingle();
+  if(readError)throw readError;
+  const lastSync=dgSyncMeta()[dgCloudUser.id]||null;
+  if(remote?.updated_at){
+   const remoteTime=Date.parse(remote.updated_at),lastTime=lastSync?Date.parse(lastSync):0;
+   if(!lastSync||remoteTime>lastTime+1000){
+    const warning=!lastSync?'W chmurze istnieje już kopia tej kolekcji, której to urządzenie wcześniej nie synchronizowało.':'W chmurze są zmiany nowsze niż ostatnia synchronizacja tego urządzenia.';
+    if(!confirm(warning+'\\n\\nAnuluj, aby najpierw pobrać dane z chmury. OK oznacza świadome nadpisanie kopii chmurowej.')){
+     dgCloudStatus='Wysyłanie anulowane — kopia chmurowa nie została zmieniona.';dgRenderCloudPanel();return;
+    }
+   }
+  }
+  dgCloudStatus='Przygotowuję kolekcję i zdjęcia…';dgRenderCloudPanel();
+  const payload=await dgPrepareCloudValue({...state,brands:[...new Set(state.brands||[])]},new Map());
+  const expectedUpdatedAt=remote?.updated_at||null;
+  let syncMode='legacy';
+  const {data:atomicData,error:atomicError}=await dgSupabaseClient.rpc('sync_diecast_garage',{
+   p_payload:payload,p_items:Array.isArray(payload.items)?payload.items:[],p_expected_updated_at:expectedUpdatedAt
+  });
+  if(!atomicError){
+   syncMode='atomic';
+  }else if(dgIsMissingSyncRpc(atomicError)||dgIsMissingNormalizedColumn(atomicError)){
+   const updatedAt=new Date().toISOString();
+   const {error}=await dgSupabaseClient.from('diecast_garage_data').upsert({user_id:dgCloudUser.id,payload,updated_at:updatedAt},{onConflict:'user_id'});
+   if(error)throw error;
+   dgSetSyncMeta(updatedAt);
+   dgCloudStatus='Zapisano kopię zgodności (tryb starszy). Aby włączyć synchronizację rekordów i ochronę transakcyjną, zastosuj migrację supabase/migrations/20261118_atomic_collection_sync.sql.';
+   toast('Backup chmurowy zapisany — wymagana migracja synchronizacji');dgRenderCloudPanel();return;
+  }else if(atomicError.code==='40001'||String(atomicError.message||'').includes('SYNC_CONFLICT')){
+   throw new Error('Kolekcja w chmurze zmieniła się w trakcie zapisu. Pobierz najpierw najnowszą wersję i spróbuj ponownie.');
+  }else throw atomicError;
+  const syncedAt=Array.isArray(atomicData)?atomicData[0]?.updated_at:null;
+  dgSetSyncMeta(syncedAt||new Date().toISOString());
+  dgCloudStatus='Zsynchronizowano '+(Array.isArray(atomicData)?(atomicData[0]?.garage_count||0):0)+' modeli w garażu i '+(Array.isArray(atomicData)?(atomicData[0]?.wishlist_count||0):0)+' na wishliście. Zapis atomowy.';
+  toast('Kolekcja zsynchronizowana z chmurą');dgRenderCloudPanel();
+ }catch(e){
+  toast('Synchronizacja: '+e.message);dgCloudStatus='Błąd synchronizacji: '+e.message;dgRenderCloudPanel();
+ }
+}
+async function dgCloudPull(){
+ try{
+  dgRequireUser();
+  if(!confirm('Pobrać kolekcję z chmury i zastąpić dane na tym urządzeniu? Dla bezpieczeństwa najpierw pobierz backup obecnej kolekcji.'))return;
+  dgCloudStatus='Pobieram kolekcję i zdjęcia…';dgRenderCloudPanel();
+  const {data,error}=await dgSupabaseClient.from('diecast_garage_data').select('payload,updated_at').eq('user_id',dgCloudUser.id).maybeSingle();
+  if(error)throw error;
+  if(!data){toast('W chmurze nie ma jeszcze kolekcji. Najpierw wyślij ją z urządzenia źródłowego.');dgCloudStatus='W chmurze nie ma jeszcze kolekcji.';dgRenderCloudPanel();return}
+  const restored=await dgRestoreCloudValue(data.payload,new Map());
+  let normalizedMode=false;
+  const [garageResult,wishlistResult]=await Promise.all([
+   dgSupabaseClient.from('user_garage_items').select('client_item_id,item_data').eq('user_id',dgCloudUser.id),
+   dgSupabaseClient.from('user_wishlist_items').select('client_item_id,item_data').eq('user_id',dgCloudUser.id)
+  ]);
+  const normalizedError=garageResult.error||wishlistResult.error;
+  if(!normalizedError){
+   const normalizedItems=[...(garageResult.data||[]),...(wishlistResult.data||[])].map(row=>row.item_data).filter(item=>item&&typeof item==='object');
+   if(normalizedItems.length||!Array.isArray(restored.items)||restored.items.length===0){
+    restored.items=await dgRestoreCloudValue(normalizedItems,new Map());normalizedMode=true;
+   }
+  }else if(!dgIsMissingNormalizedColumn(normalizedError))throw normalizedError;
+  state=normalizeBackup({app:'Diecast Garage',state:restored});
+  localStorage.setItem(KEY,JSON.stringify(state));dgSetSyncMeta(data.updated_at);render();
+  dgCloudStatus='Pobrano '+state.items.filter(i=>i.status==='owned').length+' modeli w garażu i '+state.items.filter(i=>i.status==='wishlist').length+' na wishliście ('+new Date(data.updated_at).toLocaleString('pl-PL')+'). '+(normalizedMode?'Źródło: znormalizowane rekordy.':'Źródło: kopia zgodności JSON — zastosuj migrację, aby włączyć nowe tabele.');
+  toast('Kolekcja i zdjęcia pobrane');dgRenderCloudPanel();
+ }catch(e){
+  toast('Pobieranie: '+e.message);dgCloudStatus='Błąd pobierania: '+e.message;dgRenderCloudPanel();
+ }
+}
 
 dgInitClient();dgInitCatalogImport();dgRefreshFilters();render();dgCatalogReady=dgLoadCatalog().then(()=>{dgRefreshFilters();render();if(!importedCatalog.length&&/^https?:$/.test(location.protocol))dgFetchOnlineCatalog()});
 </script>
