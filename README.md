@@ -16,7 +16,7 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 - Local collection persistence in browser storage, catalogue persistence in IndexedDB.
 - Backup export/import in JSON.
 - PWA manifest, service worker and app icons for installation on supported phones/desktops.
-- Automated Chromium smoke test covering online catalogue import, search, details, adding a car to the garage and creating a custom multipack.
+- Automated Chromium smoke test covering online catalogue import, search, details, adding a car to the garage and creating, editing and deleting a custom multipack.
 - Optional Supabase Auth and manual collection sync. When the atomic sync migration is applied, one transaction updates the compatibility JSON snapshot and normalized garage/wishlist rows, with stale-write protection; older projects retain a clearly reported legacy fallback.
 - Private photo upload/download through the diecast-photos Supabase Storage bucket (requires correct bucket and policies).
 - Online catalogue index import from danyjoy/diecastDb (approximately 17,800 Mainline, Premium and Silver Series records according to its upstream documentation). The index is fetched by the browser and cached locally in IndexedDB; full details are loaded lazily from year/assortment files.
