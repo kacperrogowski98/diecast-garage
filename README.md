@@ -16,6 +16,7 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 - Local collection persistence in browser storage, catalogue persistence in IndexedDB.
 - Backup export/import in JSON.
 - PWA manifest, service worker and app icons for installation on supported phones/desktops.
+- Automated Chromium smoke test covering online catalogue import, search, details, adding a car to the garage and creating a custom multipack.
 - Optional Supabase Auth and manual collection sync through the legacy diecast_garage_data JSON payload table.
 - Private photo upload/download through the diecast-photos Supabase Storage bucket (requires correct bucket and policies).
 - Online catalogue index import from danyjoy/diecastDb (approximately 17,800 Mainline, Premium and Silver Series records according to its upstream documentation). The index is fetched by the browser and cached locally in IndexedDB; full details are loaded lazily from year/assortment files.
@@ -27,7 +28,7 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 - Brand and Supercar/Hypercar classification are partly heuristic and need review. Unknown values must remain unknown; do not treat automated classifications as verified facts.
 - The catalogue is currently stored per browser/device in IndexedDB. It is not yet served from the app's Supabase catalogue tables.
 - Collection sync is manual push/pull using the legacy JSON table. The normalized user_garage_items and user_wishlist_items tables exist in SQL but are not yet used by the v1.5 UI. Automatic background sync is not implemented.
-- Browser end-to-end testing on iOS/Android and real cross-device sync validation are still required.
+- Manual iOS/Android installation and real Supabase cross-device sync validation are still required; the automated Chromium smoke test does not replace those checks.
 - Supabase configuration must be entered separately on each device. Only the public anon/publishable key belongs in the browser; never expose a service-role key.
 
 ## Repository structure
@@ -51,7 +52,7 @@ The repository is public, so source code is visible. User collection rows are no
 
 ## Next implementation steps
 
-1. Run automated checks and browser smoke tests against the live deployment.
+1. Complete manual iOS/Android installation checks and validate the app against the live deployment.
 2. Validate the upstream index mapping and data counts, including brand inference and classification edge cases.
 3. Improve catalogue normalization/deduplication and pack/variant coverage without inventing missing records.
 4. Migrate app collection UI to normalized Supabase tables and implement safer conflict-aware sync.
