@@ -20,7 +20,8 @@
 - [ ] Apply the atomic sync migration in the live Supabase project and validate with two separate devices/accounts.
 - [ ] Add conflict-aware automatic or user-triggered incremental sync.
 - [ ] Apply and test Supabase Storage policies and verify photo access is private.
-- [x] Validate the cached PWA shell reopens offline in Chromium.\n- [ ] Validate offline behavior and PWA installation on iOS/Android.
+- [x] Validate the cached PWA shell reopens offline in Chromium.
+- [ ] Validate offline behavior and PWA installation on iOS/Android.
 
 ## Data model target
 
