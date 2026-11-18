@@ -2,7 +2,7 @@
 
 ## Current baseline
 
-- [x] Single-file v1.6 app committed as index.html.
+- [x] Single-file v1.7 app committed as index.html.
 - [x] PWA manifest, service worker and app icons committed.
 - [x] GitHub Pages configured for GitHub Actions.
 - [x] Successful live deployment: https://kacperrogowski98.github.io/diecast-garage/
@@ -10,7 +10,8 @@
 - [x] Optional Supabase Auth and manual JSON-payload collection sync in the UI.
 - [x] Optional private photo upload/download flow in the UI.
 - [x] Online scan-index importer for the upstream diecastDb catalogue.
-- [x] Add automated Chromium smoke coverage for online catalogue import, search, details, garage add and custom multipack creation.
+- [x] Add automated Chromium smoke coverage for PWA manifest/icons, offline shell, online catalogue import, search, details, garage add and custom multipack create/edit/delete.
+- [x] Add custom multipack create/edit/delete in the collector UI.
 - [ ] Verify manual installation and primary flows on iOS/Android.
 - [ ] Validate the online catalogue mapping against upstream scan-index and year files.
 - [ ] Improve casting/release/variant deduplication and data provenance.
@@ -19,7 +20,7 @@
 - [ ] Apply the atomic sync migration in the live Supabase project and validate with two separate devices/accounts.
 - [ ] Add conflict-aware automatic or user-triggered incremental sync.
 - [ ] Apply and test Supabase Storage policies and verify photo access is private.
-- [ ] Validate offline behavior and PWA installation on iOS/Android.
+- [x] Validate the cached PWA shell reopens offline in Chromium.\n- [ ] Validate offline behavior and PWA installation on iOS/Android.
 
 ## Data model target
 
