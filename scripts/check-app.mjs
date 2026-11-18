@@ -32,8 +32,8 @@ for (let i = 0; i < inlineScripts.length; i++) {
 const start = html.indexOf('const DG_BRANDS=');
 const end = html.indexOf('async function dgReadCatalogFile', start);
 assert.ok(start >= 0 && end > start, 'Catalogue normalizer source must be present');
-const context = {};
-vm.runInNewContext(html.slice(start, end) + '\nglobalThis.testNormalize = dgNormalizeRecord; globalThis.testExtract = dgExtractRows; globalThis.testClassify = dgClassify;', context);
+const context = { location: { href: 'https://app.test/' } };
+vm.runInNewContext(html.slice(start, end) + '\nglobalThis.testNormalize = dgNormalizeRecord; globalThis.testExtract = dgExtractRows; globalThis.testClassify = dgClassify; globalThis.testSafeUrl = dgSafeHttpUrl;', context);
 
 const sample = {
   id: 'JBB06_1',
@@ -60,6 +60,6 @@ const extracted = context.testExtract({
 assert.equal(extracted.rows.length, 1, 'Compact scan index row must be expanded');
 assert.equal(extracted.rows[0].title, sample.title, 'Compact scan index columns must map by field name');
 assert.equal(context.testClassify('Ferrari 812 Competizione', 'Ferrari', ''), 'supercar_hypercar', 'Known supercar models must enter the Supercar/Hypercar filter');
-assert.equal(context.testClassify('Ferrari 499P', 'Ferrari', ''), 'racing', 'Le Mans prototype castings must remain in Racing, not Supercar/Hypercar');
+assert.equal(context.testClassify('Ferrari 499P', 'Ferrari', ''), 'racing', 'Le Mans prototype castings must remain in Racing, not Supercar/Hypercar');\nassert.equal(context.testSafeUrl('javascript:alert(1)'), '', 'Imported unsafe URL schemes must be rejected');\nassert.equal(context.testSafeUrl(''), '', 'Missing optional URLs must remain empty');
 
 console.log('Diecast Garage checks passed: HTML, inline JavaScript, PWA paths, RLS markers and catalogue adapter.');
