@@ -15,7 +15,8 @@
 - [ ] Validate the online catalogue mapping against upstream scan-index and year files.
 - [ ] Improve casting/release/variant deduplication and data provenance.
 - [ ] Expand multipack catalogue beyond the current Ferrari seed.
-- [ ] Migrate the collection UI from legacy JSON payload sync to normalized Supabase garage/wishlist tables.
+- [x] Add atomic Supabase RPC that writes the compatibility snapshot and normalized garage/wishlist rows in one transaction, preserving complete item JSON and photos.
+- [ ] Apply the atomic sync migration in the live Supabase project and validate with two separate devices/accounts.
 - [ ] Add conflict-aware automatic or user-triggered incremental sync.
 - [ ] Apply and test Supabase Storage policies and verify photo access is private.
 - [ ] Validate offline behavior and PWA installation on iOS/Android.
