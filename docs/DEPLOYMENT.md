@@ -18,8 +18,8 @@ Open the live HTTPS URL on the phone. On iPhone, use Safari → Share → Add to
 A static Pages deployment does not itself provide a shared database. To sync a collection between devices:
 
 1. Create or select a Supabase project.
-2. For a new project, apply `supabase/schema.sql` in the Supabase SQL Editor. For an existing project created from the earlier schema, apply `supabase/migrations/20261118_atomic_collection_sync.sql`.
-3. In Supabase Authentication settings, add `https://kacperrogowski98.github.io/diecast-garage/` to the allowed redirect URLs.
+2. For a new project, apply `supabase/schema.sql` in the Supabase SQL Editor. For an existing project created from the earlier schema, apply `supabase/migrations/20261118_atomic_collection_sync.sql`. You can open the [atomic sync migration](https://raw.githubusercontent.com/kacperrogowski98/diecast-garage/main/supabase/migrations/20261118_atomic_collection_sync.sql) directly. Afterward, run `supabase/verify_sync_setup.sql` to inspect the setup.
+3. In Supabase Authentication settings, set the Site URL and add `https://kacperrogowski98.github.io/diecast-garage/` to the allowed redirect URLs.
 4. In the app, open Konto / synchronizacja and enter the Project URL and public anon/publishable key.
 5. Create an account and sign in on each device with the same account.
 6. Use Wyślij tę kolekcję do chmury on the source device; use Pobierz kolekcję z chmury on the other device.
