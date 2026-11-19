@@ -233,6 +233,9 @@ create policy "Users delete own Diecast Garage photos" on storage.objects
 -- Atomic cloud sync for Diecast Garage.
 -- Apply once in Supabase SQL Editor. Safe to re-run.
 
+-- Atomic cloud sync for Diecast Garage.
+-- Apply once in Supabase SQL Editor. Safe to re-run.
+
 alter table public.user_garage_items
   add column if not exists item_data jsonb not null default '{}'::jsonb;
 alter table public.user_wishlist_items
@@ -247,7 +250,7 @@ returns table(updated_at timestamptz, garage_count integer, wishlist_count integ
 language plpgsql
 security invoker
 set search_path = public
-as $
+as $$
 declare
   v_user_id uuid := auth.uid();
   v_current timestamptz;
@@ -305,7 +308,7 @@ begin
     x.item->>'condition',
     nullif(x.item->>'date', '')::date,
     case
-      when coalesce(x.item->>'price', '') ~ '^[0-9]+([.][0-9]{1,2})?
+      when coalesce(x.item->>'price', '') ~ '^[0-9]+([.][0-9]{1,2})?$'
       then (x.item->>'price')::numeric
       else null
     end,
@@ -339,7 +342,7 @@ begin
     coalesce(x.item->'modelSnapshot'->>'canonical_name', x.item->>'name', 'Hot Wheels model'),
     greatest(0, least(5, coalesce(nullif(x.item->>'priority', '')::smallint, 0))),
     case
-      when coalesce(x.item->>'targetPrice', x.item->>'price', '') ~ '^[0-9]+([.][0-9]{1,2})?
+      when coalesce(x.item->>'targetPrice', x.item->>'price', '') ~ '^[0-9]+([.][0-9]{1,2})?$'
       then coalesce(x.item->>'targetPrice', x.item->>'price')::numeric
       else null
     end,
@@ -369,7 +372,7 @@ begin
 
   return query select v_now, v_garage_count, v_wishlist_count;
 end;
-$;
+$$;
 
 revoke all on function public.sync_diecast_garage(jsonb, jsonb, timestamptz) from public, anon;
 grant execute on function public.sync_diecast_garage(jsonb, jsonb, timestamptz) to authenticated;
