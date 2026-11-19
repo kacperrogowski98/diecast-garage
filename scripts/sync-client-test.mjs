@@ -85,7 +85,7 @@ try {
   await page.waitForFunction(() => document.querySelectorAll('#content .car').length > 0);
   await page.locator('#content .car').first().getByRole('button',{name:/Garaż/}).click();
   await page.locator('#cloudBtn').click();
-  await page.waitForFunction(() => document.querySelector('#dgCloudStatus')?.textContent.includes('Zalogowano'),null,{timeout:12000}).catch(async error => { const debug = await page.evaluate(() => ({config:localStorage.getItem('diecast_garage_supabase_config_v1'),supabase:typeof window.supabase,createClient:typeof window.supabase?.createClient,status:document.querySelector('#dgCloudStatus')?.textContent||null,modal:document.querySelector('#modalRoot')?.innerText||null})); console.log('SYNC TEST DEBUG',JSON.stringify(debug),'PAGE ERRORS',JSON.stringify(errors)); throw error; });
+  await page.waitForFunction(() => document.querySelector('#dgAuthArea')?.textContent.includes('Konto aktywne:'),null,{timeout:12000}).catch(async error => { const debug = await page.evaluate(() => ({config:localStorage.getItem('diecast_garage_supabase_config_v1'),supabase:typeof window.supabase,createClient:typeof window.supabase?.createClient,status:document.querySelector('#dgCloudStatus')?.textContent||null,modal:document.querySelector('#modalRoot')?.innerText||null})); console.log('SYNC TEST DEBUG',JSON.stringify(debug),'PAGE ERRORS',JSON.stringify(errors)); throw error; });
   await page.locator('#modalRoot').getByRole('button',{name:/Wyślij tę kolekcję do chmury/}).click();
   await page.waitForFunction(() => document.querySelector('#dgCloudStatus')?.textContent.includes('Zsynchronizowano'));
   const firstPush = await page.evaluate(() => window.__mockCloud.calls[0]);
