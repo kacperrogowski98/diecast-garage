@@ -38,6 +38,9 @@ assert.match(schema, /item_data jsonb not null/i, 'Normalized rows must preserve
 assert.ok(html.includes("rpc('sync_diecast_garage'"), 'Client must use the atomic sync RPC when available');
 assert.ok(syncMigration.includes('pg_advisory_xact_lock'), 'Atomic sync must serialize writes per user');
 assert.ok(syncMigration.includes('is distinct from p_expected_updated_at'), 'Atomic sync must reject stale snapshots');
+assert.match(syncMigration, /grant select, insert, update on public\.diecast_garage_data to authenticated/i, 'Authenticated users need explicit snapshot privileges for the invoker RPC');
+assert.match(syncMigration, /grant select, insert, update, delete on public\.user_garage_items to authenticated/i, 'Authenticated users need explicit normalized garage privileges');
+assert.match(syncVerification, /has_table_privilege/, 'Supabase verification must check table grants');
 assert.ok(schema.endsWith(syncMigration), 'Full schema and incremental sync migration must stay aligned');
 assert.match(syncVerification, /has_function_privilege/, 'Supabase verification script must check RPC permissions');
 assert.match(syncVerification, /relrowsecurity/, 'Supabase verification script must check row-level security');
