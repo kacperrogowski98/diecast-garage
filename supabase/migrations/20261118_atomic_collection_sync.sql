@@ -141,3 +141,10 @@ $$;
 
 revoke all on function public.sync_diecast_garage(jsonb, jsonb, timestamptz) from public, anon;
 grant execute on function public.sync_diecast_garage(jsonb, jsonb, timestamptz) to authenticated;
+
+
+-- Explicit table privileges are required by the SECURITY INVOKER RPC.
+-- RLS still restricts every row to auth.uid() = user_id.
+grant select, insert, update on public.diecast_garage_data to authenticated;
+grant select, insert, update, delete on public.user_garage_items to authenticated;
+grant select, insert, update, delete on public.user_wishlist_items to authenticated;
