@@ -11,9 +11,9 @@ const syncVerification = fs.readFileSync('supabase/verify_sync_setup.sql', 'utf8
 const serviceWorker = fs.readFileSync('sw.js', 'utf8');
 
 assert.match(html, /<html lang="pl">/i, 'Polish document language is present');
-assert.ok(html.includes('<title>Diecast Garage · v1.11</title>'), 'Current app release title must be v1.11');
-assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.11') && html.includes('Diecast Garage · v1.11 ·'), 'Visible app version labels must match the release title');
-assert.ok(serviceWorker.includes('diecast-garage-shell-v1.11.0'), 'PWA shell cache must be versioned with the current release');
+assert.ok(html.includes('<title>Diecast Garage · v1.12</title>'), 'Current app release title must be v1.12');
+assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.12') && html.includes('Diecast Garage · v1.12 ·'), 'Visible app version labels must match the release title');
+assert.ok(serviceWorker.includes('diecast-garage-shell-v1.12.0'), 'PWA shell cache must be versioned with the current release');
 assert.match(html, /id="content"/, 'Main app content mount exists');
 assert.match(html, /id="assortmentFilter"/, 'Catalogue assortment filter exists');
 assert.match(html, /function saveClassificationOverride\(id\)/, 'Collectors can correct automatic model classification');
@@ -24,6 +24,7 @@ assert.match(html, /dgCatalogNeedsRefresh\(\)/, 'Catalogue must check its refres
 assert.match(html, /assortmentFilter==='all'\|\|x\.assortment===assortmentFilter/, 'Catalogue results are filtered by assortment');
 assert.match(html, /getElementById\('assortmentFilter'\)\.addEventListener\('change'/, 'Assortment filter updates the catalogue');
 assert.match(html, /dgFetchOnlineCatalog/, 'Online catalogue importer is wired');
+assert.match(html, /marek rozpoznanych.*kandydatów Supercar\/Hypercar/, 'Catalogue import status must report recognized brands and supercar candidates');
 assert.ok(html.includes('function addCustomPack()'), 'Collectors must be able to create custom multipacks');
 assert.ok(html.includes('function removeCustomPack('), 'Collectors must be able to delete custom multipacks');
 assert.ok(html.includes('function editCustomPack('), 'Collectors must be able to edit custom multipacks');
