@@ -98,6 +98,10 @@ assert.equal(context.testNormalize({title: "Custom '70 Honda N600", year: '1970'
 assert.equal(normalized.release_year, 2025, 'Year must map from scan-index year field');
 assert.equal(normalized.assortment, 'mainline', 'Collection key must be retained');
 assert.equal(normalized.source_record_id, 'JBB06_1', 'Upstream source ID must be retained');
+const gallery = context.testNormalize({...sample, images: ['https://findmyhw.com/media/images/JBB06_1/JBB06_1_1.webp', 'https://findmyhw.com/media/images/JBB06_1/JBB06_1_2.webp', 'javascript:alert(1)']}, 'diecastdb', 0, {});
+assert.equal(gallery.images.length, 2, 'All safe upstream gallery images must be preserved');
+assert.equal(gallery.image_url, gallery.images[0], 'Primary image must remain the first gallery image');
+assert.ok(gallery.images.every(url => url.startsWith('https://')), 'Unsafe image URL schemes must be excluded from the gallery');
 assert.match(normalized.image_url, /findmyhw\.com\/media\/images\//, 'Image URL must use the upstream image convention');
 
 const extracted = context.testExtract({
