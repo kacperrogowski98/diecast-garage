@@ -11,9 +11,9 @@ const syncVerification = fs.readFileSync('supabase/verify_sync_setup.sql', 'utf8
 const serviceWorker = fs.readFileSync('sw.js', 'utf8');
 
 assert.match(html, /<html lang="pl">/i, 'Polish document language is present');
-assert.ok(html.includes('<title>Diecast Garage · v1.15</title>'), 'Current app release title must be v1.15');
-assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.15') && html.includes('Diecast Garage · v1.15 ·'), 'Visible app version labels must match the release title');
-assert.ok(serviceWorker.includes('diecast-garage-shell-v1.15.0'), 'PWA shell cache must be versioned with the current release');
+assert.ok(html.includes('<title>Diecast Garage · v1.16</title>'), 'Current app release title must be v1.16');
+assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.16') && html.includes('Diecast Garage · v1.16 ·'), 'Visible app version labels must match the release title');
+assert.ok(serviceWorker.includes('diecast-garage-shell-v1.16.0'), 'PWA shell cache must be versioned with the current release');
 assert.match(html, /id="content"/, 'Main app content mount exists');
 assert.match(html, /id="assortmentFilter"/, 'Catalogue assortment filter exists');
 assert.match(html, /id="sortFilter"/, 'Catalogue sort control exists');
@@ -114,5 +114,16 @@ assert.equal(context.testClassify('Ferrari 812 Competizione', 'Ferrari', ''), 's
 assert.equal(context.testClassify('Ferrari 499P', 'Ferrari', ''), 'racing', 'Le Mans prototype castings must remain in Racing, not Supercar/Hypercar');
 assert.equal(context.testSafeUrl('javascript:alert(1)'), '', 'Imported unsafe URL schemes must be rejected');
 assert.equal(context.testSafeUrl(''), '', 'Missing optional URLs must remain empty');
+
+const seedStart = html.indexOf('const SEED=') + 'const SEED='.length;
+const seedEnd = html.indexOf(';\\nconst KEY', seedStart);
+assert.ok(seedStart >= 'const SEED='.length && seedEnd > seedStart, 'Seed catalogue JSON must be present');
+const seedData = JSON.parse(html.slice(seedStart, seedEnd));
+for (const [packId, year] of [['ferrari-5pack-1994-gift', '1994'], ['ferrari-5pack-1995', '1995'], ['ferrari-5pack-2026', '2026']]) {
+  const contents = seedData.pack_contents.filter(item => item.pack_id === packId);
+  assert.equal(contents.length, 5, `Ferrari ${year} 5-pack must contain exactly five linked records`);
+  assert.ok(contents.every(item => item.source_url.includes(`_(${year})`)), `Ferrari ${year} pack contents must point to the matching source year`);
+}
+assert.equal(seedData.pack_contents.length, 15, 'All seeded Ferrari pack-content rows must remain accounted for');
 
 console.log('Diecast Garage checks passed: HTML, inline JavaScript, PWA paths, RLS markers and catalogue adapter.');
