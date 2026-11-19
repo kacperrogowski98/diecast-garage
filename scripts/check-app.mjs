@@ -11,11 +11,13 @@ const syncVerification = fs.readFileSync('supabase/verify_sync_setup.sql', 'utf8
 const serviceWorker = fs.readFileSync('sw.js', 'utf8');
 
 assert.match(html, /<html lang="pl">/i, 'Polish document language is present');
-assert.ok(html.includes('<title>Diecast Garage · v1.8</title>'), 'Current app release title must be v1.8');
-assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.8') && html.includes('Diecast Garage · v1.8 ·'), 'Visible app version labels must match the release title');
-assert.ok(serviceWorker.includes('diecast-garage-shell-v1.8.0'), 'PWA shell cache must be versioned with the current release');
+assert.ok(html.includes('<title>Diecast Garage · v1.9</title>'), 'Current app release title must be v1.9');
+assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.9') && html.includes('Diecast Garage · v1.9 ·'), 'Visible app version labels must match the release title');
+assert.ok(serviceWorker.includes('diecast-garage-shell-v1.9.0'), 'PWA shell cache must be versioned with the current release');
 assert.match(html, /id="content"/, 'Main app content mount exists');
 assert.match(html, /id="assortmentFilter"/, 'Catalogue assortment filter exists');
+assert.match(html, /DG_CATALOG_REFRESH_INTERVAL=7\*24\*60\*60\*1000/, 'Catalogue refresh cadence must follow the upstream weekly update');
+assert.match(html, /dgCatalogNeedsRefresh\(\)/, 'Catalogue must check its refresh timestamp at startup');
 assert.match(html, /assortmentFilter==='all'\|\|x\.assortment===assortmentFilter/, 'Catalogue results are filtered by assortment');
 assert.match(html, /getElementById\('assortmentFilter'\)\.addEventListener\('change'/, 'Assortment filter updates the catalogue');
 assert.match(html, /dgFetchOnlineCatalog/, 'Online catalogue importer is wired');

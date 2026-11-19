@@ -1,6 +1,6 @@
 # Diecast Garage
 
-Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.8**.
+Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.9**.
 
 ## Live app
 
@@ -22,6 +22,7 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 - Private photo upload/download through the diecast-photos Supabase Storage bucket (requires correct bucket and policies).
 - Online catalogue index import from danyjoy/diecastDb (approximately 17,800 Mainline, Premium and Silver Series records according to its upstream documentation). The index is fetched by the browser and cached locally in IndexedDB; full details are loaded lazily from year/assortment files.
 - Combined catalogue filters for vehicle class, year, brand and assortment (Mainline / Premium / Silver Series).
+- Automatic catalogue refresh every seven days, matching the upstream weekly data refresh; cached records remain usable if the network is unavailable.
 - Manual JSON and folder import adapters for danyjoy/diecastDb and pvwnthem/Hotwheels-Data.
 
 ## Important current limitations

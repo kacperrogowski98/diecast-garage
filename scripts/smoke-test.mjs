@@ -60,6 +60,8 @@ try {
 
   const status = await page.locator('#catalogStatus').textContent();
   assert.match(status, /Pobrano indeks online:\s*[\d\s.,]+\s+wydań/i, 'Online catalogue index should import successfully');
+  const catalogRefreshedAt = await page.evaluate(() => Number(localStorage.getItem('diecast_garage_catalog_refresh_v1')));
+  assert.ok(catalogRefreshedAt > 0, 'Successful catalogue import should record its refresh timestamp');
 
   await page.locator('.tab[data-view="catalog"]').click();
   await page.locator('#search').fill('Ferrari');
