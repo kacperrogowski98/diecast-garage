@@ -11,10 +11,13 @@ const syncVerification = fs.readFileSync('supabase/verify_sync_setup.sql', 'utf8
 const serviceWorker = fs.readFileSync('sw.js', 'utf8');
 
 assert.match(html, /<html lang="pl">/i, 'Polish document language is present');
-assert.ok(html.includes('<title>Diecast Garage · v1.7</title>'), 'Current app release title must be v1.7');
-assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.7') && html.includes('Diecast Garage · v1.7 ·'), 'Visible app version labels must match the release title');
-assert.ok(serviceWorker.includes('diecast-garage-shell-v1.7.0'), 'PWA shell cache must be versioned with the current release');
+assert.ok(html.includes('<title>Diecast Garage · v1.8</title>'), 'Current app release title must be v1.8');
+assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.8') && html.includes('Diecast Garage · v1.8 ·'), 'Visible app version labels must match the release title');
+assert.ok(serviceWorker.includes('diecast-garage-shell-v1.8.0'), 'PWA shell cache must be versioned with the current release');
 assert.match(html, /id="content"/, 'Main app content mount exists');
+assert.match(html, /id="assortmentFilter"/, 'Catalogue assortment filter exists');
+assert.match(html, /assortmentFilter==='all'\|\|x\.assortment===assortmentFilter/, 'Catalogue results are filtered by assortment');
+assert.match(html, /id="assortmentFilter"\)\.addEventListener\('change'/, 'Assortment filter updates the catalogue');
 assert.match(html, /dgFetchOnlineCatalog/, 'Online catalogue importer is wired');
 assert.ok(html.includes('function addCustomPack()'), 'Collectors must be able to create custom multipacks');
 assert.ok(html.includes('function removeCustomPack('), 'Collectors must be able to delete custom multipacks');

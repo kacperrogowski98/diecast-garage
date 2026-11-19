@@ -10,10 +10,11 @@
 - [x] Optional Supabase Auth and manual JSON-payload collection sync in the UI.
 - [x] Optional private photo upload/download flow in the UI.
 - [x] Online scan-index importer for the upstream diecastDb catalogue.
+- [x] Add Mainline / Premium / Silver Series filters to the imported release catalogue.
 - [x] Add automated Chromium smoke coverage for PWA manifest/icons, offline shell, online catalogue import, search, details, garage add and custom multipack create/edit/delete.
 - [x] Add custom multipack create/edit/delete in the collector UI.
 - [ ] Verify manual installation and primary flows on iOS/Android.
-- [ ] Validate the online catalogue mapping against upstream scan-index and year files.
+- [ ] Validate the online catalogue mapping against upstream scan-index and year files, including edge cases and provenance.
 - [ ] Improve casting/release/variant deduplication and data provenance.
 - [ ] Expand multipack catalogue beyond the current Ferrari seed.
 - [x] Add atomic Supabase RPC that writes the compatibility snapshot and normalized garage/wishlist rows in one transaction, preserving complete item JSON and photos.

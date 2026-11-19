@@ -67,6 +67,17 @@ try {
   const visibleCars = await page.locator('#content .car').count();
   assert.ok(visibleCars > 0, 'Searching the imported catalogue for Ferrari should return model cards');
 
+  const assortmentOptions = await page.locator('#assortmentFilter option').evaluateAll(options => options.map(option => option.value));
+  assert.ok(assortmentOptions.includes('mainline') && assortmentOptions.includes('premium') && assortmentOptions.includes('silver-series'), 'Online catalogue should expose Mainline, Premium and Silver Series filters');
+  await page.locator('#search').fill('');
+  await page.locator('#assortmentFilter').selectOption('premium');
+  await page.waitForFunction(() => document.querySelector('#resultCount')?.textContent.includes('wydań'));
+  const premiumMeta = await page.locator('#content .car .meta').allTextContents();
+  assert.ok(premiumMeta.some(value => value.toLowerCase().includes('premium') || value.toLowerCase().includes('boulevard') || value.toLowerCase().includes('car culture')), 'Premium filter should show Premium assortment releases');
+  await page.locator('#assortmentFilter').selectOption('all');
+  await page.locator('#search').fill('Ferrari');
+  await page.waitForFunction(() => document.querySelectorAll('#content .car').length > 0);
+
   await page.locator('#content .car').first().getByRole('button', { name: /Szczegóły/ }).click();
   await page.locator('#modalRoot .modal h3').waitFor();
   await page.locator('#modalRoot .modal').getByRole('button', { name: '✕' }).click();
