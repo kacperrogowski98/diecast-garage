@@ -24,3 +24,5 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Run browser smoke test
         run: node scripts/smoke-test.mjs
+      - name: Run mocked cloud sync browser test
+        run: node scripts/sync-client-test.mjs
