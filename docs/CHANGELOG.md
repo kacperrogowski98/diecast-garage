@@ -1,3 +1,9 @@
+## v1.17 — 20 November 2026
+
+- Reviewed and corrected classification for 21 Ferrari seed castings: F50 and F50 Spider are Supercar/Hypercar; competition prototypes and Formula cars are Racing; remaining road-going classics are Sports/Exotic.
+- Applied the curated classification to every linked release, so the release-level filter agrees with the casting record.
+- Added regression checks for all 21 reviewed seed classifications.
+
 ## v1.16 — 19 November 2026
 
 - Corrected 10 mislinked Ferrari 5-pack content rows; the 1994, 1995 and 2026 packs now each contain five correctly sourced records.
