@@ -12,6 +12,7 @@
 - [x] Online scan-index importer for the upstream diecastDb catalogue.
 - [x] Add Mainline / Premium / Silver Series filters to the imported release catalogue.
 - [x] Automatically refresh the local catalogue every seven days while preserving the last successful local copy if the network is unavailable.
+- [x] Allow collectors to manually review and override heuristic vehicle classifications without changing upstream source records.
 - [x] Add automated Chromium smoke coverage for PWA manifest/icons, offline shell, online catalogue import, search, details, garage add and custom multipack create/edit/delete.
 - [x] Add custom multipack create/edit/delete in the collector UI.
 - [ ] Verify manual installation and primary flows on iOS/Android.

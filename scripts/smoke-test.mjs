@@ -82,6 +82,11 @@ try {
 
   await page.locator('#content .car').first().getByRole('button', { name: /Szczegóły/ }).click();
   await page.locator('#modalRoot .modal h3').waitFor();
+  await page.locator('#dgClassOverride').selectOption('supercar_hypercar');
+  await page.getByRole('button', { name: 'Zapisz klasyfikację' }).click();
+  await page.waitForFunction(() => Object.values(JSON.parse(localStorage.getItem('diecast_garage_mvp_02')).overrides || {}).some(value => value.classification_status === 'user_reviewed' && value.vehicle_class === 'supercar_hypercar'));
+  await page.locator('#content .car').first().getByRole('button', { name: /Szczegóły/ }).click();
+  await page.locator('#dgClassOverride').waitFor();
   await page.locator('#modalRoot .modal').getByRole('button', { name: '✕' }).click();
 
   await page.locator('#content .car').first().getByRole('button', { name: /Garaż/ }).click();
