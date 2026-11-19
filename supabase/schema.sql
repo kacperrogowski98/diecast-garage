@@ -103,6 +103,10 @@ create policy "Public can read packs" on public.packs for select to anon, authen
 drop policy if exists "Public can read pack contents" on public.pack_contents;
 create policy "Public can read pack contents" on public.pack_contents for select to anon, authenticated using (true);
 
+
+-- Explicit read grants for the shared public catalogue; policies still prohibit writes.
+grant select on public.brands, public.castings, public.releases, public.variants, public.packs, public.pack_contents to anon, authenticated;
+
 -- Each signed-in user can read and write only their own collection/wishlist payload.
 drop policy if exists "Users can read their own Diecast Garage data" on public.diecast_garage_data;
 create policy "Users can read their own Diecast Garage data" on public.diecast_garage_data
@@ -226,7 +230,6 @@ create policy "Users delete own Diecast Garage photos" on storage.objects
   using (bucket_id = 'diecast-photos' and (storage.foldername(name))[1] = auth.uid()::text);
 
 
--- Atomic normalized sync function (kept in sync with migrations).
 -- Atomic cloud sync for Diecast Garage.
 -- Apply once in Supabase SQL Editor. Safe to re-run.
 
@@ -244,7 +247,7 @@ returns table(updated_at timestamptz, garage_count integer, wishlist_count integ
 language plpgsql
 security invoker
 set search_path = public
-as $$
+as $
 declare
   v_user_id uuid := auth.uid();
   v_current timestamptz;
@@ -302,7 +305,7 @@ begin
     x.item->>'condition',
     nullif(x.item->>'date', '')::date,
     case
-      when coalesce(x.item->>'price', '') ~ '^[0-9]+([.][0-9]{1,2})?$'
+      when coalesce(x.item->>'price', '') ~ '^[0-9]+([.][0-9]{1,2})?
       then (x.item->>'price')::numeric
       else null
     end,
@@ -336,7 +339,7 @@ begin
     coalesce(x.item->'modelSnapshot'->>'canonical_name', x.item->>'name', 'Hot Wheels model'),
     greatest(0, least(5, coalesce(nullif(x.item->>'priority', '')::smallint, 0))),
     case
-      when coalesce(x.item->>'targetPrice', x.item->>'price', '') ~ '^[0-9]+([.][0-9]{1,2})?$'
+      when coalesce(x.item->>'targetPrice', x.item->>'price', '') ~ '^[0-9]+([.][0-9]{1,2})?
       then coalesce(x.item->>'targetPrice', x.item->>'price')::numeric
       else null
     end,
@@ -366,7 +369,14 @@ begin
 
   return query select v_now, v_garage_count, v_wishlist_count;
 end;
-$$;
+$;
 
 revoke all on function public.sync_diecast_garage(jsonb, jsonb, timestamptz) from public, anon;
 grant execute on function public.sync_diecast_garage(jsonb, jsonb, timestamptz) to authenticated;
+
+
+-- Explicit table privileges are required by the SECURITY INVOKER RPC.
+-- RLS still restricts every row to auth.uid() = user_id.
+grant select, insert, update on public.diecast_garage_data to authenticated;
+grant select, insert, update, delete on public.user_garage_items to authenticated;
+grant select, insert, update, delete on public.user_wishlist_items to authenticated;
