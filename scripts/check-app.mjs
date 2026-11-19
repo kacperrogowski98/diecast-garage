@@ -116,7 +116,7 @@ assert.equal(context.testSafeUrl('javascript:alert(1)'), '', 'Imported unsafe UR
 assert.equal(context.testSafeUrl(''), '', 'Missing optional URLs must remain empty');
 
 const seedStart = html.indexOf('const SEED=') + 'const SEED='.length;
-const seedEnd = html.indexOf(';\\nconst KEY', seedStart);
+const seedEnd = html.indexOf(';\nconst KEY', seedStart);
 assert.ok(seedStart >= 'const SEED='.length && seedEnd > seedStart, 'Seed catalogue JSON must be present');
 const seedData = JSON.parse(html.slice(seedStart, seedEnd));
 for (const [packId, year] of [['ferrari-5pack-1994-gift', '1994'], ['ferrari-5pack-1995', '1995'], ['ferrari-5pack-2026', '2026']]) {
