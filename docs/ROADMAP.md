@@ -12,6 +12,7 @@
 - [x] Online scan-index importer for the upstream diecastDb catalogue.
 - [x] Add Mainline / Premium / Silver Series filters to the imported release catalogue.
 - [x] Add catalogue sorting by model name, newest/oldest release year and brand.
+- [x] Add owned multipack copy management (condition, price, date, seller, notes and removal).
 - [x] Automatically refresh the local catalogue every seven days while preserving the last successful local copy if the network is unavailable.
 - [x] Show imported release count, recognized brands and heuristic Supercar/Hypercar candidate count in the catalogue status.
 - [x] Allow collectors to manually review and override heuristic vehicle classifications without changing upstream source records, including custom models.

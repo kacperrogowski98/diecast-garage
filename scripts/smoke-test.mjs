@@ -115,6 +115,18 @@ try {
   assert.equal(saved.items.length, 1, 'Owned model should persist in local collection state');
   assert.equal(saved.customPacks.length, 1, 'Custom multipack should persist in local collection state');
 
+  await customPackCard.getByRole('button', { name: 'Dodaj zestaw' }).click();
+  await customPackCard.getByRole('button', { name: 'Zawartość' }).click();
+  await page.getByText('Twoja kolekcja (1)').waitFor();
+  await page.getByRole('button', { name: 'Edytuj egzemplarz' }).click();
+  await page.locator('#piCondition').selectOption('Nowy, fabrycznie zamknięty');
+  await page.locator('#piPrice').fill('49.99');
+  await page.locator('#piSeller').fill('Test Store');
+  await page.getByRole('button', { name: 'Zapisz', exact: true }).click();
+  await page.getByText('Nowy, fabrycznie zamknięty').waitFor();
+  await page.getByRole('button', { name: 'Usuń z kolekcji' }).click();
+  await page.getByText('Nie masz jeszcze tego multipacka.').waitFor();
+
   await customPackCard.getByRole('button', { name: 'Zawartość' }).click();
   await page.getByRole('button', { name: 'Edytuj' }).click();
   await page.locator('#customPackName').fill('E2E Edited 5-Pack');

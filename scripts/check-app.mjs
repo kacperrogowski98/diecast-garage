@@ -11,9 +11,9 @@ const syncVerification = fs.readFileSync('supabase/verify_sync_setup.sql', 'utf8
 const serviceWorker = fs.readFileSync('sw.js', 'utf8');
 
 assert.match(html, /<html lang="pl">/i, 'Polish document language is present');
-assert.ok(html.includes('<title>Diecast Garage · v1.13</title>'), 'Current app release title must be v1.13');
-assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.13') && html.includes('Diecast Garage · v1.13 ·'), 'Visible app version labels must match the release title');
-assert.ok(serviceWorker.includes('diecast-garage-shell-v1.13.0'), 'PWA shell cache must be versioned with the current release');
+assert.ok(html.includes('<title>Diecast Garage · v1.14</title>'), 'Current app release title must be v1.14');
+assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.14') && html.includes('Diecast Garage · v1.14 ·'), 'Visible app version labels must match the release title');
+assert.ok(serviceWorker.includes('diecast-garage-shell-v1.14.0'), 'PWA shell cache must be versioned with the current release');
 assert.match(html, /id="content"/, 'Main app content mount exists');
 assert.match(html, /id="assortmentFilter"/, 'Catalogue assortment filter exists');
 assert.match(html, /id="sortFilter"/, 'Catalogue sort control exists');
@@ -33,6 +33,8 @@ assert.match(html, /marek rozpoznanych.*kandydatów Supercar\/Hypercar/, 'Catalo
 assert.ok(html.includes('function addCustomPack()'), 'Collectors must be able to create custom multipacks');
 assert.ok(html.includes('function removeCustomPack('), 'Collectors must be able to delete custom multipacks');
 assert.ok(html.includes('function editCustomPack('), 'Collectors must be able to edit custom multipacks');
+assert.ok(html.includes('function editPackItem(') && html.includes('function savePackItem(') && html.includes('function removePackItem('), 'Collectors must be able to edit and remove owned multipack copies');
+assert.match(html, /Twoja kolekcja \(\$\{ownedPacks\.length\}\)/, 'Pack details must show owned copies');
 assert.ok(html.includes('customPacks=Array.isArray'), 'Custom multipacks must survive local state and backup normalization');
 assert.match(html, /dgSyncMeta\(\)/, 'Cloud sync metadata must be tracked per user');
 assert.match(html, /W chmurze są zmiany nowsze/, 'Cloud push must warn before overwriting a newer snapshot');
