@@ -17,7 +17,7 @@ assert.ok(serviceWorker.includes('diecast-garage-shell-v1.8.0'), 'PWA shell cach
 assert.match(html, /id="content"/, 'Main app content mount exists');
 assert.match(html, /id="assortmentFilter"/, 'Catalogue assortment filter exists');
 assert.match(html, /assortmentFilter==='all'\|\|x\.assortment===assortmentFilter/, 'Catalogue results are filtered by assortment');
-assert.match(html, /id="assortmentFilter"\)\.addEventListener\('change'/, 'Assortment filter updates the catalogue');
+assert.match(html, /getElementById\('assortmentFilter'\)\.addEventListener\('change'/, 'Assortment filter updates the catalogue');
 assert.match(html, /dgFetchOnlineCatalog/, 'Online catalogue importer is wired');
 assert.ok(html.includes('function addCustomPack()'), 'Collectors must be able to create custom multipacks');
 assert.ok(html.includes('function removeCustomPack('), 'Collectors must be able to delete custom multipacks');
