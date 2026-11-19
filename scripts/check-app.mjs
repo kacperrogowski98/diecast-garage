@@ -112,6 +112,9 @@ assert.equal(extracted.rows.length, 1, 'Compact scan index row must be expanded'
 assert.equal(extracted.rows[0].title, sample.title, 'Compact scan index columns must map by field name');
 assert.equal(context.testClassify('Ferrari 812 Competizione', 'Ferrari', ''), 'supercar_hypercar', 'Known supercar models must enter the Supercar/Hypercar filter');
 assert.equal(context.testClassify('Ferrari 499P', 'Ferrari', ''), 'racing', 'Le Mans prototype castings must remain in Racing, not Supercar/Hypercar');
+assert.equal(context.testClassify('McLaren F1 GTR', 'McLaren', ''), 'racing', 'Competition variants of supercars must take precedence over road-car model terms');
+assert.equal(context.testClassify('Ford GT', 'Ford', ''), 'supercar_hypercar', 'Road-going Ford GT must remain a Supercar/Hypercar candidate');
+assert.equal(context.testClassify('McLaren F1', 'McLaren', ''), 'supercar_hypercar', 'Road-going McLaren F1 must remain a Supercar/Hypercar candidate');
 assert.equal(context.testSafeUrl('javascript:alert(1)'), '', 'Imported unsafe URL schemes must be rejected');
 assert.equal(context.testSafeUrl(''), '', 'Missing optional URLs must remain empty');
 
