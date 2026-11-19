@@ -10,6 +10,10 @@ Potential upstream datasets identified for the catalogue importer:
 - This is broad release-level coverage, not every Hot Wheels product worldwide: multipacks, promotional releases and many regional/exclusive variants still need separate sources and verification.
 - Must preserve source IDs and URLs, normalize year/series/assortment, and deduplicate repeated castings and releases.
 
+### Upstream coverage snapshot
+
+The upstream `diecastDb` data documentation currently reports 14,474 Mainline releases (1968–2027), 1,954 Premium releases (2012–2027) and 1,404 Silver Series releases (2009 and 2012–2027), for **17,832 release records** in total. These are upstream-published counts, not an independent completeness audit. They describe three assortment datasets, not every Hot Wheels product ever sold; 5-packs, other multipacks, promotional releases, regional exclusives and many packaging/colour variants remain outside this coverage unless separately sourced and verified.
+
 ## pvwnthem/Hotwheels-Data
 - Repository: https://github.com/pvwnthem/Hotwheels-Data
 - Includes HotApi JSON Lines and community wiki-derived data.
