@@ -40,3 +40,18 @@ order by c.relname;
 select id, name, public
 from storage.buckets
 where id = 'diecast-photos';
+
+
+-- 5) Explicit SQL grants required by the SECURITY INVOKER sync RPC.
+select
+  has_table_privilege('authenticated', 'public.diecast_garage_data', 'SELECT') as snapshot_select,
+  has_table_privilege('authenticated', 'public.diecast_garage_data', 'INSERT') as snapshot_insert,
+  has_table_privilege('authenticated', 'public.diecast_garage_data', 'UPDATE') as snapshot_update,
+  has_table_privilege('authenticated', 'public.user_garage_items', 'SELECT') as garage_select,
+  has_table_privilege('authenticated', 'public.user_garage_items', 'INSERT') as garage_insert,
+  has_table_privilege('authenticated', 'public.user_garage_items', 'UPDATE') as garage_update,
+  has_table_privilege('authenticated', 'public.user_garage_items', 'DELETE') as garage_delete,
+  has_table_privilege('authenticated', 'public.user_wishlist_items', 'SELECT') as wishlist_select,
+  has_table_privilege('authenticated', 'public.user_wishlist_items', 'INSERT') as wishlist_insert,
+  has_table_privilege('authenticated', 'public.user_wishlist_items', 'UPDATE') as wishlist_update,
+  has_table_privilege('authenticated', 'public.user_wishlist_items', 'DELETE') as wishlist_delete;
