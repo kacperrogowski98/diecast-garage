@@ -26,6 +26,14 @@ These are useful for future coverage and cross-checking, but they are not curren
 
 Do not scrape or bulk-import these sources until a permitted export/API and its terms are confirmed. Keep pack identity separate from individual car releases, and verify the complete pack contents against packaging photos or a reliable source.
 
+## Multipack source candidates
+
+- [South Texas Diecast 5-Pack archive](https://www.southtexasdiecast.com/hwguide/5pack.html) — historical 5-pack tables with codes and contents.
+- [Hot Wheels Wiki 5-Packs](https://hotwheels.fandom.com/wiki/5-Packs) and [5-Packs category](https://hotwheels.fandom.com/wiki/Category:5-Packs) — community-maintained year and pack discovery references.
+- [HW Collectors News Digital Car Catalog](https://catalog.hwcollectorsnews.com/Search) — search categories include Castings, Sets, Series and Variations; no supported bulk export has been confirmed.
+
+See [MULTIPACK_IMPORT_SPEC.md](MULTIPACK_IMPORT_SPEC.md) for the proposed pack data model and verification rules. No bulk multipack import has been performed.
+
 ## Import rules
 1. Preserve upstream source and source ID for every imported record.
 2. Separate casting identity from release, color/variant and multipack.

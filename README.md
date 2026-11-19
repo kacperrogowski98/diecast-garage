@@ -44,6 +44,7 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 - supabase/migrations/ — incremental SQL migrations for existing Supabase projects.
 - supabase/verify_sync_setup.sql — read-only checks for the Supabase sync setup.
 - docs/SUPABASE_SETUP.md — step-by-step setup for a real Supabase project.
+- docs/MULTIPACK_IMPORT_SPEC.md — multipack catalogue data model, source review and import rules.
 - docs/ — catalogue, sync, deployment and implementation notes.
 
 ## Catalogue sources and provenance
