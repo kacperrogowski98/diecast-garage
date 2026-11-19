@@ -22,8 +22,14 @@
 - New Supabase project: apply `supabase/schema.sql`.
 - Existing project: apply `supabase/migrations/20261118_atomic_collection_sync.sql` after the original schema.
 - Configure the app with the Supabase Project URL and public anon/publishable key.
+- The schema explicitly grants authenticated users the table privileges required by the SECURITY INVOKER RPC; RLS policies still scope every row to auth.uid().
 - Never place a service-role key in the browser.
 - Keep RLS enabled and the photo bucket private.
+
+## Automated client validation
+
+- Chromium tests cover the atomic push request, normalized pull reconstruction and stale-write conflict response using a mocked Supabase client.
+- These tests do not connect to a real Supabase project and do not prove live RLS, Auth or Storage behavior.
 
 ## Remaining validation
 

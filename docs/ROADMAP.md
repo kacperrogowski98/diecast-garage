@@ -17,7 +17,10 @@
 - [ ] Improve casting/release/variant deduplication and data provenance.
 - [ ] Expand multipack catalogue beyond the current Ferrari seed.
 - [x] Add atomic Supabase RPC that writes the compatibility snapshot and normalized garage/wishlist rows in one transaction, preserving complete item JSON and photos.
-- [ ] Apply the atomic sync migration in the live Supabase project and validate with two separate devices/accounts.
+- [x] Add explicit SQL grants for the SECURITY INVOKER sync RPC and verification queries for those privileges.
+- [x] Add mocked browser coverage for atomic push, normalized pull and stale-write conflict handling.
+- [x] Add a step-by-step Supabase project setup guide and link it from the app.
+- [ ] Create/connect the live Supabase project, apply schema.sql, run verify_sync_setup.sql and validate with two separate devices/accounts.
 - [ ] Add conflict-aware automatic or user-triggered incremental sync.
 - [ ] Apply and test Supabase Storage policies and verify photo access is private.
 - [x] Validate the cached PWA shell reopens offline in Chromium.

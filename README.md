@@ -28,7 +28,7 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 - Brand and Supercar/Hypercar classification are partly heuristic and need review. Unknown values must remain unknown; do not treat automated classifications as verified facts.
 - The catalogue is currently stored per browser/device in IndexedDB. It is not yet served from the app's Supabase catalogue tables.
 - Collection sync is user-triggered, not real-time/background. Atomic normalized sync requires applying `supabase/migrations/20261118_atomic_collection_sync.sql` in the connected Supabase project; until then, the app falls back to the legacy JSON snapshot.
-- Manual iOS/Android installation and real Supabase cross-device sync validation are still required; the automated Chromium smoke test does not replace those checks.
+- Manual iOS/Android installation and real Supabase cross-device sync validation are still required; automated and mocked browser tests do not replace those checks.
 - Supabase configuration must be entered separately on each device. Only the public anon/publishable key belongs in the browser; never expose a service-role key.
 
 ## Repository structure
@@ -39,6 +39,7 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 - supabase/schema.sql — full database schema, RLS policies and atomic sync RPC.
 - supabase/migrations/ — incremental SQL migrations for existing Supabase projects.
 - supabase/verify_sync_setup.sql — read-only checks for the Supabase sync setup.
+- docs/SUPABASE_SETUP.md — step-by-step setup for a real Supabase project.
 - docs/ — catalogue, sync, deployment and implementation notes.
 
 ## Catalogue sources and provenance
@@ -57,5 +58,5 @@ The repository is public, so source code is visible. User collection rows are no
 1. Complete manual iOS/Android installation checks and validate the app against the live deployment.
 2. Validate the upstream index mapping and data counts, including brand inference and classification edge cases.
 3. Improve catalogue normalization/deduplication and pack/variant coverage without inventing missing records.
-4. Apply the atomic sync migration in the live Supabase project and validate normalized sync on two devices/accounts.
+4. Create/connect the real Supabase project, apply schema.sql (or the incremental migration on an existing project), run verify_sync_setup.sql and validate normalized sync on two devices/accounts.
 5. Validate Auth, RLS, Storage policies and cross-device behavior on phone and desktop.
