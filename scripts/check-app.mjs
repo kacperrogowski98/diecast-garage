@@ -11,9 +11,9 @@ const syncVerification = fs.readFileSync('supabase/verify_sync_setup.sql', 'utf8
 const serviceWorker = fs.readFileSync('sw.js', 'utf8');
 
 assert.match(html, /<html lang="pl">/i, 'Polish document language is present');
-assert.ok(html.includes('<title>Diecast Garage · v1.16</title>'), 'Current app release title must be v1.16');
-assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.16') && html.includes('Diecast Garage · v1.16 ·'), 'Visible app version labels must match the release title');
-assert.ok(serviceWorker.includes('diecast-garage-shell-v1.16.0'), 'PWA shell cache must be versioned with the current release');
+assert.ok(html.includes('<title>Diecast Garage · v1.17</title>'), 'Current app release title must be v1.17');
+assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.17') && html.includes('Diecast Garage · v1.17 ·'), 'Visible app version labels must match the release title');
+assert.ok(serviceWorker.includes('diecast-garage-shell-v1.17.0'), 'PWA shell cache must be versioned with the current release');
 assert.match(html, /id="content"/, 'Main app content mount exists');
 assert.match(html, /id="assortmentFilter"/, 'Catalogue assortment filter exists');
 assert.match(html, /id="sortFilter"/, 'Catalogue sort control exists');
@@ -125,5 +125,35 @@ for (const [packId, year] of [['ferrari-5pack-1994-gift', '1994'], ['ferrari-5pa
   assert.ok(contents.every(item => item.source_url.includes(`_(${year})`)), `Ferrari ${year} pack contents must point to the matching source year`);
 }
 assert.equal(seedData.pack_contents.length, 15, 'All seeded Ferrari pack-content rows must remain accounted for');
+const curatedClasses = {
+  'Ferrari F50': 'supercar_hypercar',
+  'Ferrari F50 Spider': 'supercar_hypercar',
+  'Ferrari 156': 'racing',
+  '1967 Ferrari 330 P4': 'racing',
+  '1969 Ferrari 312 P': 'racing',
+  'Ferrari 250 LM': 'racing',
+  'Ferrari 250 Testa Rossa': 'racing',
+  'Ferrari 330 P4': 'racing',
+  'Ferrari Can-Am': 'racing',
+  'Ferrari F2004': 'racing',
+  'Ferrari P4': 'racing',
+  'Ferrari SF-25': 'racing',
+  'Ferrari 250': 'sports_or_exotic',
+  'Ferrari 208 Turbo': 'sports_or_exotic',
+  'Ferrari 328 GTB': 'sports_or_exotic',
+  'Ferrari 328 GTS': 'sports_or_exotic',
+  'Ferrari 365 GTS/4': 'sports_or_exotic',
+  'Ferrari 365 GTS4': 'sports_or_exotic',
+  'Ferrari 456M': 'sports_or_exotic',
+  'Ferrari 512 M': 'sports_or_exotic',
+  'Ferrari F512M': 'sports_or_exotic'
+};
+for (const [name, expected] of Object.entries(curatedClasses)) {
+  const casting = seedData.castings.find(item => item.canonical_name === name);
+  assert.ok(casting, `Seed casting ${name} must exist`);
+  assert.equal(casting.vehicle_class, expected, `Seed classification for ${name} must remain curated`);
+  assert.equal(casting.classification_status, 'curated_seed_review');
+}
+
 
 console.log('Diecast Garage checks passed: HTML, inline JavaScript, PWA paths, RLS markers and catalogue adapter.');
