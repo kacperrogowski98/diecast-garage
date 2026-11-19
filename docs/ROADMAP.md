@@ -2,7 +2,7 @@
 
 ## Current baseline
 
-- [x] Single-file v1.7 app committed as index.html.
+- [x] Single-file v1.13 app committed as index.html.
 - [x] PWA manifest, service worker and app icons committed.
 - [x] GitHub Pages configured for GitHub Actions.
 - [x] Successful live deployment: https://kacperrogowski98.github.io/diecast-garage/
@@ -11,6 +11,7 @@
 - [x] Optional private photo upload/download flow in the UI.
 - [x] Online scan-index importer for the upstream diecastDb catalogue.
 - [x] Add Mainline / Premium / Silver Series filters to the imported release catalogue.
+- [x] Add catalogue sorting by model name, newest/oldest release year and brand.
 - [x] Automatically refresh the local catalogue every seven days while preserving the last successful local copy if the network is unavailable.
 - [x] Show imported release count, recognized brands and heuristic Supercar/Hypercar candidate count in the catalogue status.
 - [x] Allow collectors to manually review and override heuristic vehicle classifications without changing upstream source records, including custom models.

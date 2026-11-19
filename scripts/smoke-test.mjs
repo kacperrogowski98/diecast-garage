@@ -72,6 +72,12 @@ try {
   const visibleCars = await page.locator('#content .car').count();
   assert.ok(visibleCars > 0, 'Searching the imported catalogue for Ferrari should return model cards');
 
+  const sortOptions = await page.locator('#sortFilter option').evaluateAll(options => options.map(option => option.value));
+  assert.ok(['name','year_desc','year_asc','brand'].every(value => sortOptions.includes(value)), 'Catalogue should expose all sort modes');
+  await page.locator('#sortFilter').selectOption('year_desc');
+  await page.locator('#sortFilter').selectOption('brand');
+  await page.locator('#sortFilter').selectOption('name');
+
   const assortmentOptions = await page.locator('#assortmentFilter option').evaluateAll(options => options.map(option => option.value));
   assert.ok(assortmentOptions.includes('mainline') && assortmentOptions.includes('premium') && assortmentOptions.includes('silver-series'), 'Online catalogue should expose Mainline, Premium and Silver Series filters');
   await page.locator('#search').fill('');

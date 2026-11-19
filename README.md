@@ -1,6 +1,6 @@
 # Diecast Garage
 
-Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.12**.
+Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.13**.
 
 ## Live app
 
@@ -16,12 +16,12 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 - Local collection persistence in browser storage, catalogue persistence in IndexedDB.
 - Backup export/import in JSON.
 - PWA manifest, service worker and app icons for installation on supported phones/desktops.
-- Automated Chromium smoke test covering PWA/offline behavior, online catalogue import, Mainline/Premium/Silver Series filtering, search, details, adding a car to the garage and creating, editing and deleting a custom multipack.
+- Automated Chromium smoke test covering PWA/offline behavior, online catalogue import, Mainline/Premium/Silver Series filtering, sorting, search, details, adding a car to the garage and creating, editing and deleting a custom multipack.
 - Mocked Supabase browser test covering atomic cloud push, normalized pull and stale-write conflict handling. This does not replace validation against a live Supabase project.
 - Optional Supabase Auth and manual collection sync. When the atomic sync migration is applied, one transaction updates the compatibility JSON snapshot and normalized garage/wishlist rows, with stale-write protection; older projects retain a clearly reported legacy fallback.
 - Private photo upload/download through the diecast-photos Supabase Storage bucket (requires correct bucket and policies).
 - Online catalogue index import from danyjoy/diecastDb (approximately 17,800 Mainline, Premium and Silver Series records according to its upstream documentation). The index is fetched by the browser and cached locally in IndexedDB; full details are loaded lazily from year/assortment files.
-- Combined catalogue filters for vehicle class, year, brand and assortment (Mainline / Premium / Silver Series).
+- Combined catalogue filters for vehicle class, year, brand and assortment (Mainline / Premium / Silver Series), plus sorting by name, release year and brand.
 - Review and manually override heuristic vehicle classifications; user corrections are preserved separately from source catalogue data.
 - Automatic catalogue refresh every seven days, matching the upstream weekly data refresh; cached records remain usable if the network is unavailable.
 - Manual JSON and folder import adapters for danyjoy/diecastDb and pvwnthem/Hotwheels-Data.
