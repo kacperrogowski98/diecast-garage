@@ -1,3 +1,8 @@
+## v1.16 — 19 November 2026
+
+- Corrected 10 mislinked Ferrari 5-pack content rows; the 1994, 1995 and 2026 packs now each contain five correctly sourced records.
+- Added regression checks for five contents per pack and source-year consistency.
+
 ## v1.15 — 19 November 2026
 
 - Preserve every safe upstream image URL when enriching a catalogue record, instead of keeping only the first image.
