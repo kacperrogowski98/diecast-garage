@@ -1,3 +1,8 @@
+## v1.18 — 20 November 2026
+
+- Improved vehicle classification precedence: explicit competition variants (GT3/GT4/GTR/GT1, Le Mans, Formula, rally and named race variants) are assigned to Racing before broad supercar model-name matches.
+- Added regression tests ensuring McLaren F1 GTR is Racing while road-going McLaren F1 and Ford GT remain Supercar/Hypercar candidates.
+
 ## v1.17 — 20 November 2026
 
 - Reviewed and corrected classification for 21 Ferrari seed castings: F50 and F50 Spider are Supercar/Hypercar; competition prototypes and Formula cars are Racing; remaining road-going classics are Sports/Exotic.
