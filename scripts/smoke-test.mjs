@@ -60,9 +60,9 @@ try {
 
   const status = await page.locator('#catalogStatus').textContent();
   assert.match(status, /Pobrano indeks online:\s*[\d\s.,]+\s+wydań/i, 'Online catalogue index should import successfully');
-  const releaseCount = Number((status.match(/Pobrano indeks online:\\s*([\\d\\s.,]+)\\s+wydań/i)?.[1] || '').replace(/[^\\d]/g, ''));
+  const releaseCount = Number((status.match(/Pobrano indeks online:\s*([\d\s.,]+)\s+wydań/i)?.[1] || '').replace(/[^\d]/g, ''));
   assert.ok(releaseCount >= 17000, 'Online index should contain the broad upstream release catalogue');
-  assert.match(status, /\\d+ marek rozpoznanych · \\d+ kandydatów Supercar\\/Hypercar/, 'Import summary should show recognized brands and supercar candidates');
+  assert.match(status, /\d+ marek rozpoznanych · \d+ kandydatów Supercar\/Hypercar/, 'Import summary should show recognized brands and supercar candidates');
   const catalogRefreshedAt = await page.evaluate(() => Number(localStorage.getItem('diecast_garage_catalog_refresh_v1')));
   assert.ok(catalogRefreshedAt > 0, 'Successful catalogue import should record its refresh timestamp');
 
