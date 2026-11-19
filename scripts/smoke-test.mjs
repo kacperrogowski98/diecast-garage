@@ -126,6 +126,7 @@ try {
   await page.getByText('Nowy, fabrycznie zamknięty').waitFor();
   await page.getByRole('button', { name: 'Usuń z kolekcji' }).click();
   await page.getByText('Nie masz jeszcze tego multipacka.').waitFor();
+  await page.getByRole('button', { name: 'Zamknij' }).click();
 
   await customPackCard.getByRole('button', { name: 'Zawartość' }).click();
   await page.getByRole('button', { name: 'Edytuj' }).click();
