@@ -1,3 +1,9 @@
+## v1.15 — 19 November 2026
+
+- Preserve every safe upstream image URL when enriching a catalogue record, instead of keeping only the first image.
+- Show the complete source photo gallery in model details, with each image opening at full size.
+- Reject unsafe image URL schemes in the gallery and add regression coverage for image preservation.
+
 # Changelog
 
 ## v1.7 — 18 November 2026
