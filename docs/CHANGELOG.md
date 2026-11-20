@@ -1,3 +1,9 @@
+## v1.71 — 20 November 2026
+
+- Added three complete 2005 five-pack reissue/colour variants (15 entries): Easter Eggs-Treme, Ferrari and Muscle Mania.
+- Kept these separate from their original assortments and preserved the source-listed colour differences.
+- Added packaging-photo verification flags and source provenance.
+
 ## v1.70 — 20 November 2026
 
 - Added five 2006 reissue assortments (26 entries): Corvette, Easter Eggs-Treme, First Editions, Hot Trucks AKA Hot Truckus 500 and X-Raycers.
