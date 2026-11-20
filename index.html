@@ -301,7 +301,7 @@ function dgPackSeriesCoverageMarkup(){
  ).join('')+'</div></div>';
 }
 function dgFocusPackSeries(year,keyword){
- packSearch=keyword;packYear=String(year);packSource='all';packKind='5pack';packOwnership='all';packPage=0;
+ packSearch=keyword;packYear=String(year);packSource='all';packKind='all';packOwnership='all';packPage=0;
  render();
  const input=document.getElementById('packSearchField');
  if(input)input.focus();
