@@ -128,3 +128,8 @@ The browser app can import the upstream scan index and lazily load year/assortme
 ## 2015 five-packs
 
 - Wheel Wonderland 2015: https://www.wheelwonderland.com/fr/5-packs/2015/ — 16 complete numbered package compositions / 80 entries added; the curated HW Exotics pack was not duplicated.
+
+
+## 2014 five-packs
+
+- Wheel Wonderland 2014: https://www.wheelwonderland.com/fr/5-packs/2014/ — 18 complete numbered package compositions / 90 entries added; existing Ferrari and HW Exotics packs were not duplicated.
