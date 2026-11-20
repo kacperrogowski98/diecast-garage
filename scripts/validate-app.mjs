@@ -28,7 +28,7 @@ const viewerSyntax=viewer.replace(/^import .*;$/gm,'').replace(/^export /gm,'');
 new vm.Script(viewerSyntax,{filename:'viewer3d.js'});
 
 const pullStart=html.indexOf('async function dgCloudPull(){');
-const pullEnd=html.indexOf('function exportData(){',pullStart);
+const pullEnd=html.indexOf('</script>',pullStart);
 assert.ok(pullStart>=0&&pullEnd>pullStart,'Cloud pull and backup implementation missing');
 const cloudPull=html.slice(pullStart,pullEnd);
 assert.ok(cloudPull.includes('exportData();')&&cloudPull.indexOf('exportData();')<cloudPull.indexOf('state=normalizeBackup('),'Cloud pull must export backup before replacing local state');
