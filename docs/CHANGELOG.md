@@ -1,3 +1,9 @@
+## v1.46 — 20 November 2026
+
+- Added 12 complete numbered 2002 five-packs (60 entries): 4x4 Monsters, Air Circus, Asphalt Assault, Extreme City, Happy Birthday, Heat Fleet, HW Side Show, Insectiride, Octoblast, Sci-Fi Monsters, Sports and Turbo Jet City.
+- Retained the existing Ferrari 5-Pack and excluded duplicate alternate-colour records.
+- Preserved source-listed colours, toy numbers and provenance.
+
 ## v1.45 — 20 November 2026
 
 - Added 11 complete numbered 2003 five-packs (55 entries): B-Day Gift, Concrete Cruisers, Cop Squad, Flag Flyers, Heat Fleet, Hot Haulers, Raptor Blast, Robo Zoo, Serpent Cyclone, T-Wrecks and Tiki Blasters.
