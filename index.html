@@ -71,6 +71,52 @@ const DG_YEAR_FILE_CACHE=new Map();
 async function dgGetYearFile(year,assortment){let key=year+'/'+assortment;if(!DG_YEAR_FILE_CACHE.has(key)){let sources=['https://raw.githubusercontent.com/danyjoy/diecastDb/main/data/'+key+'.json','https://cdn.jsdelivr.net/gh/danyjoy/diecastDb@main/data/'+key+'.json','https://danyjoy.github.io/diecastDb/data/'+key+'.json'];let promise=(async()=>{let errors=[];for(let url of sources){try{let response=await fetch(url,{cache:'force-cache'});if(!response.ok)throw new Error('HTTP '+response.status);return await response.json()}catch(e){errors.push(url.split('/')[2]+': '+e.message)}}throw new Error('Nie udało się pobrać pliku '+key+'.json ('+errors.join('; ')+')')})().catch(err=>{DG_YEAR_FILE_CACHE.delete(key);throw err});DG_YEAR_FILE_CACHE.set(key,promise)}return DG_YEAR_FILE_CACHE.get(key)}
 async function dgEnrichRecord(id){let x=importedCatalog.find(m=>m.release_id===id);if(!x||x.source!=='diecastdb'||x._fullRecord||!x.release_year||!['mainline','premium','silver-series'].includes(x.assortment))return;try{let payload=await dgGetYearFile(x.release_year,x.assortment);let raw=(payload.cars||[]).find(r=>String(r.id)===String(x.source_record_id));if(!raw)return;let full=dgNormalizeRecord(raw,'diecastdb',0,{year:payload.release_year,collection:payload.collection});if(!full)return;full.release_id=id;full._fullRecord=true;let idx=importedCatalog.findIndex(r=>r.release_id===id);if(idx>=0)importedCatalog[idx]={...importedCatalog[idx],...full};dgCachedModels=null;await dgStoreCatalog([full]);details(id)}catch(e){console.warn('Could not load full catalog record',e)}}
 async function dgFetchExtendedCatalog(){const btn=document.getElementById("extendedCatalogBtn");if(btn){btn.disabled=true;btn.textContent="Pobieranie archiwum…"}try{dgUpdateCatalogStatus("Pobieram dodatkowe archiwum historyczne Hot Wheels Wiki (1974–2023)…");const urls=["https://raw.githubusercontent.com/pvwnthem/Hotwheels-Data/main/HotApi.json","https://cdn.jsdelivr.net/gh/pvwnthem/Hotwheels-Data@main/HotApi.json"];let file=null;for(const url of urls){try{const response=await fetch(url,{cache:"no-cache"});if(!response.ok)throw new Error("HTTP "+response.status);const blob=await response.blob();if(blob.size<10000||blob.size>25*1024*1024)throw new Error("Nieoczekiwany rozmiar archiwum");file=new File([blob],"HotApi.json",{type:"application/json"});break}catch(error){console.warn("Archive download failed",url,error)}}if(!file)throw new Error("Archiwum jest niedostępne");await dgImportCatalogFiles([file]);toast("Dodatkowe archiwum zostało wczytane. Duplikaty między źródłami mogą wymagać przeglądu.")}catch(e){dgUpdateCatalogStatus("Błąd archiwum historycznego: "+e.message);toast("Archiwum: "+e.message)}finally{if(btn){btn.disabled=false;btn.textContent="＋ Archiwum 1974–2023"}}}
+async function dgImportWikiReleaseStream(stream){
+ await dgCatalogReady;
+ const reader=stream.getReader(),decoder=new TextDecoder();
+ const map=new Map(importedCatalog.map(r=>[r.release_id,r]));
+ const brands=new Set(state.brands||[]);
+ let buffer='',total=0,valid=0,invalid=0,batch=[];
+ async function flush(){
+  if(!batch.length)return;
+  const ready=batch;batch=[];
+  await dgStoreCatalog(ready);
+  for(const item of ready){map.set(item.release_id,item);if(item.brand&&item.brand!=='Unassigned')brands.add(item.brand)}
+  if(valid%7500<750)dgUpdateCatalogStatus('Wiki v6: zapisano '+valid.toLocaleString('pl-PL')+' wydań (partiami po 750)…');
+ }
+ async function process(line){
+  if(!line.trim())return;
+  total++;
+  try{
+   const record=JSON.parse(line);
+   if(record.product_type&&!['vehicle','monster_truck'].includes(record.product_type))return;
+   const item=dgNormalizeRecord(record,'hotwheels-wiki-v6',total);
+   if(!item){invalid++;return}
+   batch.push(item);valid++;
+   if(batch.length>=750)await flush();
+  }catch(error){
+   invalid++;
+   if(invalid<=3)console.warn('Wiki v6 record skipped:',error);
+  }
+ }
+ try{
+  while(true){
+   const {value,done}=await reader.read();if(done)break;
+   buffer+=decoder.decode(value,{stream:true});
+   let pos;while((pos=buffer.indexOf('\n'))>=0){const line=buffer.slice(0,pos);buffer=buffer.slice(pos+1);await process(line)}
+  }
+  buffer+=decoder.decode();
+  if(buffer.trim())await process(buffer);
+  await flush();
+ }finally{reader.releaseLock()}
+ if(valid<10000)throw new Error('Niekompletne archiwum Wiki v6: '+valid+' poprawnych wydań');
+ importedCatalog=[...map.values()];
+ dgCachedModels=null;
+ state.brands=[...brands];
+ save();dgRefreshFilters();
+ dgUpdateCatalogStatus('Wiki v6: zapisano '+valid.toLocaleString('pl-PL')+' wydań, pominięto '+invalid+' błędnych rekordów. Dane źródłowe mogą powtarzać inne katalogi.');
+ return {valid,total,invalid};
+}
 async function dgFetchWikiV6Catalog(automatic=false){
  const btn=document.getElementById('wikiCatalogBtn');if(btn){btn.disabled=true;btn.textContent='Wczytywanie Wiki v6…'}try{localStorage.setItem(DG_WIKI_CHECK_KEY,String(Date.now()))}catch(_){}
  try{
@@ -79,9 +125,7 @@ async function dgFetchWikiV6Catalog(automatic=false){
   if(typeof DecompressionStream==='undefined')throw new Error('Przeglądarka nie obsługuje dekompresji gzip. Użyj ręcznego importu JSONL.');
   dgUpdateCatalogStatus('Rozpakowuję katalog Wiki v6; może zawierać kilkadziesiąt tysięcy wydań…');
   const uncompressed=response.body.pipeThrough(new DecompressionStream('gzip'));
-  const text=await new Response(uncompressed).text();
-  const file=new File([text],'hotwheels_db_v6.jsonl',{type:'application/x-ndjson'});
-  await dgImportCatalogFiles([file]);
+  await dgImportWikiReleaseStream(uncompressed);
   try {
    try{localStorage.setItem(DG_PACK_CHECK_KEY,String(Date.now()))}catch(_){}
    const packsResponse=await fetch('./catalog/wiki-packs.jsonl.gz',{cache:'no-cache'});
