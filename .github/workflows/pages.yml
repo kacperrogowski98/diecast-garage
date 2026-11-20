@@ -28,6 +28,8 @@ jobs:
         run: node scripts/validate-app.mjs
       - name: Validate catalog normalization and classification
         run: node scripts/test-catalog.mjs
+      - name: Verify independent Wiki multipack refresh
+        run: node scripts/test-pack-only-import.mjs
       - name: Test multipack wishlist and backup compatibility
         run: node scripts/test-pack-wishlist.mjs
       - name: Stress-test streamed Wiki importer on 10k records
