@@ -30,7 +30,11 @@ These are useful for future coverage and cross-checking, but they are not curren
 
 Do not scrape or bulk-import these sources until a permitted export/API and its terms are confirmed. Keep pack identity separate from individual car releases, and verify the complete pack contents against packaging photos or a reliable source.
 
-## Verified multipack additions
+## Verified and research-stage multipack additions
+
+- HW Exotics 5-Packs 2014 (BFB36), 2015 (CDT27) and 2016 (DJD29): five cars per pack transcribed from South Texas Diecast, HW Collectors News and Hot Wheels Wiki. These are community-reference records and remain flagged for packaging-photo verification.
+
+
 
 - HW Exotics 5-Pack (2018), assortment FKT62: five vehicles recorded from Mattel's official announcement; production colors and packaging variations are not inferred.
 
