@@ -1,5 +1,10 @@
 ## v1.61 — 20 November 2026
 
+- Added five 2016 five-pack reissue variants (25 vehicle entries): Hot Trucks, HW Exotics, HW Flames, Muscle Mania and Volkswagen.
+- Kept each reissue distinct from the original assortment and retained source-listed colours/details, package codes and verification flags.
+
+## v1.61 — 20 November 2026
+
 - Added five additional 2016 five-pack reissue/colour variants (25 entries): Hot Trucks, HW Exotics, HW Flames, Muscle Mania and Volkswagen.
 - Kept alternate colours and tampo variants separate from base assortments and marked them for packaging-photo verification.
 - Preserved Wheel Wonderland source provenance.
