@@ -1,3 +1,9 @@
+## v1.72 — 20 November 2026
+
+- Added three complete 2004 five-pack reissue/colour variants (15 entries): B-Day Gift, Batman and Camouflage.
+- Corrected Smashville from a five-pack to a six-car assortment and added the documented sixth model.
+- Added source provenance and packaging-photo verification flags.
+
 ## v1.71 — 20 November 2026
 
 - Added three complete 2005 five-pack reissue/colour variants (15 entries): Easter Eggs-Treme, Ferrari and Muscle Mania.
