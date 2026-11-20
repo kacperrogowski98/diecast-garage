@@ -313,3 +313,8 @@ The browser app can import the upstream scan index and lazily load year/assortme
 ## 2005 reissue and colour-variant five-packs
 
 - Wheel Wonderland 2005: https://www.wheelwonderland.com/fr/5-packs/2005/ — three additional complete reissue/colour variants (15 entries): Easter Eggs-Treme, Ferrari and Muscle Mania.
+
+
+## 2004 reissues and assortment-size correction
+
+- Wheel Wonderland 2004: https://www.wheelwonderland.com/fr/5-packs/2004/ — three complete reissue variants (15 entries). The source lists Smashville with six vehicles; the app now records all six and labels the pack correctly.
