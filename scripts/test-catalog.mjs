@@ -6,7 +6,7 @@ const html=fs.readFileSync('index.html','utf8');
 const script=html.match(/<script>\s*([\s\S]*?)<\/script>/)?.[1];
 assert.ok(script,'Application script not found');
 const names=['DG_BRANDS','DG_BRAND_ALIASES','DG_FANTASY_TERMS','DG_SUPERCAR_TERMS'];
-const functions=['dgSafeHttpUrl','dgSlug','dgNormWords','dgInferBrand','dgHasPhrase','dgClassify','dgRarity','dgYear','dgNormalizeRecord'];
+const functions=['dgSafeHttpUrl','dgSlug','dgNormWords','dgInferBrand','dgHasPhrase','dgClassify','dgRarity','dgYear','dgNormalizeRecord','dgExtractRows','dgReadCatalogFile'];
 const statements=[];
 for(const name of names){const match=script.match(new RegExp('const '+name+'=[^\\n]+'));assert.ok(match,'Missing '+name);statements.push(match[0]);}
 for(const name of functions){
@@ -33,4 +33,11 @@ assert.equal(historical.brand,'Ferrari');
 assert.equal(historical.release_year,1995);
 assert.equal(historical.vehicle_class,'supercar_hypercar');
 assert.equal(historical.source,'hotwheels-data');
+const file={name:'HotApi.json',text:async()=>['{"Casting":"Ferrari F40","Year":1995}','{"Casting":"Porsche 911 GT3 RS","Year":2021}'].join('\\n')};
+const jsonl=await ctx.dgReadCatalogFile(file);
+assert.equal(jsonl.length,2);
+assert.equal(jsonl[0].canonical_name,'Ferrari F40');
+assert.equal(jsonl[1].brand,'Porsche');
+const scan=ctx.dgExtractRows({fields:['id','title','release_year','assortment'],cars:[['ABC','Ferrari F40',1989,'Mainline'] ]},'scan-index.json');
+assert.equal(scan.rows[0].title,'Ferrari F40');
 console.log('PASS: catalogue normalization, rarity, supercar recognition, historical-source attribution');
