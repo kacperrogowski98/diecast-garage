@@ -87,17 +87,19 @@ async function dgImportWikiReleaseStream(stream){
  async function process(line){
   if(!line.trim())return;
   total++;
+  let item;
   try{
    const record=JSON.parse(line);
    if(record.product_type&&!['vehicle','monster_truck'].includes(record.product_type))return;
-   const item=dgNormalizeRecord(record,'hotwheels-wiki-v6',total);
-   if(!item){invalid++;return}
-   batch.push(item);valid++;
-   if(batch.length>=750)await flush();
+   item=dgNormalizeRecord(record,'hotwheels-wiki-v6',total);
   }catch(error){
    invalid++;
    if(invalid<=3)console.warn('Wiki v6 record skipped:',error);
+   return;
   }
+  if(!item){invalid++;return}
+  batch.push(item);valid++;
+  if(batch.length>=750)await flush();
  }
  try{
   while(true){
