@@ -122,6 +122,8 @@ jobs:
         run: |
           node scripts/validate-app.mjs
           node scripts/test-catalog.mjs
+      - name: Verify full Wiki v6 archive and 5-pack contents
+        run: node scripts/validate-full-catalog.mjs
       - name: Install 3D module dependencies
         run: npm install --no-save three@0.170.0 esbuild@0.24.2
       - name: Prepare standalone production site with bundled 3D
