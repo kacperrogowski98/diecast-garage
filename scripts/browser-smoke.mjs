@@ -82,6 +82,10 @@ try {
  await page.locator('#packList button:has-text("Chcę ten zestaw")').first().click();
  await page.locator('[aria-label="Status multipacka"]').selectOption('wishlist');
  assert.equal(await page.locator('#packList .car').count(),1,'Only wished pack must remain in pack wishlist filter');
+ await page.locator('[data-view="wishlist"]').click();
+ assert.ok((await page.locator('#content').innerText()).includes('Poszukiwane 5-paki i multipacki'),'Multipacks should be visible on shared Wishlist screen');
+ assert.ok(await page.locator('#content button:has-text("Mam ten zestaw")').count()>0);
+ await page.locator('[data-view="packs"]').click();
  await page.locator('[aria-label="Status multipacka"]').selectOption('all');
  await page.locator('#packList .btn:has-text("Zawartość")').first().click();
  assert.ok(await page.locator('#modalRoot .modal').count(),'Multipack details should open');
