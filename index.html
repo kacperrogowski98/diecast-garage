@@ -155,7 +155,32 @@ function resolvePackContent(content,index){
     match_status:exact?'variant':'family'};
 }
 
-function packContents(packId){let seeded=(SEED.pack_contents||[]).filter(x=>x.pack_id===packId);let custom=(state.customPacks||[]).find(x=>x.pack_id===packId);let wiki=wikiPacks.find(x=>x.pack_id===packId);let contents=seeded.length?seeded:wiki?.contents?.length?wiki.contents:(custom?.contents||[]).map(name=>({model_name_as_source:name,verification_status:'Wpis użytkownika'}));let index=new Map();for(const m of allModels()){if(!m.casting_id)continue;for(const name of [m.canonical_name,m.model_name_as_source,m.name]){let key=packMatchKey(name);if(!key)continue;let bucket=index.get(key)||[];bucket.push(m);index.set(key,bucket)}}return contents.map(c=>resolvePackContent(c,index))}
+let dgPackModelCache=null;
+function dgPackModelIndex(){
+ const models=allModels();
+ if(dgPackModelCache?.models===models)return dgPackModelCache;
+ const byName=new Map(),byCasting=new Map();
+ for(const model of models){
+  if(model.casting_id){
+   const all=byCasting.get(model.casting_id)||[];
+   all.push(model);byCasting.set(model.casting_id,all);
+  }
+  const names=new Set([model.canonical_name,model.model_name_as_source,model.name].map(packMatchKey).filter(Boolean));
+  for(const name of names){
+   const bucket=byName.get(name)||[];
+   bucket.push(model);byName.set(name,bucket);
+  }
+ }
+ dgPackModelCache={models,byName,byCasting};
+ return dgPackModelCache;
+}
+function packContents(packId){
+ const seeded=(SEED.pack_contents||[]).filter(x=>x.pack_id===packId);
+ const custom=(state.customPacks||[]).find(x=>x.pack_id===packId);
+ const wiki=wikiPacks.find(x=>x.pack_id===packId);
+ const contents=seeded.length?seeded:wiki?.contents?.length?wiki.contents:(custom?.contents||[]).map(name=>({model_name_as_source:name,verification_status:'Wpis użytkownika'}));
+ return contents.map(c=>resolvePackContent(c,dgPackModelIndex().byName));
+}
 function packContentCount(packId){let seeded=(SEED.pack_contents||[]).filter(x=>x.pack_id===packId);if(seeded.length)return seeded.length;let custom=(state.customPacks||[]).find(x=>x.pack_id===packId);let wiki=wikiPacks.find(x=>x.pack_id===packId);return wiki?.contents?.length||custom?.contents?.length||0}
 function packOwnedCount(packId){return (state.packItems||[]).filter(x=>x.packId===packId).length}
 let packSearch='',packYear='all',packSource='all',packKind='all',packPage=0;const PACK_PAGE_SIZE=36;
@@ -190,13 +215,14 @@ async function openPack3D(packId){
  catch(error){console.error('Pack 3D:',error);modal.innerHTML='<div class="modalback"><div class="modal"><h3>Podgląd zestawu niedostępny</h3><p class="notice">'+esc(error.message||'Błąd silnika 3D')+'</p><button class="btn" onclick="closeModal()">Zamknij</button></div></div>'}
 }
 function dgPackRepresentativeImage(content){
+ const index=dgPackModelIndex();
  const key=packMatchKey(content.model_name_as_source);
- if(!key&&!content.casting_id)return '';
+ const candidates=content.casting_id?index.byCasting.get(content.casting_id)||[]:index.byName.get(key)||[];
  let fallback='';
- for(const model of allModels()){
-  if(content.casting_id?model.casting_id!==content.casting_id:packMatchKey(model.canonical_name||model.model_name_as_source||'')!==key)continue;
+ for(const model of candidates){
   const url=dgSafeHttpUrl(model.image_url);
   if(!url)continue;
+  if(dgPackVariantMatch(content,model))return url;
   if(content.body_color&&packMatchKey(content.body_color)===packMatchKey(model.body_color||model.color_variant||''))return url;
   if(!fallback)fallback=url;
  }
