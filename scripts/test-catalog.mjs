@@ -41,7 +41,7 @@ assert.equal(wikiFirst.toy_number,'6258');
 assert.equal(wikiFirst.source_url,wikiRow.page_url);
 assert.equal(wikiFirst.image_url,wikiRow.photo_url);
 assert.equal(wikiFirst.pack_membership,'Vintage 5-Pack');
-const wikiFile={name:'hotwheels_db_v6.jsonl',text:async()=>JSON.stringify(wikiRow)+'\\n'+JSON.stringify({...wikiRow,id:'2020-ferrari-f40',model_name:'Ferrari F40',casting:'Ferrari F40'})};
+const wikiFile={name:'hotwheels_db_v6.jsonl',text:async()=>JSON.stringify(wikiRow)+'\n'+JSON.stringify({...wikiRow,id:'2020-ferrari-f40',model_name:'Ferrari F40',casting:'Ferrari F40'})};
 const wikiRecords=await ctx.dgReadCatalogFile(wikiFile);
 assert.equal(wikiRecords.length,2);
 assert.ok(wikiRecords.every(row=>row.source==='hotwheels-wiki-v6'));
