@@ -182,3 +182,8 @@ The browser app can import the upstream scan index and lazily load year/assortme
 ## 2002 five-packs
 
 - Wheel Wonderland 2002: https://www.wheelwonderland.com/fr/5-packs/2002/ — 12 additional numbered five-packs / 60 entries; the existing Ferrari set was retained and alternate-colour duplicates excluded.
+
+
+## 2001 five- and six-packs
+
+- Wheel Wonderland 2001: https://www.wheelwonderland.com/en/5-packs/2001/ — ten five-packs / 50 entries and two six-packs / 12 entries. The actual numbered card counts are retained.
