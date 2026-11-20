@@ -29,6 +29,7 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 - Review and manually override heuristic vehicle classifications; user corrections are preserved separately from source catalogue data.
 - Automatic catalogue refresh every seven days, matching the upstream weekly data refresh; cached records remain usable if the network is unavailable.
 - Manual JSON and folder import adapters for danyjoy/diecastDb and pvwnthem/Hotwheels-Data.
+- An optional historical archive download button fetches a second Hot Wheels Wiki-derived source (1974–2023). Cross-source duplicate release matching is not yet fully verified, so archive records are identified by source.
 
 ## Important current limitations
 
