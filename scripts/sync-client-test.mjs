@@ -12,8 +12,9 @@ const server = http.createServer(async (req,res) => {
     const relative = pathname === '/' ? 'index.html' : pathname.slice(1);
     const target = path.resolve(root,relative);
     if (target !== root && !target.startsWith(root + path.sep)) { res.writeHead(403).end(); return; }
+    const bytes = await fs.readFile(target);
     res.writeHead(200,{'Content-Type':mime[path.extname(target)]||'application/octet-stream','Cache-Control':'no-store'});
-    res.end(await fs.readFile(target));
+    res.end(bytes);
   } catch { res.writeHead(404).end('Not found'); }
 });
 await new Promise(resolve => server.listen(4174,'127.0.0.1',resolve));
