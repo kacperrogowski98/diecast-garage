@@ -1,0 +1,64 @@
+name: Refresh comprehensive Hot Wheels Wiki v6 catalogue
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "20 4 1 * *"
+  push:
+    paths:
+      - ".github/workflows/wiki-catalog.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wiki-catalog-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Download upstream Wiki v6 catalogue builder
+        run: git clone --depth 1 https://github.com/ktrizolio/hotwheels-fandom-db.git /tmp/wiki-builder
+      - name: Install upstream dependencies
+        run: python -m pip install -r /tmp/wiki-builder/scraper/requirements.txt
+      - name: Build full catalogue from official Fandom MediaWiki API
+        working-directory: /tmp/wiki-builder
+        run: python scraper/atualizar_db.py
+      - name: Compress and check output
+        shell: bash
+        run: |
+          set -euo pipefail
+          find /tmp/wiki-builder/saida -name hotwheels_db_v6.jsonl -print
+          file="$(find /tmp/wiki-builder/saida -name hotwheels_db_v6.jsonl | sort | tail -n 1)"
+          test -n "$file"
+          mkdir -p catalog
+          python - "$file" <<'PY'
+          import sys, gzip, json, pathlib
+          p=pathlib.Path(sys.argv[1])
+          n=0
+          with p.open(encoding='utf-8') as source, gzip.open('catalog/wiki-v6.jsonl.gz','wt',encoding='utf-8',compresslevel=9) as out:
+              for line in source:
+                  if not line.strip(): continue
+                  row=json.loads(line)
+                  if not row.get('model_name') or not row.get('id'): continue
+                  out.write(json.dumps(row,ensure_ascii=False,separators=(',',':'))+'\n')
+                  n+=1
+          print('Wiki v6 rows:',n)
+          if n < 10000: raise SystemExit('Refusing unexpectedly small catalogue')
+          PY
+      - name: Commit refreshed catalogue
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add catalog/wiki-v6.jsonl.gz
+          if git diff --cached --quiet; then echo "Catalogue unchanged"; exit 0; fi
+          git commit -m "data: refresh Wiki v6 catalogue"
+          git push
