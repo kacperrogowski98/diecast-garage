@@ -10,6 +10,8 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 concurrency:
   group: wiki-catalog-refresh
@@ -17,6 +19,8 @@ concurrency:
 
 jobs:
   refresh:
+    environment:
+      name: github-pages
     runs-on: ubuntu-latest
     timeout-minutes: 55
     steps:
@@ -62,3 +66,30 @@ jobs:
           if git diff --cached --quiet; then echo "Catalogue unchanged"; exit 0; fi
           git commit -m "data: refresh Wiki v6 catalogue"
           git push
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - name: Bundle main catalogue scan index
+        shell: bash
+        run: |
+          set -euo pipefail
+          sources=(
+            "https://raw.githubusercontent.com/danyjoy/diecastDb/main/data/scan-index.json"
+            "https://cdn.jsdelivr.net/gh/danyjoy/diecastDb@main/data/scan-index.json"
+            "https://danyjoy.github.io/diecastDb/data/scan-index.json"
+          )
+          for url in "${sources[@]}"; do
+            if curl --fail --location --retry 2 --connect-timeout 10 --max-time 90 --silent --show-error "$url" -o catalog/scan-index.json; then
+              if node -e "const c=JSON.parse(require('fs').readFileSync('catalog/scan-index.json','utf8'));if(!Array.isArray(c.cars)||c.cars.length<10000)process.exit(1)"; then break; fi
+            fi
+            rm -f catalog/scan-index.json
+          done
+          test -s catalog/scan-index.json
+      - name: Upload Pages site with Wiki v6 catalogue
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - name: Deploy updated site to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
