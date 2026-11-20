@@ -1,4 +1,7 @@
-## v1.22 — 20 November 2026
+## v1.23 — 20 November 2026
+
+- Expanded HW Exotics 5-Pack history with 2014 (BFB36), 2015 (CDT27) and 2016 (DJD29), adding 15 vehicle entries from specialist collector references.
+- Clearly marked community-sourced records for packaging-photo verification; tests confirm five entries and preserve source links per pack.
 
 - Added the 2018 HW Exotics 5-Pack (FKT62) with five vehicles transcribed from Mattel's official announcement.
 - Added regression checks for the exact contents and official source attribution.
