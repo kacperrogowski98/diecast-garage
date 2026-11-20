@@ -287,6 +287,81 @@ function dgCloud3DAccess(){
   }
  }
 }
+let dgBulk3DBusy=false;
+async function dgBulkCloud3D(direction){
+ if(dgBulk3DBusy)return;
+ try{
+  dgRequireUser();
+  if(!['push','pull'].includes(direction))throw new Error('Nieprawidłowy kierunek transferu');
+  if(!confirm(direction==='push'?'Wysłać brakujące lokalne modele GLB do prywatnej chmury? Istniejących plików chmurowych nie nadpiszemy.':'Pobrać brakujące modele GLB do tego urządzenia? Już zapisane pliki lokalne pozostaną bez zmian.'))return;
+  dgBulk3DBusy=true;
+  const userId=dgCloudUser.id;
+  const bucket=dgSupabaseClient.storage.from(DG_MODEL_BUCKET);
+  let db=await dgOpenCatalogDB();
+  let copied=0,skipped=0,failed=0;
+  try{
+   if(direction==='push'){
+    const keys=await new Promise((resolve,reject)=>{
+     const req=db.transaction(DG_MESH_STORE,'readonly').objectStore(DG_MESH_STORE).getAllKeys();
+     req.onsuccess=()=>resolve(req.result||[]);
+     req.onerror=()=>reject(req.error);
+    });
+    for(const key of keys){
+     try{
+      const item=await new Promise((resolve,reject)=>{
+       const req=db.transaction(DG_MESH_STORE,'readonly').objectStore(DG_MESH_STORE).get(key);
+       req.onsuccess=()=>resolve(req.result);
+       req.onerror=()=>reject(req.error);
+      });
+      if(!item?.file){skipped++;continue}
+      if(item.file.size>25*1024*1024){failed++;continue}
+      const {error}=await bucket.upload(dgCloud3DPath(key),item.file,{upsert:false,contentType:'model/gltf-binary'});
+      if(error){
+       if(error.statusCode===409||error.status===409||/already exists|duplicate|conflict/i.test(String(error.message||'')))skipped++;
+       else{failed++;console.warn('GLB upload:',key,error)}
+      }else copied++;
+     }catch(error){failed++;console.warn('GLB upload error:',key,error)}
+     const status=document.getElementById('dgCloudStatus');if(status)status.textContent='Modele 3D: '+(copied+skipped+failed)+' / '+keys.length;
+    }
+   }else{
+    let offset=0,processed=0;
+    while(offset<1000){
+     const {data,error}=await bucket.list(userId+'/glb',{limit:100,offset,sortBy:{column:'name',order:'asc'}});
+     if(error)throw error;
+     const files=(data||[]).filter(x=>x.name?.endsWith('.glb'));
+     for(const remote of files){
+      if(processed++>=1000)break;
+      try{
+       const releaseId=decodeURIComponent(remote.name.slice(0,-4));
+       if(!releaseId){skipped++;continue}
+       const local=await new Promise((resolve,reject)=>{
+        const req=db.transaction(DG_MESH_STORE,'readonly').objectStore(DG_MESH_STORE).get(releaseId);
+        req.onsuccess=()=>resolve(req.result);
+        req.onerror=()=>reject(req.error);
+       });
+       if(local?.file){skipped++;continue}
+       const {data:blob,error:downloadError}=await bucket.download(userId+'/glb/'+remote.name);
+       if(downloadError)throw downloadError;
+       if(!blob||blob.size>25*1024*1024)throw new Error('Nieprawidłowy rozmiar pliku');
+       await new Promise((resolve,reject)=>{
+        const tx=db.transaction(DG_MESH_STORE,'readwrite');
+        tx.objectStore(DG_MESH_STORE).put({release_id:releaseId,file:blob,filename:releaseId+'.glb',saved_at:new Date().toISOString()});
+        tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);
+       });
+       copied++;
+      }catch(e){failed++;console.warn('GLB download:',remote.name,e)}
+      const status=document.getElementById('dgCloudStatus');if(status)status.textContent='Pobrane modele 3D: '+copied+', pominięte: '+skipped+', błędy: '+failed;
+     }
+     if((data||[]).length<100)break;
+     offset+=100;
+    }
+   }
+  }finally{db.close()}
+  dgCloudStatus='Modele 3D — '+(direction==='push'?'wysłano':'pobrano')+': '+copied+', pominięto: '+skipped+', błędy: '+failed+'.';
+  dgRenderCloudPanel();toast(dgCloudStatus);
+ }catch(error){dgCloudStatus='Synchronizacja modeli 3D: '+String(error.message||error);dgRenderCloudPanel();toast(dgCloudStatus)}
+ finally{dgBulk3DBusy=false}
+}
 async function open3D(id){let x=dgReleaseById(id);if(!x)return;const modal=document.getElementById('modalRoot');modal.innerHTML='<div class="modalback"><div class="modal"><p>Wczytywanie garażu 3D…</p></div></div>';try{const viewer=await import('./viewer3d.js');viewer.openViewer(x,modal,dgCloud3DAccess());window.dgCloseViewer=viewer.closeViewer}catch(e){console.error('3D viewer:',e);modal.innerHTML='<div class="modalback"><div class="modal"><h3>Podgląd 3D niedostępny</h3><p class="notice">Ładowanie silnika 3D wymaga internetu oraz przeglądarki obsługującej WebGL. '+esc(e.message||'')+'</p><button class="btn" onclick="closeModal()">Zamknij</button></div></div>'}}
 function details(id){let x=dgReleaseById(id);if(!x)return;if(x.source==='diecastdb'&&!x._fullRecord)dgEnrichRecord(id);let safeImageUrl=dgSafeHttpUrl(x.image_url),safeSourceUrl=dgSafeHttpUrl(x.source_url),safeImageUrls=[...new Set((Array.isArray(x.images)?x.images:[]).map(dgSafeHttpUrl).filter(Boolean))];if(safeImageUrl&&!safeImageUrls.includes(safeImageUrl))safeImageUrls.unshift(safeImageUrl);let linkedPacks=dgPacksForModel(x);let packLinks=linkedPacks.length?`<div class="meta">Znaleziono ${linkedPacks.length} zestawów z tą samą nazwą modelu. Kolor i konkretne wydanie mogą się różnić.</div>`+linkedPacks.slice(0,16).map(p=>`<div style="padding:7px 0;border-bottom:1px solid #303641"><button class="btn ghost" onclick="packDetails('${esc(p.pack_id)}')">📦 ${esc(p.pack_name||p.pack_id)}${p.release_year?' · '+esc(p.release_year):''}${p.package_number?' · #'+esc(p.package_number):''}</button></div>`).join('')+(linkedPacks.length>16?`<div class="meta">Wyświetlono pierwsze 16 z ${linkedPacks.length} dopasowań.</div>`:''):'<div class="meta">Brak jednoznacznego dopasowania nazwy w zapisanych multipackach. Nie oznacza to, że model nie był w zestawie.</div>';let marketName=String(x.canonical_name||x.model_name_as_source||'').trim();let marketQuery=encodeURIComponent(['Hot Wheels',marketName,x.toy_number||''].filter(Boolean).join(' '));let marketLinks=`<section style="padding:12px 0"><h4>Gdzie szukać ofert?</h4><div class="cardactions"><a class="btn" href="https://allegro.pl/listing?string=${marketQuery}" target="_blank" rel="noopener noreferrer">Szukaj na Allegro</a><a class="btn" href="https://www.ebay.com/sch/i.html?_nkw=${marketQuery}" target="_blank" rel="noopener noreferrer">Szukaj na eBay</a></div><p class="meta">To wyszukiwarki zewnętrznych ofert, nie potwierdzenie dostępności ani konkretnego koloru. Sprawdź numer i zdjęcia u sprzedawcy.</p></section>`;let fields=[['Marka',x.brand||'Ferrari'],['Model',x.canonical_name||x.model_name_as_source],['Rok wydania',x.release_year],['Seria',x.series_or_line],['Numer',x.toy_number],['SKU',x.sku],['Numer w serii',x.series_index],['Kolor',x.body_color],['Wariant',x.color_variant],['Tampo',x.tampo_details],['Koła',x.wheel_type],['Materiał bazy',x.base_material],['Kolor bazy',x.base_color],['Kraj produkcji',x.country_of_origin],['Casting number',x.casting_number],['Rarity',x.rarity],['Wymienione zestawy / multipacki',x.pack_membership],['Typ produktu',x.product_type],['Klasyfikacja',labelClass(x.vehicle_class)],['Status klasyfikacji',x.classification_status],['Źródło',x.source_name||x.source],['Status danych',x.verification_status]].filter(a=>a[1]);document.getElementById('modalRoot').innerHTML=`<div class="modalback" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modalhead"><h3>${esc(x.canonical_name||x.model_name_as_source)}</h3><button class="btn" onclick="closeModal()">✕</button></div>${fields.map(a=>`<div style="padding:8px 0;border-bottom:1px solid #303641"><span class="muted">${esc(a[0])}</span><div>${esc(a[1])}</div></div>`).join('')}<div style="padding:12px 0;border-bottom:1px solid #303641"><label for="dgClassOverride">Twoja klasyfikacja modelu</label><select class="field" id="dgClassOverride" style="width:100%;margin:7px 0"><option value="supercar_hypercar">Supercar / Hypercar</option><option value="sports_or_exotic">Sports / Exotic</option><option value="racing">Racing</option><option value="real_car">Real Car</option><option value="fantasy">Fantasy</option><option value="other">Other</option><option value="unclassified">Do klasyfikacji</option></select><button class="btn primary" onclick="saveClassificationOverride('${id}')">Zapisz klasyfikację</button><p class="notice">Klasyfikacja automatyczna jest sugestią. Twoja poprawka zostanie zapisana lokalnie i uwzględniona w filtrach.</p></div><section style="padding:12px 0"><h4>W jakich multipackach występuje?</h4>${packLinks}</section><div class="cardactions"><button class="btn primary" onclick="open3D('${id}')">◎ Otwórz garaż 3D (wizualizacja poglądowa)</button></div>${marketLinks}${safeImageUrls.length?`<div class="dg-source-gallery" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:8px;margin:14px 0">${safeImageUrls.map((url,i)=>`<a href="${esc(url)}" target="_blank" rel="noopener" aria-label="Otwórz zdjęcie ${i+1}"><img src="${esc(url)}" alt="${esc(x.canonical_name||x.model_name_as_source)} — zdjęcie ${i+1}" loading="lazy" style="display:block;width:100%;height:150px;object-fit:contain;background:#11151b;border-radius:10px" onerror="this.parentElement.remove()"></a>`).join('')}</div>`:''}<p class="notice">Dane katalogowe mogą wymagać weryfikacji. Nie traktuj statusu roboczego jako potwierdzenia wariantu.</p>${safeSourceUrl?`<p><a href="${esc(safeSourceUrl)}" target="_blank" rel="noopener">Źródło rekordu ↗</a></p>`:''}${safeImageUrl?`<p><a href="${esc(safeImageUrl)}" target="_blank" rel="noopener">Otwórz zdjęcie źródłowe ↗</a></p>`:''}</div></div>`;document.getElementById('dgClassOverride').value=x.vehicle_class||'unclassified'}
 function addItem(id,status){let x=dgReleaseById(id);if(!x)return;if(status==='wishlist'&&state.items.some(i=>(i.releaseId||i.id)===id&&i.status==='wishlist')){toast('To wydanie jest już na wishliście');return}state.items.push({id,releaseId:id,collectionId:'copy-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),status,brand:x.brand||'Ferrari',modelSnapshot:{canonical_name:x.canonical_name||x.model_name_as_source||x.name,model_name_as_source:x.model_name_as_source||x.canonical_name||x.name,casting_id:x.casting_id||x.custom_id||x.release_id,vehicle_class:x.vehicle_class||'unclassified',release_year:x.release_year||null,series_or_line:x.series_or_line||'',toy_number:x.toy_number||'',body_color:x.body_color||x.color_variant||'',rarity:x.rarity||'',assortment:x.assortment||'',image_url:x.image_url||'',source:x.source||'catalog',source_url:x.source_url||''},added:new Date().toISOString(),condition:'Nie określono',price:'',notes:''});save();toast(status==='owned'?'Dodano egzemplarz do garażu':'Dodano do wishlist')}
