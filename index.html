@@ -277,7 +277,7 @@ async function dgCloudPull(){
  }
 }
 
-dgInitClient();dgInitCatalogImport();document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===view));dgRefreshFilters();render();dgCatalogReady=dgLoadCatalog().then(async()=>{dgRefreshFilters();render();if(/^https?:$/.test(location.protocol)){const needsMain=!importedCatalog.length||dgCatalogNeedsRefresh();if(needsMain)await dgFetchOnlineCatalog();if(!importedCatalog.some(x=>x.source==='hotwheels-wiki-v6'))await dgFetchWikiV6Catalog();if(!importedCatalog.some(x=>x.source==='hotwheels-data'))await dgFetchExtendedCatalog();}});
+dgInitClient();dgInitCatalogImport();document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===view));dgRefreshFilters();render();dgCatalogReady=dgLoadCatalog();dgCatalogReady.then(async()=>{dgRefreshFilters();render();if(/^https?:$/.test(location.protocol)){const needsMain=!importedCatalog.length||dgCatalogNeedsRefresh();if(needsMain)await dgFetchOnlineCatalog();if(!importedCatalog.some(x=>x.source==='hotwheels-wiki-v6'))await dgFetchWikiV6Catalog();if(!importedCatalog.some(x=>x.source==='hotwheels-data'))await dgFetchExtendedCatalog();}});
 </script>
 <script>
 // PWA shell caching. Cloud sync still requires an internet connection.
