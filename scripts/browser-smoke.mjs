@@ -133,6 +133,24 @@ try {
  await page.locator('#modalRoot button:has-text("Zapisz")').click();
  assert.equal(await page.locator('#modalRoot img[alt="Przód opakowania"]').count(),1);
  console.log('PASS: add multipack, compress and persist front packaging photo');
+ await page.locator('#modalRoot .modalhead button').click();
+ await page.locator('[aria-label="Status multipacka"]').selectOption('all');
+ await page.locator('[aria-label="Źródło zestawu"]').selectOption('all');
+ await page.locator('button:has-text("Dodaj własny multipack")').click();
+ await page.locator('#customPackName').fill('Test Collector 5-Pack');
+ await page.locator('#customPackYear').fill('2025');
+ await page.locator('#customPackContents').fill('Ferrari F40\\nMcLaren P1');
+ await page.locator('#piFrontPreview').locator('..').locator('input[type="file"]').setInputFiles({name:'front.png',mimeType:'image/png',buffer:pixel});
+ await page.waitForFunction(()=>Boolean(document.querySelector('#piFrontPreview img')));
+ await page.locator('#modalRoot .modalfoot .btn.primary').click();
+ const customPhoto=await page.evaluate(()=>{
+  const custom=JSON.parse(localStorage.getItem('diecast_garage_mvp_02')).customPacks;
+  return custom.find(p=>p.pack_name==='Test Collector 5-Pack')?.frontPhoto||'';
+ });
+ assert.ok(customPhoto.startsWith('data:image/jpeg;base64,'),'Custom pack image must persist in collection state');
+ assert.ok((await page.locator('#packList').innerText()).includes('Test Collector 5-Pack'));
+ console.log('PASS: custom 5-pack entry with collector-supplied front photograph');
+
   assert.ok(!errors.length,'Page JavaScript errors: '+errors.join(' | '));
  console.log('PASS browser smoke: mobile viewport, create/save, garage persistence, catalogue filters, 3D showroom fallback');
 } finally {await browser.close();}
