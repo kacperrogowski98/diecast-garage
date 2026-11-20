@@ -27,6 +27,8 @@ try {
  assert.equal(await page.locator('#modalRoot [data-cloud-auth]').count(),4,'Two collection and two 3D sync actions are required');
  assert.equal(await page.locator('#modalRoot [data-cloud-auth]:disabled').count(),4,'Cloud actions must be disabled when logged out');
  await page.locator('#modalRoot .modalhead button').click();
+ await page.locator('[data-view="brands"]').click();
+ assert.ok((await page.locator('#content').innerText()).includes('unikalnych modeli w garażu'),'Brand view must report unique casting-family completion');
  await page.locator('[data-view="catalog"]').click();
  assert.equal(await page.locator('#ownershipFilter').count(),1);
  await page.locator('#ownershipFilter').selectOption("owned");
