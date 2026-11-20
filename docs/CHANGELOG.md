@@ -1,3 +1,9 @@
+## v1.73 — 20 November 2026
+
+- Added five 2003 reissue assortments (26 entries): B-Day Gift, Ferrari (six-car variant), Flag Flyers, Heat Fleet and Hot Haulers.
+- Preserved the Ferrari reissue as a six-pack with its six source-listed entries.
+- The Tiki Blasters reissue was not imported because the source page repeats a vehicle row; it remains pending verification rather than being silently duplicated.
+
 ## v1.72 — 20 November 2026
 
 - Added three complete 2004 five-pack reissue/colour variants (15 entries): B-Day Gift, Batman and Camouflage.
