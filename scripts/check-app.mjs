@@ -29,8 +29,8 @@ assert.match(html, /assortmentFilter==='all'\|\|x\.assortment===assortmentFilter
 assert.match(html, /getElementById\('assortmentFilter'\)\.addEventListener\('change'/, 'Assortment filter updates the catalogue');
 assert.match(html, /getElementById\('sortFilter'\)\.addEventListener\('change'/, 'Sort control updates the catalogue');
 assert.match(html, /dgFetchOnlineCatalog/, 'Online catalogue importer is wired');
-assert.match(html, /cdn\\.jsdelivr\\.net\\/gh\\/danyjoy\\/diecastDb/, 'Catalogue index and detail fetchers must have a jsDelivr fallback');
-assert.match(html, /async function dgGetYearFile[\\s\\S]*?sources=\\[/, 'Lazy year-file enrichment must retry multiple public mirrors');
+assert.ok(html.includes('https://cdn.jsdelivr.net/gh/danyjoy/diecastDb@main/data/scan-index.json'), 'Catalogue index must have a jsDelivr fallback');
+assert.ok(html.includes("let sources=['https://raw.githubusercontent.com/danyjoy/diecastDb/main/data/'+key+'.json','https://cdn.jsdelivr.net/gh/danyjoy/diecastDb@main/data/'+key+'.json','https://danyjoy.github.io/diecastDb/data/'+key+'.json']"), 'Lazy year-file enrichment must retry multiple public mirrors');
 assert.match(html, /marek rozpoznanych.*kandydatów Supercar\/Hypercar/, 'Catalogue import status must report recognized brands and supercar candidates');
 assert.ok(html.includes('function addCustomPack()'), 'Collectors must be able to create custom multipacks');
 assert.ok(html.includes('function removeCustomPack('), 'Collectors must be able to delete custom multipacks');
