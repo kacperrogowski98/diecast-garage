@@ -7,7 +7,7 @@
 ## v1.59 — 20 November 2026
 
 - Reviewed five alternate-colour 2008 five-pack series: Easter Speedsters, Heat Fleet, Rescue Rods, Scary Cars and Trick Tracks.
-- These variant/reissue runs are documented for follow-up, but are not counted as separate seeded pack records until distinct package identity is verified.
+- These variant/reissue runs are represented as separate `5-pack variant` records and included in the catalogue totals, while remaining separate from the 15 base numbered five-packs.
 
 ## v1.58 — 20 November 2026
 
