@@ -317,6 +317,13 @@ const contents2012 = seedData2022.pack_contents.filter(c => packs2012.some(pack 
 assert.equal(packs2012.length, 16, '2012 adds 16 complete numbered five-packs beyond the curated Ferrari pack');
 assert.equal(contents2012.length, 80, '2012 additional five-pack catalogue includes 80 vehicle entries');
 assert.ok(packs2012.every(p => contents2012.filter(c => c.pack_id === p.pack_id).length === 5 && p.source_url === 'https://www.wheelwonderland.com/fr/5-packs/2012/'), 'Every additional 2012 five-pack has five contents and source provenance');
+
+const variants2012 = seedData2022.packs.filter(p => p.release_year === 2012 && p.pack_type === '5-pack variant');
+const variantContents2012 = seedData2022.pack_contents.filter(c => variants2012.some(p => p.pack_id === c.pack_id));
+assert.equal(variants2012.length, 10, '2012 includes ten documented five-pack reissues');
+assert.equal(variantContents2012.length, 50, '2012 reissue variants include 50 vehicle entries');
+assert.ok(variants2012.every(p => variantContents2012.filter(c => c.pack_id === p.pack_id).length === 5), 'Every 2012 reissue variant contains exactly five vehicles');
+
 const reissue2012 = seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-2012-reissue-'));
 const reissue2012Contents = seedData2022.pack_contents.filter(c => reissue2012.some(p => p.pack_id === c.pack_id));
 assert.equal(reissue2012.length, 10, '2012 five-pack reissues are retained separately from numbered base assortments');
