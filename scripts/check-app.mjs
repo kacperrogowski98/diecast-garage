@@ -15,9 +15,10 @@ const syncVerification = fs.readFileSync('supabase/verify_sync_setup.sql', 'utf8
 const serviceWorker = fs.readFileSync('sw.js', 'utf8');
 
 assert.match(html, /<html lang="pl">/i, 'Polish document language is present');
-assert.ok(html.includes('<title>Diecast Garage · v1.75</title>'), 'Current app release title must be v1.75');
-assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.75') && html.includes('Diecast Garage · v1.75 ·'), 'Visible app version labels must match the release title');
-assert.match(serviceWorker, /diecast-garage-shell-v1\.75\.\d+/, 'PWA shell cache must be versioned with the current release');
+const releaseVersion = html.match(/<title>Diecast Garage · (v\\d+\\.\\d+)<\\/title>/)?.[1];
+assert.ok(releaseVersion, 'App must expose its current release version in the page title');
+assert.ok(html.includes('PERSONAL COLLECTION MANAGER · '+releaseVersion) && html.includes('Diecast Garage · '+releaseVersion+' ·'), 'Visible release labels match the title');
+assert.ok(serviceWorker.includes('diecast-garage-shell-'+releaseVersion), 'PWA shell cache must match the app release');
 assert.ok(serviceWorker.includes("'./seed.js'"), 'Offline shell must cache seed.js');
 assert.match(html, /id="content"/, 'Main app content mount exists');
 assert.match(html, /id="assortmentFilter"/, 'Catalogue assortment filter exists');
