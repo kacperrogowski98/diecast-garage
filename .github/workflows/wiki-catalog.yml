@@ -107,7 +107,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p _site/catalog
-          cp index.html seed.js sw.js manifest.webmanifest icon.svg icon-192.png _site/
+          cp index.html seed.js sw.js viewer3d.js manifest.webmanifest icon.svg icon-192.png _site/
           cp -a catalog/. _site/catalog/
       - name: Upload Pages site with Wiki v6 catalogue
         uses: actions/upload-pages-artifact@v3
