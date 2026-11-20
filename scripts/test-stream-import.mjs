@@ -18,8 +18,9 @@ function streamOf(data){
  }});
 }
 function makeContext(fail=false){
- const saved=[];
+ const saved=[],markerWrites=[];
  const ctx=vm.createContext({
+   DG_WIKI_COMPLETE_KEY:'wiki-complete-test',localStorage:{setItem(key,value){markerWrites.push({key,value})}},
    TextDecoder, console, dgCatalogReady:Promise.resolve(), importedCatalog:[],
    state:{brands:['Ferrari']}, dgCachedModels:null,
    dgNormalizeRecord:(r)=>({release_id:'wiki-'+r.id,brand:'Ferrari'}),
@@ -27,7 +28,7 @@ function makeContext(fail=false){
    dgUpdateCatalogStatus:()=>{},save:()=>true,dgRefreshFilters:()=>{}
  });
  vm.runInContext(source+'\nthis.runImport=dgImportWikiReleaseStream;',ctx);
- return {ctx,saved};
+ return {ctx,saved,markerWrites};
 }
 const good=makeContext();
 const result=await good.ctx.runImport(streamOf(bytes));
@@ -35,7 +36,10 @@ assert.equal(result.valid,10014);
 assert.equal(result.total,10017);
 assert.equal(good.saved.length,10014);
 assert.equal(good.ctx.importedCatalog.length,10014);
+assert.equal(good.markerWrites.length,1,'A successful streamed import must write one completion marker');
+assert.equal(JSON.parse(good.markerWrites[0].value).valid,10014);
 const broken=makeContext(true);
 await assert.rejects(()=>broken.ctx.runImport(streamOf(bytes)),/Simulated quota exceeded/);
 assert.equal(broken.ctx.importedCatalog.length,0,'Failed writes must not mark the import as fully complete');
+assert.equal(broken.markerWrites.length,0,'Failed imports must not write completion markers');
 console.log('PASS: streamed 10,017 Wiki rows in fixed chunks, excluded tracks, propagated DB failures');
