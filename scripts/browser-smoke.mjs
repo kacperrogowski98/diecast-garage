@@ -34,6 +34,10 @@ try {
  await page.locator('#ownershipFilter').selectOption("all");
  assert.equal(await page.locator('#rarityFilter').count(),1);
  assert.equal(await page.locator('#sourceFilter').count(),1);
+ assert.equal(await page.locator('#photoFilter').count(),1);
+ await page.locator('#photoFilter').selectOption('with');
+ await page.locator('#photoFilter').selectOption('without');
+ await page.locator('#photoFilter').selectOption('all');
  await page.locator('#search').fill('Ferrari F40');
  await page.locator('#brandFilter').selectOption('Ferrari');
  await page.locator('[data-view="garage"]').click();
