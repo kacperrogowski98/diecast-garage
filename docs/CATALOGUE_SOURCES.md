@@ -248,3 +248,8 @@ The browser app can import the upstream scan index and lazily load year/assortme
 - Wheel Wonderland 1985: https://www.wheelwonderland.com/fr/5-packs/1985/ — one five-pack / five entries.
 - Wheel Wonderland 1986: https://www.wheelwonderland.com/fr/5-packs/1986/ — four Gift Pak five-packs / 20 entries.
 - Wheel Wonderland 1987: https://www.wheelwonderland.com/fr/5-packs/1987/ — four five-packs / 20 entries.
+
+
+## 2008 alternate-colour five-pack assortments
+
+- Wheel Wonderland 2008: https://www.wheelwonderland.com/fr/5-packs/2008/ — five alternate-colour assortments recorded separately from the numbered five-packs. The source lists colourway differences but some entries do not show separate toy numbers; these are explicitly marked as variants pending packaging-photo verification.
