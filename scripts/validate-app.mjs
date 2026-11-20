@@ -1,0 +1,19 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+
+const html=fs.readFileSync('index.html','utf8');
+const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(m=>m[1]).filter(Boolean);
+assert.ok(scripts.length>=2,'Missing application scripts');
+for(const [i,code] of scripts.entries())new vm.Script(code,{filename:'inline-'+i+'.js'});
+const required=['id="rarityFilter"','id="classFilter"','id="brandFilter"','id="yearFilter"','id="assortmentFilter"','id="content"','id="modalRoot"','id="catalogStatus"','dgFetchOnlineCatalog','dgCloudPush','dgCloudPull','exportData','importData','dgRarity'];
+for(const token of required)assert.ok(html.includes(token),'Missing UI/API: '+token);
+const sw=fs.readFileSync('sw.js','utf8');
+new vm.Script(sw,{filename:'sw.js'});
+assert.ok(sw.includes('v1.76'),'Outdated PWA shell version');
+const manifest=JSON.parse(fs.readFileSync('manifest.webmanifest','utf8'));
+assert.equal(manifest.display,'standalone');
+assert.ok(manifest.start_url);
+const seed=fs.readFileSync('seed.js','utf8');
+new vm.Script(seed,{filename:'seed.js'});
+console.log('PASS: inline JS syntax, service worker, manifest, seed and essential UI hooks');
