@@ -202,6 +202,13 @@ const packs2017 = seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-
 const contents2017 = seedData2022.pack_contents.filter(p => packs2017.some(pack => pack.pack_id === p.pack_id));
 assert.equal(packs2017.length, 19, '2017 adds 19 complete numbered packs beyond the curated Exotics pack');
 assert.equal(contents2017.length, 95, '2017 additional five-pack catalogue includes 95 vehicle entries');
+
+const variants2017 = seedData2022.packs.filter(p => p.release_year === 2017 && p.pack_type === '5-pack variant');
+const variantContents2017 = seedData2022.pack_contents.filter(c => variants2017.some(p => p.pack_id === c.pack_id));
+assert.equal(variants2017.length, 10, '2017 includes ten documented reissue/colour-variant five-packs');
+assert.equal(variantContents2017.length, 50, '2017 reissue variants include 50 vehicle entries');
+assert.ok(variants2017.every(p => variantContents2017.filter(c => c.pack_id === p.pack_id).length === 5), 'Every 2017 reissue variant contains exactly five vehicles');
+
 assert.ok(packs2017.every(p => contents2017.filter(c => c.pack_id === p.pack_id).length === 5 && p.source_url === 'https://www.wheelwonderland.com/fr/5-packs/2017/'), 'Every additional 2017 pack has five contents and source provenance');
 
 
@@ -286,6 +293,13 @@ const contents2008 = seedData2022.pack_contents.filter(p => packs2008.some(pack 
 assert.equal(packs2008.length, 15, '2008 includes 15 complete numbered non-Ferrari five-packs');
 assert.equal(contents2008.length, 75, '2008 numbered five-pack catalogue includes 75 vehicle entries');
 assert.ok(packs2008.every(p => contents2008.filter(c => c.pack_id === p.pack_id).length === 5 && p.source_url === 'https://www.wheelwonderland.com/fr/5-packs/2008/'), 'Every 2008 five-pack has five contents and source provenance');
+
+const variants2008 = seedData2022.packs.filter(p => p.release_year === 2008 && p.pack_type === '5-pack variant');
+const variantContents2008 = seedData2022.pack_contents.filter(c => variants2008.some(p => p.pack_id === c.pack_id));
+assert.equal(variants2008.length, 5, '2008 preserves five alternate-colour/reissue five-pack assortments');
+assert.equal(variantContents2008.length, 25, '2008 alternate-colour/reissue assortments contain 25 vehicle entries');
+assert.ok(variants2008.every(p => variantContents2008.filter(c => c.pack_id === p.pack_id).length === 5 && p.source_url === 'https://www.wheelwonderland.com/fr/5-packs/2008/'), 'Every 2008 variant has five contents and source provenance');
+
 const ferrari2008 = seedData2022.pack_contents.filter(c => c.pack_id === 'ferrari-5pack-2008');
 assert.equal(ferrari2008.length, 5, '2008 Ferrari GT pack has five numbered models');
 const packs2007 = seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-2007-'));
