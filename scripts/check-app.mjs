@@ -15,7 +15,7 @@ const syncVerification = fs.readFileSync('supabase/verify_sync_setup.sql', 'utf8
 const serviceWorker = fs.readFileSync('sw.js', 'utf8');
 
 assert.match(html, /<html lang="pl">/i, 'Polish document language is present');
-const releaseVersion = html.match(/<title>Diecast Garage · (v\\d+\\.\\d+)<\\/title>/)?.[1];
+const releaseVersion = html.match(/<title>Diecast Garage · (v[0-9.]+)<\/title>/)?.[1];
 assert.ok(releaseVersion, 'App must expose its current release version in the page title');
 assert.ok(html.includes('PERSONAL COLLECTION MANAGER · '+releaseVersion) && html.includes('Diecast Garage · '+releaseVersion+' ·'), 'Visible release labels match the title');
 assert.ok(serviceWorker.includes('diecast-garage-shell-'+releaseVersion), 'PWA shell cache must match the app release');
