@@ -17,6 +17,9 @@ try {
  await page.locator('#modalRoot .modalfoot .btn.primary').click();
  await page.waitForFunction(()=>document.querySelector('#ownedCount')?.textContent==='1');
  assert.ok((await page.locator('#content').innerText()).includes('Diecast Smoke Test Ferrari F40'));
+ await page.reload({waitUntil:'domcontentloaded'});
+ await page.waitForFunction(()=>document.querySelector('#ownedCount')?.textContent==='1');
+ assert.ok((await page.locator('#content').innerText()).includes('Diecast Smoke Test Ferrari F40'),'Owned car must survive reload and cached release lookup');
  await page.locator('[data-view="catalog"]').click();
  assert.equal(await page.locator('#ownershipFilter').count(),1);
  await page.locator('#ownershipFilter').selectOption("owned");
