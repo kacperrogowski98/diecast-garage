@@ -5,19 +5,12 @@ import assert from 'node:assert/strict';
 const html=fs.readFileSync('index.html','utf8');
 const script=html.match(/<script>\s*([\s\S]*?)<\/script>/)?.[1];
 assert.ok(script,'Application script not found');
-const names=['DG_BRANDS','DG_BRAND_ALIASES','DG_FANTASY_TERMS','DG_SUPERCAR_TERMS'];
-const functions=['dgSafeHttpUrl','dgSlug','dgNormWords','dgInferBrand','dgHasPhrase','dgClassify','dgRarity','dgYear','dgNormalizeRecord','dgExtractRows','dgReadCatalogFile'];
-const statements=[];
-for(const name of names){const match=script.match(new RegExp('const '+name+'=[^\\n]+'));assert.ok(match,'Missing '+name);statements.push(match[0]);}
-for(const name of functions){
- const pos=script.indexOf('function '+name+'(');
- assert.ok(pos>=0,'Missing '+name);
- const begin=script.indexOf('{',pos);let depth=0,end=-1;
- for(let i=begin;i<script.length;i++){if(script[i]==='{')depth++;if(script[i]==='}'&&--depth===0){end=i+1;break}}
- assert.ok(end>begin,'Unclosed '+name);statements.push(script.slice(pos,end));
-}
+const start=script.indexOf('const DG_BRANDS=');
+const end=script.indexOf('function dgOpenCatalogDB()',start);
+assert.ok(start>=0 && end>start,'Catalogue parser not found');
+const parserScript=script.slice(start,end);
 const ctx=vm.createContext({URL,location:{href:'https://example.com/diecast-garage/'}});
-vm.runInContext(statements.join('\n'),ctx);
+vm.runInContext(parserScript,ctx);
 assert.equal(ctx.dgRarity('Super Treasure Hunt'),'sth');
 assert.equal(ctx.dgRarity('Treasure Hunt'),'th');
 assert.equal(ctx.dgRarity(null),'other');
