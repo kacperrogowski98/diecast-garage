@@ -28,7 +28,7 @@ Run [supabase/migrations/20261120_private_glb_storage.sql](../supabase/migration
 
 Once connected and signed in, open an individual car's 3D viewer. After importing a `.glb` file, choose **☁ Wyślij GLB**. On the second device, sign into the same Supabase account and use **☁ Pobierz GLB** in that car's viewer. Downloading replaces that car's locally stored 3D model on the receiving device, after confirmation.
 
-Cloud GLB transfer is an explicit action, separate from collection photo/garage push-pull. A live two-device end-to-end test is still required.
+Cloud GLB transfer is an explicit action, separate from collection photo/garage push-pull. In **Konto / synchronizacja** there are also **☁ Wyślij modele 3D** and **☁ Pobierz brakujące modele 3D** for bulk transfer. Bulk upload does not overwrite an already stored cloud model, while bulk download only adds files missing locally (limited to 1,000 files per operation). For intentional replacement, use the single-model viewer after confirmation. A live two-device end-to-end test is still required.
 
 ## 3. Verify database and security setup
 
