@@ -1,3 +1,9 @@
+## v1.31 — 20 November 2026
+
+- Added 15 fully enumerated 2019 five-packs (75 vehicle entries), including Fast & Furious, Rocket League, Police Pursuit, and Wave Cravers.
+- The previously curated 2019 HW Exotics pack was not duplicated; incomplete X-Raycers content was left out rather than guessed.
+- Included source-listed colours where available and retained provenance/packaging verification flags.
+
 ## v1.30 — 20 November 2026
 
 - Added 2020 and 2021 numbered five-pack compositions: 33 additional packs and 165 vehicle entries. Existing HW Exotics packs were not duplicated.
