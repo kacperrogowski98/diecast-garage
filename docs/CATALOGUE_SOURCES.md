@@ -268,3 +268,8 @@ The browser app can import the upstream scan index and lazily load year/assortme
 ## 2016 five-pack reissues
 
 - Wheel Wonderland 2016: https://www.wheelwonderland.com/fr/5-packs/2016/ — five separately documented reissue/colour-variant pack records / 25 entries, kept distinct from the base assortments using a variant type.
+
+
+## 2015 reissue and colour-variant five-packs
+
+- Wheel Wonderland 2015: https://www.wheelwonderland.com/fr/5-packs/2015/ — six additional complete reissue/colour variants (30 entries): Dino Riders, Graffiti Rides, HW Exotics, Police Pursuit, Rescue Racers and Track Aces. Partial X-Raycers rows and the non-pack “Included cars” grouping were excluded.
