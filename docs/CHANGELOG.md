@@ -1,3 +1,9 @@
+## v1.80 — 20 November 2026
+
+- Added one-click Allegro and eBay search links to model details, using the Hot Wheels model name and catalogue number when present.
+- Explicitly clarifies that external marketplace searches do not verify live stock, prices, colours or exact editions.
+- Added browser smoke assertions for both marketplace search links and static checks for safe new-tab links.
+
 ## v1.79 — 20 November 2026
 
 - Each model's detail panel now shows the multipacks where the exact normalized model name is recorded, including the pack year and package code.
