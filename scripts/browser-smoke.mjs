@@ -139,7 +139,7 @@ try {
  await page.locator('button:has-text("Dodaj własny multipack")').click();
  await page.locator('#customPackName').fill('Test Collector 5-Pack');
  await page.locator('#customPackYear').fill('2025');
- await page.locator('#customPackContents').fill('Ferrari F40\\nMcLaren P1');
+ await page.locator('#customPackContents').fill('Ferrari F40\nMcLaren P1');
  await page.locator('#piFrontPreview').locator('..').locator('input[type="file"]').setInputFiles({name:'front.png',mimeType:'image/png',buffer:pixel});
  await page.waitForFunction(()=>Boolean(document.querySelector('#piFrontPreview img')));
  await page.locator('#modalRoot .modalfoot .btn.primary').click();
