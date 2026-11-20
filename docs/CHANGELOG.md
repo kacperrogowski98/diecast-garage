@@ -1,5 +1,11 @@
 ## v1.61 — 20 November 2026
 
+- Added five documented 2016 reissue/colour-variant pack records (25 vehicle entries): Hot Trucks, HW Exotics, HW Flames, Muscle Mania and Volkswagen.
+- These are marked as `5-pack variant`, separate from the original numbered assortment records, so collectors can distinguish package/reissue versions.
+- Retained original toy numbers, source provenance and packaging-photo verification status.
+
+## v1.61 — 20 November 2026
+
 - Added five 2016 five-pack reissue variants (25 vehicle entries): Hot Trucks, HW Exotics, HW Flames, Muscle Mania and Volkswagen.
 - Kept each reissue distinct from the original assortment and retained source-listed colours/details, package codes and verification flags.
 
