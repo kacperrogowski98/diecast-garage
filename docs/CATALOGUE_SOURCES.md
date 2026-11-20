@@ -308,3 +308,8 @@ The browser app can import the upstream scan index and lazily load year/assortme
 ## 2006 reissue multipacks
 
 - Wheel Wonderland 2006: https://www.wheelwonderland.com/fr/5-packs/2006/ — four complete five-pack reissues and one six-car X-Raycers reissue. The six-pack is recorded with its actual size.
+
+
+## 2005 reissue and colour-variant five-packs
+
+- Wheel Wonderland 2005: https://www.wheelwonderland.com/fr/5-packs/2005/ — three additional complete reissue/colour variants (15 entries): Easter Eggs-Treme, Ferrari and Muscle Mania.
