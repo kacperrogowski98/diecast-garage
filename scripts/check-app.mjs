@@ -352,11 +352,8 @@ const halloweenPack = seedData2022.packs.find(p => p.pack_id === 'hw-6pack-2012-
 assert.ok(halloweenPack && halloweenPack.pack_type === '6-pack' && seedData2022.pack_contents.filter(c => c.pack_id === halloweenPack.pack_id).length === 6, 'The 2012 Halloween six-pack retains all six vehicles as a six-pack');
 
 
-const reissue2011 = seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-2011-reissue-'));
-const reissue2011Contents = seedData2022.pack_contents.filter(c => reissue2011.some(p => p.pack_id === c.pack_id));
-assert.equal(reissue2011.length, 12, '2011 reissue/colour variants are retained separately from numbered base assortments');
-assert.equal(reissue2011Contents.length, 60, 'Twelve 2011 reissue assortments contain 60 vehicle entries');
-assert.ok(reissue2011.every(p => p.pack_type === '5-pack variant' && reissue2011Contents.filter(c => c.pack_id === p.pack_id).length === 5), 'Every 2011 reissue has five vehicles and explicit variant status');
+// No 2011 reissue packs have been verified in the embedded seed; do not invent them.
+assert.equal(seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-2011-reissue-')).length, 0, 'Unverified 2011 reissues stay excluded');
 
 const packs2010 = seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-2010-') && p.pack_type !== '5-pack variant');
 const contents2010 = seedData2022.pack_contents.filter(p => packs2010.some(pack => pack.pack_id === p.pack_id));
