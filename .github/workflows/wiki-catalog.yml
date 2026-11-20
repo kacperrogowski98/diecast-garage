@@ -122,6 +122,7 @@ jobs:
         run: |
           node scripts/validate-app.mjs
           node scripts/test-catalog.mjs
+          node scripts/test-cloud-3d.mjs
       - name: Verify full Wiki v6 archive and 5-pack contents
         run: node scripts/validate-full-catalog.mjs
       - name: Install 3D module dependencies
