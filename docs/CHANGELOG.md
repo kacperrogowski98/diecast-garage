@@ -1,3 +1,9 @@
+## v1.54 — 20 November 2026
+
+- Added six complete 1994 five-packs and one six-pack (36 vehicle entries): Blimp & Support Team, Ford, Off Road Explorers, Racing Team, Speed Demons, World Cup and Action Command.
+- Existing Ferrari 1994 packs were retained without duplication.
+- Preserved source-listed colours, numbered contents, source links and verification flags.
+
 ## v1.53 — 20 November 2026
 
 - Added three complete 1995 five-packs and two six-packs (27 vehicle entries): Emergency Squad, Ford, Track System, Chevrolet and Hot Wheels Race Team.
