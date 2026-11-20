@@ -1,6 +1,6 @@
 # Diecast Garage
 
-Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.98**.
+Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.99**.
 
 ## Live app
 
@@ -117,19 +117,23 @@ The repository is public, so source code is visible. User collection rows are no
 4. Create/connect the real Supabase project, apply schema.sql (or the incremental migration on an existing project), run verify_sync_setup.sql and validate normalized sync on two devices/accounts.
 5. Validate Auth, RLS, Storage policies and cross-device behavior on phone and desktop.
 
-## Reliability update v1.98
+## Reliability update v1.99
 
 - A Wiki v6 import is considered complete only after all streamed batches and the final collection-state save succeed.
 - Multipack matching reconciles casting families shared across Ferrari seed and Wiki/diecastDb sources, without treating a same-name match as proof of an exact release. Matching by toy code, year and body color remains conservative.
 - Regression tests cover duplicate source casting IDs, cross-source 5-pack completion and failed import completion markers.
 
-## Reliability update v1.98
+## Reliability update v1.99
 
 - The Wiki v6 importer checks the number of JSONL records against the separately published `catalog/wiki-stats.json` manifest before marking an import complete; a mismatch is treated as incomplete.
 - The application explicitly labels a local Wiki v6 index as completed versus partial / unconfirmed.
 - Importers reconcile identical casting families across distinct source-specific IDs while keeping exact-release matching conservative.
 
-## Storage and backups v1.98
+## Storage and backups v1.99
 
 - The account panel offers a read-only browser storage estimate, warns that deleting Safari/browser data can remove local collections and IndexedDB GLB files, and provides a one-click JSON collection backup shortcut.
 - This storage diagnostic does **not** provide an automatic cloud backup; private cross-device collection/GLB sync still requires a configured Supabase account.
+
+## Catalog photograph filter v1.99
+
+- Collector catalogue can filter variants to those with source photograph URLs or to those missing photographic documentation. This is a metadata availability filter, not verification that an external photo URL is reachable or depicts the exact edition.
