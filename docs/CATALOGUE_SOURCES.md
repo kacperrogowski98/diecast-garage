@@ -228,3 +228,9 @@ The browser app can import the upstream scan index and lazily load year/assortme
 ## 1993 five-packs
 
 - Wheel Wonderland 1993: https://www.wheelwonderland.com/fr/5-packs/1993/ — six complete numbered five-packs / 30 entries. Only numbered 1/5–5/5 compositions were imported.
+
+
+## 1991–1992 five-packs
+
+- Wheel Wonderland 1991: https://www.wheelwonderland.com/fr/5-packs/1991/ — seven complete numbered five-packs / 35 entries.
+- Wheel Wonderland 1992: https://www.wheelwonderland.com/fr/5-packs/1992/ — five complete numbered five-packs / 25 entries plus six-entry Off Road Explorers variant assortment. Ambiguous double-numbered Classic Collection rows were excluded.
