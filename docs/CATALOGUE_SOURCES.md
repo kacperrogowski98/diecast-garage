@@ -63,3 +63,8 @@ See [MULTIPACK_IMPORT_SPEC.md](MULTIPACK_IMPORT_SPEC.md) for the proposed pack d
 
 ## Current limitation
 The browser app can import the upstream scan index and lazily load year/assortment files into local IndexedDB. No full catalogue import has been run into a production Supabase database. The upstream dataset is broad but not exhaustive; the source repositories are references for the importer, not proof that every Hot Wheels product is represented.
+
+
+## 2022 five-packs
+
+- Wheel Wonderland, Hot Wheels 5-Packs 2022: https://www.wheelwonderland.com/en/5-packs/2022/ — source for 18 package codes/variants and 90 listed vehicle entries. These are independent collector-database records and remain flagged for packaging-photo verification.
