@@ -283,3 +283,8 @@ The browser app can import the upstream scan index and lazily load year/assortme
 ## 2012 reissue and colour-variant packs
 
 - Wheel Wonderland 2012: https://www.wheelwonderland.com/fr/5-packs/2012/ — 10 complete five-pack reissues (50 entries) and one alternate Halloween six-pack (6 entries). These are kept distinct from the original assortments, with pack sizes and source provenance preserved.
+
+
+## 2011 reissue and colour-variant five-packs
+
+- Wheel Wonderland 2011: https://www.wheelwonderland.com/fr/5-packs/2011/ — 12 additional complete reissue/colour variants (60 entries): Attack Pack, Batman, Creature Cars, Easter Rides, Ferrari, Graffiti Rides, Halloween, Holiday Hot Rods, HW City Works, HW Exotics, HW Hot Rods, Police Pursuit and Team Hot Wheels. These remain separate from the original assortments.
