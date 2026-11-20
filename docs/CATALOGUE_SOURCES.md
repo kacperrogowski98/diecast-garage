@@ -241,3 +241,10 @@ The browser app can import the upstream scan index and lazily load year/assortme
 - Wheel Wonderland 1988: https://www.wheelwonderland.com/fr/5-packs/1988/ — seven numbered five-packs / 35 entries.
 - Wheel Wonderland 1989: https://www.wheelwonderland.com/fr/5-packs/1989/ — four five-packs / 20 entries and one six-car Trailbusters Gift Pack. The ambiguous Super Sportscars list was excluded.
 - Wheel Wonderland 1990: https://www.wheelwonderland.com/fr/5-packs/1990/ — six numbered five-packs / 30 entries.
+
+
+## 1985–1987 early five-packs
+
+- Wheel Wonderland 1985: https://www.wheelwonderland.com/fr/5-packs/1985/ — one five-pack / five entries.
+- Wheel Wonderland 1986: https://www.wheelwonderland.com/fr/5-packs/1986/ — four Gift Pak five-packs / 20 entries.
+- Wheel Wonderland 1987: https://www.wheelwonderland.com/fr/5-packs/1987/ — four five-packs / 20 entries.
