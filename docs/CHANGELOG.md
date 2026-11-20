@@ -1,3 +1,9 @@
+## v1.44 — 20 November 2026
+
+- Added 12 complete numbered 2004 five-packs (60 vehicle entries): B-Day Gift, Batman, Camoflamage, Chrome Burnerz, Cyborg Assault, HW Racing, Night Breed, Smashville, Speed Circus, Tiki Torchers, Truckus 500 and Zero-G.
+- Variant-only duplicate rows and the separate one-car Hot Wheels Racing entry were not misrepresented as full packs.
+- Preserved source colours, package numbers and provenance.
+
 ## v1.43 — 20 November 2026
 
 - Added eleven complete numbered 2005 five-packs (55 entries): Autogrfx, Black Tops, Easter Eggs-treme, Gorilla Attack, Heat Fleet II, Muscle Mania, Robo Revenge, Roll Patrol, Shiners, Wastelanders and Wild Cats.
