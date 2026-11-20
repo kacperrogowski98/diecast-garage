@@ -1,3 +1,9 @@
+## v1.56 — 20 November 2026
+
+- Added 12 historical pack records for 1991–1992, totalling 66 vehicle entries.
+- 1991: seven numbered five-packs including Classics, Construction, Emergency Team, Racers and Super Sportscars.
+- 1992: five five-packs plus the six-entry Off Road Explorers variant assortment; the ambiguous Classic Collection double-numbered rows remain excluded rather than guessed.
+
 ## v1.55 — 20 November 2026
 
 - Added six complete numbered 1993 five-packs (30 vehicle entries), including all four 25th Anniversary themed packs, Construction Crew and Emergency Squad.
