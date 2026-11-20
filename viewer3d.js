@@ -96,7 +96,7 @@ const MESH_DB='diecast_garage_catalog_v1',MESH_STORE='meshes3d';
 function meshDatabase(){
   return new Promise((resolve,reject)=>{
     const req=indexedDB.open(MESH_DB,3);
-    req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains(MESH_STORE))db.createObjectStore(MESH_STORE,{keyPath:'release_id'})};
+    req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains('releases'))db.createObjectStore('releases',{keyPath:'release_id'});if(!db.objectStoreNames.contains('wiki_packs'))db.createObjectStore('wiki_packs',{keyPath:'pack_id'});if(!db.objectStoreNames.contains(MESH_STORE))db.createObjectStore(MESH_STORE,{keyPath:'release_id'})};
     req.onsuccess=()=>resolve(req.result);
     req.onerror=()=>reject(req.error||new Error('Nie udało się otworzyć magazynu 3D'));
   });
@@ -280,12 +280,12 @@ export function openViewer(model, root) {
     }
     root.querySelector('#dg3dFile').addEventListener('change',event=>{
       const file=event.target.files?.[0];if(!file)return;
-      if(!/\\.glb$/i.test(file.name)||file.size>25*1024*1024){notice.textContent='Wybierz plik .glb do 25 MB.';return}
+      if(!/\.glb$/i.test(file.name)||file.size>25*1024*1024){notice.textContent='Wybierz plik .glb do 25 MB.';return}
       loadBlob(file,true);
     });
     const deleteButton=root.querySelector('#dg3dDelete');
     deleteButton?.addEventListener('click',async()=>{
-      try{await deleteSavedMesh(releaseId);if(!state.closed)notice.textContent='Usunięto zapisany model GLB. Poglądowa sylwetka pozostanie dostępna.'}
+      try{await deleteSavedMesh(releaseId);if(!state.closed){uploadSequence++;modelGroup.remove(active);disposeGroup(active);active=createCar(bodyColor(model.body_color||model.color_variant),name);modelGroup.add(active);notice.textContent='Usunięto zapisany model GLB. Przywrócono poglądową sylwetkę.'}}
       catch(error){if(!state.closed)notice.textContent='Nie udało się usunąć modelu: '+String(error.message||error)}
     });
     if(releaseId)readSavedMesh(releaseId).then(record=>{
