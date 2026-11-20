@@ -11,9 +11,9 @@ const syncVerification = fs.readFileSync('supabase/verify_sync_setup.sql', 'utf8
 const serviceWorker = fs.readFileSync('sw.js', 'utf8');
 
 assert.match(html, /<html lang="pl">/i, 'Polish document language is present');
-assert.ok(html.includes('<title>Diecast Garage · v1.24</title>'), 'Current app release title must be v1.24');
-assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.24') && html.includes('Diecast Garage · v1.24 ·'), 'Visible app version labels must match the release title');
-assert.ok(serviceWorker.includes('diecast-garage-shell-v1.24.0'), 'PWA shell cache must be versioned with the current release');
+assert.ok(html.includes('<title>Diecast Garage · v1.25</title>'), 'Current app release title must be v1.25');
+assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.25') && html.includes('Diecast Garage · v1.25 ·'), 'Visible app version labels must match the release title');
+assert.ok(serviceWorker.includes('diecast-garage-shell-v1.25.0'), 'PWA shell cache must be versioned with the current release');
 assert.match(html, /id="content"/, 'Main app content mount exists');
 assert.match(html, /id="assortmentFilter"/, 'Catalogue assortment filter exists');
 assert.match(html, /id="sortFilter"/, 'Catalogue sort control exists');
@@ -32,6 +32,9 @@ assert.match(html, /dgFetchOnlineCatalog/, 'Online catalogue importer is wired')
 assert.ok(html.includes('https://cdn.jsdelivr.net/gh/danyjoy/diecastDb@main/data/scan-index.json'), 'Catalogue index must have a jsDelivr fallback');
 assert.ok(html.includes("let sources=['https://raw.githubusercontent.com/danyjoy/diecastDb/main/data/'+key+'.json','https://cdn.jsdelivr.net/gh/danyjoy/diecastDb@main/data/'+key+'.json','https://danyjoy.github.io/diecastDb/data/'+key+'.json']"), 'Lazy year-file enrichment must retry multiple public mirrors');
 assert.match(html, /marek rozpoznanych.*kandydatów Supercar\/Hypercar/, 'Catalogue import status must report recognized brands and supercar candidates');
+assert.ok(html.includes('function packMatchKey(value)'), 'Pack contents use conservative normalized exact-name matching');
+assert.ok(html.includes("match_status:'exact'") && html.includes("ids.length>1?'ambiguous':'unmatched'"), 'Pack matching links only unique exact casting matches and flags ambiguity');
+assert.ok(html.includes('Połączono z katalogiem') && html.includes('Brak dokładnego dopasowania'), 'Pack details disclose catalogue matching status');
 assert.ok(html.includes('function addCustomPack()'), 'Collectors must be able to create custom multipacks');
 assert.ok(html.includes('function removeCustomPack('), 'Collectors must be able to delete custom multipacks');
 assert.ok(html.includes('function editCustomPack('), 'Collectors must be able to edit custom multipacks');
