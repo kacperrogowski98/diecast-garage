@@ -1,4 +1,4 @@
-const CACHE_NAME = 'diecast-garage-shell-v1.80';
+const CACHE_NAME = 'diecast-garage-shell-v1.81';
 const base = self.registration.scope;
 const APP_SHELL = ['./', './index.html', './seed.js', './manifest.webmanifest', './icon.svg', './icon-192.png']
   .map(path => new URL(path, base).toString());
@@ -19,15 +19,28 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
-  if (event.request.method !== 'GET' || url.origin !== self.location.origin) return;
-  event.respondWith(
-    caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
+  const request = event.request;
+  const url = new URL(request.url);
+  if (request.method !== 'GET' || url.origin !== self.location.origin) return;
+
+  // Network-first for page navigation, so installed PWA users see new releases.
+  // Cached HTML remains available when the phone is offline.
+  if (request.mode === 'navigate' || url.pathname.endsWith('/index.html')) {
+    event.respondWith(fetch(request).then(response => {
       if (response.ok) {
         const copy = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+        event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.put(new URL('./index.html', base).toString(), copy)));
       }
       return response;
-    }).catch(() => caches.match(new URL('./index.html', base).toString())))
-  );
+    }).catch(() => caches.match(new URL('./index.html', base).toString())));
+    return;
+  }
+
+  event.respondWith(caches.match(request).then(cached => cached || fetch(request).then(response => {
+    if (response.ok) {
+      const copy = response.clone();
+      event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.put(request, copy)));
+    }
+    return response;
+  })));
 });
