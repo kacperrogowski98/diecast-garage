@@ -121,6 +121,23 @@ async function dgImportWikiReleaseStream(stream){
  dgUpdateCatalogStatus('Wiki v6: zapisano '+valid.toLocaleString('pl-PL')+' wydań, pominięto '+invalid+' błędnych rekordów. Dane źródłowe mogą powtarzać inne katalogi.');
  return {valid,total,invalid};
 }
+async function dgFetchWikiPacksOnly(automatic=true){
+ try{
+  if(typeof DecompressionStream==='undefined')throw new Error('Brak obsługi gzip');
+  try{localStorage.setItem(DG_PACK_CHECK_KEY,String(Date.now()))}catch(_){}
+  const packsResponse=await fetch('./catalog/wiki-packs.jsonl.gz',{cache:'no-cache'});
+  if(!packsResponse.ok)throw new Error('HTTP '+packsResponse.status);
+  const text=await new Response(packsResponse.body.pipeThrough(new DecompressionStream('gzip'))).text();
+  const normalized=[];
+  for(const line of text.split(/\r?\n/)){if(!line.trim())continue;try{const pack=dgNormalizeWikiPack(JSON.parse(line));if(pack)normalized.push(pack)}catch(error){console.warn('Invalid Wiki pack row',error)}}
+  if(normalized.length<100)throw new Error('Zbyt mało zestawów Wiki: '+normalized.length);
+  await dgStoreWikiPacks(normalized);
+  wikiPacks=normalized;
+  render();
+  if(!automatic)toast('Zaimportowano '+normalized.length.toLocaleString('pl-PL')+' zestawów Wiki v6');
+  return true;
+ }catch(error){console.warn('Wiki multipack archive unavailable:',error);if(!automatic)toast('Nie udało się pobrać multipacków: '+error.message);return false}
+}
 async function dgFetchWikiV6Catalog(automatic=false){
  const btn=document.getElementById('wikiCatalogBtn');if(btn){btn.disabled=true;btn.textContent='Wczytywanie Wiki v6…'}try{localStorage.setItem(DG_WIKI_CHECK_KEY,String(Date.now()))}catch(_){}
  try{
@@ -130,17 +147,7 @@ async function dgFetchWikiV6Catalog(automatic=false){
   dgUpdateCatalogStatus('Rozpakowuję katalog Wiki v6; może zawierać kilkadziesiąt tysięcy wydań…');
   const uncompressed=response.body.pipeThrough(new DecompressionStream('gzip'));
   await dgImportWikiReleaseStream(uncompressed);
-  try {
-   try{localStorage.setItem(DG_PACK_CHECK_KEY,String(Date.now()))}catch(_){}
-   const packsResponse=await fetch('./catalog/wiki-packs.jsonl.gz',{cache:'no-cache'});
-   if(packsResponse.ok){
-    const packText=await new Response(packsResponse.body.pipeThrough(new DecompressionStream('gzip'))).text();
-    const rawPacks=packText.split(/\r?\n/).filter(Boolean);
-    const normalized=[];
-    for(const line of rawPacks){try{const pack=dgNormalizeWikiPack(JSON.parse(line));if(pack)normalized.push(pack)}catch(error){console.warn('Invalid Wiki pack row',error)}}
-    if(normalized.length){await dgStoreWikiPacks(normalized);wikiPacks=normalized;render();toast('Wczytano '+normalized.length.toLocaleString('pl-PL')+' zestawów Wiki v6')}
-   }
-  }catch(error){console.warn('Wiki multipack archive unavailable:',error)}
+  await dgFetchWikiPacksOnly(automatic);
  }catch(e){console.warn('Wiki v6 import:',e);if(!automatic)toast('Wiki v6: '+e.message)}
  finally{if(btn){btn.disabled=false;btn.textContent='↓ Pełne Wiki v6'}}
 }
@@ -563,7 +570,7 @@ async function dgCloudPull(){
  }
 }
 
-dgInitClient();dgInitCatalogImport();dgLoadWikiStats();document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===view));dgRefreshFilters();render();dgCatalogReady=dgLoadCatalog();dgCatalogReady.then(async()=>{dgRefreshFilters();render();if(/^https?:$/.test(location.protocol)){const needsMain=!importedCatalog.length||dgCatalogNeedsRefresh();if(needsMain)await dgFetchOnlineCatalog();const wikiLoaded=importedCatalog.some(x=>x.source==='hotwheels-wiki-v6');const lastWikiCheck=Number(localStorage.getItem(DG_WIKI_CHECK_KEY)||0);let completedWiki=null;try{completedWiki=JSON.parse(localStorage.getItem(DG_WIKI_COMPLETE_KEY)||'null')}catch(_){}const wikiIncomplete=!completedWiki||!Number.isInteger(completedWiki.valid)||completedWiki.valid<10000;const wikiInterval=wikiLoaded&&!wikiIncomplete?30*24*60*60*1000:24*60*60*1000;if(!lastWikiCheck||Date.now()-lastWikiCheck>=wikiInterval||(wikiLoaded&&!wikiPacks.length&&Date.now()-Number(localStorage.getItem(DG_PACK_CHECK_KEY)||0)>24*60*60*1000))await dgFetchWikiV6Catalog(true);if(!importedCatalog.some(x=>x.source==='hotwheels-data'))await dgFetchExtendedCatalog();}});
+dgInitClient();dgInitCatalogImport();dgLoadWikiStats();document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===view));dgRefreshFilters();render();dgCatalogReady=dgLoadCatalog();dgCatalogReady.then(async()=>{dgRefreshFilters();render();if(/^https?:$/.test(location.protocol)){const needsMain=!importedCatalog.length||dgCatalogNeedsRefresh();if(needsMain)await dgFetchOnlineCatalog();const wikiLoaded=importedCatalog.some(x=>x.source==='hotwheels-wiki-v6');const lastWikiCheck=Number(localStorage.getItem(DG_WIKI_CHECK_KEY)||0);let completedWiki=null;try{completedWiki=JSON.parse(localStorage.getItem(DG_WIKI_COMPLETE_KEY)||'null')}catch(_){}const wikiIncomplete=!completedWiki||!Number.isInteger(completedWiki.valid)||completedWiki.valid<10000;const wikiInterval=wikiLoaded&&!wikiIncomplete?30*24*60*60*1000:24*60*60*1000;if(!lastWikiCheck||Date.now()-lastWikiCheck>=wikiInterval)await dgFetchWikiV6Catalog(true);else if(!wikiPacks.length&&Date.now()-Number(localStorage.getItem(DG_PACK_CHECK_KEY)||0)>24*60*60*1000)await dgFetchWikiPacksOnly(true);if(!importedCatalog.some(x=>x.source==='hotwheels-data'))await dgFetchExtendedCatalog();}});
 </script>
 <script>
 // PWA shell caching. Cloud sync still requires an internet connection.
