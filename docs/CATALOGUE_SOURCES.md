@@ -172,3 +172,8 @@ The browser app can import the upstream scan index and lazily load year/assortme
 ## 2004 five-packs
 
 - Wheel Wonderland 2004: https://www.wheelwonderland.com/es/5-packs/2004/ — 12 complete numbered five-packs / 60 entries. Duplicate non-numbered colour variants and a separate single-car entry were excluded.
+
+
+## 2003 five-packs
+
+- Wheel Wonderland 2003: https://www.wheelwonderland.com/fr/5-packs/2003/ — 11 complete numbered five-packs / 55 entries. Existing Ferrari pack retained; alternate-colour duplicate rows excluded.
