@@ -86,6 +86,10 @@ jobs:
             rm -f catalog/scan-index.json
           done
           test -s catalog/scan-index.json
+      - name: Validate app and parser before Wiki v6 deployment
+        run: |
+          node scripts/validate-app.mjs
+          node scripts/test-catalog.mjs
       - name: Upload Pages site with Wiki v6 catalogue
         uses: actions/upload-pages-artifact@v3
         with:
