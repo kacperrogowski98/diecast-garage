@@ -1,3 +1,9 @@
+## v1.68 — 20 November 2026
+
+- Added 10 complete 2009 five-pack reissue/colour variants (50 entries): Creature Cars, Easter Raceway, Graffiti Rides, HW City Works, HW Hot Rods, Scary Cars, Track Aces, Trick Tracks, Volkswagen and World Racers.
+- Kept Ferrari assortments separate as already catalogued and did not invent a full pack for partial/extra rows.
+- Preserved source colourways and packaging-photo verification flags.
+
 ## v1.67 — 20 November 2026
 
 - Added 12 complete 2010 five-pack reissue/colour variants (60 entries): Attack Pack, Criss Cross Crash, Custom Car Show, Demolition Derby, Easter Speedsters, Heat Fleet, Hot Haulers, Jungle Rally, Police Pursuit, Road Course Race, Scary Cars and Trick Tracks.
