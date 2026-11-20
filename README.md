@@ -53,6 +53,15 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 - docs/MULTIPACK_IMPORT_SPEC.md — multipack catalogue data model, source review and import rules.
 - docs/ — catalogue, sync, deployment and implementation notes.
 
+## Full Wiki v6 catalogue pipeline
+
+- `.github/workflows/wiki-catalog.yml` rebuilds the approximately 57,000-release Wiki v6 source via the documented MediaWiki API and upstream open-source parser, on the first workflow-file push, manually, and monthly.
+- Successful jobs verify a minimum row count, publish `catalog/wiki-v6.jsonl.gz` and deploy Pages directly. This direct deployment is necessary because commits made using `GITHUB_TOKEN` do not automatically trigger another workflow.
+- On app launch, the optional prebuilt compressed dataset is imported to IndexedDB if not already present. A `Pełne Wiki v6` button can retry the import, and the JSON importer accepts independently generated `hotwheels_db_v6.jsonl` files.
+- The external source labels version records as `product_type`, including non-vehicle records; their classifications and pack memberships are not guaranteed to be exhaustive or correct. Wiki v6 records can overlap with diecastDb.
+- The source project and generated data are licensed CC BY-SA 4.0, with attribution required. Photographs and trademarks may have separate rights. See https://github.com/ktrizolio/hotwheels-fandom-db for documentation.
+- **Do not claim a fully loaded 57k-release database until the workflow completes and the compressed file has been verified on the deployed website.** If the Fandom API or external parser fails, the app continues with the previously available indexed catalogue.
+
 ## Catalogue completeness and interpretation
 
 The built-in Ferrari starter set, bundled Mainline/Premium/Silver index and supplementary 1974–2023 Wiki-derived archive are **not** a guaranteed complete, fully deduplicated global history. Historical source records may overlap with index records: counts of entries are not necessarily counts of unique physical releases. Imported records remain source-labelled and classification remains heuristic unless explicitly reviewed.
