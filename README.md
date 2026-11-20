@@ -1,6 +1,6 @@
 # Diecast Garage
 
-Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.24**.
+Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.25**.
 
 ## Live app
 
@@ -13,6 +13,7 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 - Responsive single-page collector app (index.html) with Garage, Catalogue, Wishlist, Racing, Brands and Multipacks views.
 - Add/edit owned models, wishlist entries, multiple copies, purchase details, notes and photos.
 - Add, edit and delete custom multipacks with year, pack type, code, model list and notes; built-in pack data is still limited and requires expansion.
+- Link pack contents to catalogue castings through conservative unique exact-name matching; ambiguous and unmatched entries remain clearly marked.
 - Local collection persistence in browser storage, catalogue persistence in IndexedDB.
 - Backup export/import in JSON.
 - PWA manifest, service worker and app icons for installation on supported phones/desktops.
