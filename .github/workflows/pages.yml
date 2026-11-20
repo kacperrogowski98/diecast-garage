@@ -24,6 +24,26 @@ jobs:
         uses: actions/configure-pages@v5
         with:
           enablement: true
+      - name: Bundle full catalogue index for reliable first launch
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p catalog
+          sources=(
+            "https://raw.githubusercontent.com/danyjoy/diecastDb/main/data/scan-index.json"
+            "https://cdn.jsdelivr.net/gh/danyjoy/diecastDb@main/data/scan-index.json"
+            "https://danyjoy.github.io/diecastDb/data/scan-index.json"
+          )
+          for source in "${sources[@]}"; do
+            if curl --fail --location --retry 2 --connect-timeout 10 --max-time 90 --silent --show-error "$source" -o catalog/scan-index.json; then
+              if node -e "const c=JSON.parse(require('fs').readFileSync('catalog/scan-index.json','utf8'));if(!Array.isArray(c.fields)||!Array.isArray(c.cars)||c.cars.length<10000)process.exit(1)"; then
+                echo "Catalogue index bundled successfully"
+                break
+              fi
+            fi
+            rm -f catalog/scan-index.json
+          done
+          test -s catalog/scan-index.json || { echo "::error::No valid catalog index available"; exit 1; }
       - name: Upload static site
         uses: actions/upload-pages-artifact@v3
         with:
