@@ -95,6 +95,9 @@ try {
 
   await page.locator('#content .car').first().getByRole('button', { name: /Szczegóły/ }).click();
   await page.locator('#modalRoot .modal h3').waitFor();
+  const allegroUrl = await page.locator('#modalRoot a[href^="https://allegro.pl/listing?string="]').getAttribute('href');
+  const ebayUrl = await page.locator('#modalRoot a[href^="https://www.ebay.com/sch/i.html?_nkw="]').getAttribute('href');
+  assert.ok(allegroUrl?.includes('Hot%20Wheels') && ebayUrl?.includes('Hot%20Wheels'),'Both marketplaces should receive encoded Hot Wheels searches');
   await page.locator('#dgClassOverride').selectOption('supercar_hypercar');
   await page.getByRole('button', { name: 'Zapisz klasyfikację' }).click();
   await page.waitForFunction(() => Object.values(JSON.parse(localStorage.getItem('diecast_garage_mvp_02')).overrides || {}).some(value => value.classification_status === 'user_reviewed' && value.vehicle_class === 'supercar_hypercar'));
