@@ -1,3 +1,9 @@
+## v1.52 — 20 November 2026
+
+- Added nine complete numbered 1996 five-packs (45 vehicle entries): 50's Favorites, 60's Muscle Cars, Auto City, Baywatch, Camaro, Construction Crew, Corvette, Just Trucks and Porsche.
+- Added the six-car Super Show Cars assortment, correctly represented as a 6-pack rather than a 5-pack.
+- Source-listed colours, toy numbers, provenance and verification status retained.
+
 ## v1.51 — 20 November 2026
 
 - Added 12 complete numbered 1997 five-packs (60 vehicle entries), including California Dreamin', City Action, Fire Fighting, Police Force, Race Team II and Racing World.
