@@ -24,7 +24,16 @@ try {
  await page.locator('#brandFilter').selectOption('Ferrari');
  await page.locator('[data-view="garage"]').click();
  assert.equal(await page.locator('#ownedCount').innerText(),'1');
- await page.locator('#showroomBtn').click();
+ const stores=await page.evaluate(async()=>{
+   const db=await new Promise((resolve,reject)=>{
+     const request=indexedDB.open('diecast_garage_catalog_v1',3);
+     request.onsuccess=()=>resolve(request.result);
+     request.onerror=()=>reject(request.error);
+   });
+   const names=Array.from(db.objectStoreNames);db.close();return names;
+ });
+ assert.ok(stores.includes('releases')&&stores.includes('wiki_packs')&&stores.includes('meshes3d'),'IndexedDB migration must keep all three stores');
+  await page.locator('#showroomBtn').click();
  await page.waitForFunction(()=>Boolean(document.querySelector('#dg3dStage canvas')||document.querySelector('#modalRoot')?.textContent?.includes('Garaż 3D niedostępny')));
  if(await page.locator('#dg3dStage canvas').count()){
    assert.equal(await page.locator('#dg3dNext').count(),1);
