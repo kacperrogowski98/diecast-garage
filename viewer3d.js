@@ -129,8 +129,9 @@ async function deleteSavedMesh(id){
 export function openViewer(model, root) {
   closeViewer();
   const gallery = Array.isArray(model.garageCars) ? model.garageCars : null;
+  const packPreview = Boolean(gallery && model.packPreview);
   const releaseId = gallery ? '' : String(model.release_id||model.custom_id||'');
-  const name = gallery ? 'Twoja kolekcja' : (model.canonical_name || model.model_name_as_source || 'Samochód');
+  const name = gallery ? (model.packName || 'Twoja kolekcja') : (model.canonical_name || model.model_name_as_source || 'Samochód');
   root.innerHTML = `<div class="modalback" id="dg3dBackdrop">
     <div class="modal dg3d-modal" role="dialog" aria-modal="true" aria-label="Podgląd 3D">
       <div class="modalhead"><h3>Garaż 3D · ${escapeText(name)}</h3><button class="btn" id="dg3dClose" aria-label="Zamknij">✕</button></div>
@@ -140,14 +141,14 @@ export function openViewer(model, root) {
         <label class="btn dg3d-upload" style="${gallery ? 'display:none' : ''}">↑ Wczytaj i zapisz GLB<input type="file" id="dg3dFile" accept=".glb,model/gltf-binary" hidden></label>
         ${!gallery&&releaseId ? '<button class="btn" id="dg3dDelete">Usuń zapisany model 3D</button>' : ''}
       </div>
-      <p class="notice" id="dg3dNotice">${gallery ? 'Trzy strefy: Supercars, Racing, Pozostałe. Modele są uproszczonymi wizualizacjami 3D, nie wiernymi replikami Hot Wheels. Pokazujemy maksymalnie 12 egzemplarzy naraz.' : 'To interaktywna poglądowa sylwetka 3D, a nie wierny model tego konkretnego Hot Wheels. Przeciągnij palcem/myszką, aby obracać, i użyj gestu szczypania lub kółka, aby przybliżać. Własne pliki .glb zapisują się wyłącznie na tym urządzeniu (bez synchronizacji chmurowej).'}</p>
-      ${gallery ? '<div class="dg3d-controls"><button class="btn" id="dg3dPrev">← Poprzednie auta</button><span id="dg3dPageLabel" class="meta"></span><button class="btn" id="dg3dNext">Następne auta →</button></div><div id="dg3dCars" class="meta"></div>' : ''}
+      <p class="notice" id="dg3dNotice">${gallery ? (packPreview ? 'Poglądowa wizualizacja samochodów wymienionych w multipacku. Nie potwierdza kolorów ani zgodności z dokładnym wydaniem; modele 3D nie są skanami oryginalnych Hot Wheels.' : 'Trzy strefy: Supercars, Racing, Pozostałe. Modele są uproszczonymi wizualizacjami 3D, nie wiernymi replikami Hot Wheels. Pokazujemy maksymalnie 12 egzemplarzy naraz.') : 'To interaktywna poglądowa sylwetka 3D, a nie wierny model tego konkretnego Hot Wheels. Przeciągnij palcem/myszką, aby obracać, i użyj gestu szczypania lub kółka, aby przybliżać. Własne pliki .glb zapisują się wyłącznie na tym urządzeniu (bez synchronizacji chmurowej).'}</p>
+      ${gallery && !packPreview ? '<div class="dg3d-controls"><button class="btn" id="dg3dPrev">← Poprzednie auta</button><span id="dg3dPageLabel" class="meta"></span><button class="btn" id="dg3dNext">Następne auta →</button></div><div id="dg3dCars" class="meta"></div>' : ''}
     </div></div>`;
   const stage = root.querySelector('#dg3dStage');
   const scene = new THREE.Scene();
   scene.background = new THREE.Color('#10141b');
   const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
-  const startPosition = gallery ? [18, 12, 19] : [6.4, 4.5, 6.6];
+  const startPosition = packPreview ? [12, 9, 14] : gallery ? [18, 12, 19] : [6.4, 4.5, 6.6];
   camera.position.set(...startPosition);
   const renderer = new THREE.WebGLRenderer({antialias: true, alpha: false});
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -184,7 +185,7 @@ export function openViewer(model, root) {
   let active = gallery ? null : createCar(bodyColor(model.body_color || model.color_variant), name);
   if (active) modelGroup.add(active);
   scene.add(modelGroup);
-  if (gallery) {
+  if (gallery && !packPreview) {
     let galleryPage = 0;
     const zones = [
       {name:'SUPERCARS', filter:m=>m.vehicle_class==='supercar_hypercar', color:'#d43542'},
@@ -227,6 +228,29 @@ export function openViewer(model, root) {
     root.querySelector('#dg3dPrev').addEventListener('click',()=>showPage(galleryPage-1));
     root.querySelector('#dg3dNext').addEventListener('click',()=>showPage(galleryPage+1));
     showPage(0);
+  }
+  if (packPreview) {
+    const cars = gallery.slice(0, 12);
+    const columns = Math.min(3, Math.max(1, Math.ceil(Math.sqrt(cars.length || 1))));
+    const rows = Math.ceil(cars.length / columns);
+    const lane = new THREE.Mesh(
+      new THREE.BoxGeometry(Math.max(7, columns * 5.7), 0.12, Math.max(6, rows * 3.6)),
+      new THREE.MeshStandardMaterial({ color:'#292f3c', metalness:0.22, roughness:0.68 })
+    );
+    lane.position.y = 0.02;
+    lane.receiveShadow = true;
+    modelGroup.add(lane);
+    cars.forEach((item, i) => {
+      const car = createCar(bodyColor(item.body_color || item.color_variant), item.canonical_name || item.model_name_as_source);
+      car.scale.setScalar(0.69);
+      car.position.set((i % columns - (columns - 1)/2)*5.55, 0.14, (Math.floor(i/columns)-(rows-1)/2)*3.55);
+      modelGroup.add(car);
+    });
+    const note = document.createElement('div');
+    note.className = 'meta';
+    note.style.marginTop = '8px';
+    note.textContent = 'Na ekspozycji: ' + cars.map(car => car.canonical_name || car.model_name_as_source || 'Nieznany model').join(' · ') + (gallery.length > 12 ? ' · + ' + (gallery.length - 12) + ' kolejnych pozycji' : '');
+    stage.insertAdjacentElement('afterend', note);
   }
   const resizeObserver = new ResizeObserver(() => {
     if (!stage.isConnected) return;
