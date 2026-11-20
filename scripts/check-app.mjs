@@ -513,7 +513,7 @@ assert.equal(reissue2002.length, 3, '2002 reissue assortments are kept separatel
 assert.equal(reissue2002Contents.length, 17, 'Two five-pack variants and one seven-pack birthday variant contain 17 entries');
 assert.ok(reissue2002.every(p => reissue2002Contents.filter(c => c.pack_id === p.pack_id).length === (p.pack_type.startsWith('7') ? 7 : 5)), '2002 reissues preserve their actual assortment sizes');
 
-const packs2001 = seedData2022.packs.filter(p => p.release_year === 2001 && p.pack_id.startsWith('hw-'));
+const packs2001 = seedData2022.packs.filter(p => p.release_year === 2001 && p.pack_id.startsWith('hw-') && p.pack_type !== '5-pack variant');
 const contents2001 = seedData2022.pack_contents.filter(p => packs2001.some(pack => pack.pack_id === p.pack_id));
 assert.equal(packs2001.length, 12, '2001 adds ten five-packs and two six-packs');
 assert.equal(contents2001.length, 62, '2001 pack catalogue includes 62 vehicle entries');
