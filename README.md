@@ -128,3 +128,8 @@ The repository is public, so source code is visible. User collection rows are no
 - The Wiki v6 importer checks the number of JSONL records against the separately published `catalog/wiki-stats.json` manifest before marking an import complete; a mismatch is treated as incomplete.
 - The application explicitly labels a local Wiki v6 index as completed versus partial / unconfirmed.
 - Importers reconcile identical casting families across distinct source-specific IDs while keeping exact-release matching conservative.
+
+## Storage and backups v1.98
+
+- The account panel offers a read-only browser storage estimate, warns that deleting Safari/browser data can remove local collections and IndexedDB GLB files, and provides a one-click JSON collection backup shortcut.
+- This storage diagnostic does **not** provide an automatic cloud backup; private cross-device collection/GLB sync still requires a configured Supabase account.
