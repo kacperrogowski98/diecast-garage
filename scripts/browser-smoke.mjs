@@ -83,6 +83,10 @@ try {
  }
  await page.locator('#search').fill('');
  await page.locator('[data-view="packs"]').click();
+ await page.locator('button:has-text("2015 ·")').first().click();
+ assert.equal(await page.locator('[aria-label="Rok multipacka"]').inputValue(),'2015','Coverage button should select requested year');
+ await page.locator('[aria-label="Rok multipacka"]').selectOption('all');
+ await page.locator('#packSearchField').fill('');
  await page.locator('[aria-label="Typ zestawu"]').selectOption('5pack');
  assert.ok(await page.locator('#packList .car').count()>0,'5-pack filter must list real packages');
  await page.locator('[aria-label="Źródło zestawu"]').selectOption('starter');
