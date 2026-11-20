@@ -133,3 +133,9 @@ The browser app can import the upstream scan index and lazily load year/assortme
 ## 2014 five-packs
 
 - Wheel Wonderland 2014: https://www.wheelwonderland.com/fr/5-packs/2014/ — 18 complete numbered package compositions / 90 entries added; existing Ferrari and HW Exotics packs were not duplicated.
+
+
+## 2012–2013 five-packs
+
+- Wheel Wonderland 2012: https://www.wheelwonderland.com/fr/5-packs/2012/ — 16 complete numbered five-packs / 80 entries plus the six-car Halloween assortment.
+- Wheel Wonderland 2013: https://www.wheelwonderland.com/fr/5-packs/2013/ — 22 complete numbered five-packs / 110 entries, including three separately numbered HW Test Facility packs. The curated Ferrari pack was not duplicated.
