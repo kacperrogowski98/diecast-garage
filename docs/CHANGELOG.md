@@ -1,3 +1,9 @@
+## v1.53 — 20 November 2026
+
+- Added three complete 1995 five-packs and two six-packs (27 vehicle entries): Emergency Squad, Ford, Track System, Chevrolet and Hot Wheels Race Team.
+- Kept the pre-existing Ferrari 1995 pack separate to avoid duplicate records.
+- Preserved numbered contents, colours, source links and verification flags.
+
 ## v1.52 — 20 November 2026
 
 - Added nine complete numbered 1996 five-packs (45 vehicle entries): 50's Favorites, 60's Muscle Cars, Auto City, Baywatch, Camaro, Construction Crew, Corvette, Just Trucks and Porsche.
