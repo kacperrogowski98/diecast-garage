@@ -14,7 +14,7 @@ const context=vm.createContext({
  DG_PACK_CHECK_KEY:'pack-last-check',
  DecompressionStream:class {},
  Response:class{constructor(stream){this.stream=stream}async text(){return packs}},
- fetch:async url=>{requested.push(url);return {ok:true,body:{}}},
+ fetch:async url=>{requested.push(url);return {ok:true,body:{pipeThrough(){return {}}}}},
  dgNormalizeWikiPack:r=>({pack_id:r.title,pack_name:r.title,contents:r.members}),
  dgStoreWikiPacks:async arr=>{written=arr.length},
  wikiPacks,
