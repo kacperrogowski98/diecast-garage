@@ -37,7 +37,7 @@ let dgReleaseIndexCache=null;
 function dgReleaseById(id){if(!id)return null;let models=allModels();if(dgReleaseIndexCache?.models!==models){dgReleaseIndexCache={models,index:new Map(models.map(m=>[m.release_id||m.custom_id||m.id,m]))}}return dgReleaseIndexCache.index.get(id)||null}
 // External catalog adapter. Catalog records live in IndexedDB, never in collection localStorage.
 const DG_CATALOG_DB='diecast_garage_catalog_v1',DG_CATALOG_STORE='releases',DG_PACK_STORE='wiki_packs',DG_MESH_STORE='meshes3d';let wikiPacks=[];let dgCatalogReady=Promise.resolve();
-const DG_CATALOG_REFRESH_KEY='diecast_garage_catalog_refresh_v1',DG_CATALOG_REFRESH_INTERVAL=7*24*60*60*1000;const DG_WIKI_CHECK_KEY='diecast_garage_wiki_catalog_last_attempt_v1',DG_PACK_CHECK_KEY='diecast_garage_wiki_pack_last_attempt_v1';
+const DG_CATALOG_REFRESH_KEY='diecast_garage_catalog_refresh_v1',DG_CATALOG_REFRESH_INTERVAL=7*24*60*60*1000;const DG_WIKI_CHECK_KEY='diecast_garage_wiki_catalog_last_attempt_v1',DG_PACK_CHECK_KEY='diecast_garage_wiki_pack_last_attempt_v1',DG_WIKI_COMPLETE_KEY='diecast_garage_wiki_complete_v1';
 function dgCatalogNeedsRefresh(){let last=0;try{last=Number(localStorage.getItem(DG_CATALOG_REFRESH_KEY))||0}catch(_){}return !last||Date.now()-last>=DG_CATALOG_REFRESH_INTERVAL}
 const DG_BRANDS=['Abarth','Acura','Alfa Romeo','Alpine','AMC','Ariel','Aston Martin','Audi','Austin','BAC','Bentley','BMW','Bugatti','Buick','Cadillac','Caterham','Chevrolet','Chrysler','Citroen','Cupra','Dacia','Datsun','De Tomaso','DeLorean','Dodge','Donkervoort','DS','Ferrari','Fiat','Fisker','Ford','Gordon Murray Automotive','GMC','Holden','Honda','Hummer','Hyundai','Infiniti','Isuzu','Jaguar','Jeep','Kia','Koenigsegg','KTM','Lamborghini','Lancia','Land Rover','Lexus','Ligier','Lincoln','Lotus','Lucid','Maserati','Mazda','McLaren','McMurtry','Mercedes-Benz','Mercedes-AMG','Mercury','MG','Mini','Mitsubishi','Morgan','Mosler','NIO','Nissan','Noble','Opel','Pagani','Panoz','Peugeot','Plymouth','Polestar','Pontiac','Porsche','Radical','Renault','Rimac','Rolls-Royce','Rover','Saab','Saleen','Saturn','Scion','Shelby','Smart','Spyker','SSC','Subaru','Suzuki','Tesla','Toyota','TVR','Volkswagen','Volvo','Wiesmann'];
 const DG_BRAND_ALIASES={'GMA':'Gordon Murray Automotive','Gordon Murray':'Gordon Murray Automotive','Gordon Murray Automotive':'Gordon Murray Automotive','McMurtry Automotive':'McMurtry','Mercedes Benz':'Mercedes-Benz','Mercedes AMG':'Mercedes-AMG','VW':'Volkswagen','A.M.C.':'AMC','De Tomaso':'De Tomaso','Cupra':'CUPRA'};
@@ -112,6 +112,7 @@ async function dgImportWikiReleaseStream(stream){
   await flush();
  }finally{reader.releaseLock()}
  if(valid<10000)throw new Error('Niekompletne archiwum Wiki v6: '+valid+' poprawnych wydań');
+ try{localStorage.setItem(DG_WIKI_COMPLETE_KEY,JSON.stringify({valid,total,completedAt:Date.now()}))}catch(_){}
  importedCatalog=[...map.values()];
  dgCachedModels=null;
  state.brands=[...brands];
@@ -550,7 +551,7 @@ async function dgCloudPull(){
  }
 }
 
-dgInitClient();dgInitCatalogImport();dgLoadWikiStats();document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===view));dgRefreshFilters();render();dgCatalogReady=dgLoadCatalog();dgCatalogReady.then(async()=>{dgRefreshFilters();render();if(/^https?:$/.test(location.protocol)){const needsMain=!importedCatalog.length||dgCatalogNeedsRefresh();if(needsMain)await dgFetchOnlineCatalog();const wikiLoaded=importedCatalog.some(x=>x.source==='hotwheels-wiki-v6');const lastWikiCheck=Number(localStorage.getItem(DG_WIKI_CHECK_KEY)||0);const wikiInterval=wikiLoaded?30*24*60*60*1000:24*60*60*1000;if(!lastWikiCheck||Date.now()-lastWikiCheck>=wikiInterval||(wikiLoaded&&!wikiPacks.length&&Date.now()-Number(localStorage.getItem(DG_PACK_CHECK_KEY)||0)>24*60*60*1000))await dgFetchWikiV6Catalog(true);if(!importedCatalog.some(x=>x.source==='hotwheels-data'))await dgFetchExtendedCatalog();}});
+dgInitClient();dgInitCatalogImport();dgLoadWikiStats();document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===view));dgRefreshFilters();render();dgCatalogReady=dgLoadCatalog();dgCatalogReady.then(async()=>{dgRefreshFilters();render();if(/^https?:$/.test(location.protocol)){const needsMain=!importedCatalog.length||dgCatalogNeedsRefresh();if(needsMain)await dgFetchOnlineCatalog();const wikiLoaded=importedCatalog.some(x=>x.source==='hotwheels-wiki-v6');const lastWikiCheck=Number(localStorage.getItem(DG_WIKI_CHECK_KEY)||0);let completedWiki=null;try{completedWiki=JSON.parse(localStorage.getItem(DG_WIKI_COMPLETE_KEY)||'null')}catch(_){}const wikiIncomplete=!completedWiki||!Number.isInteger(completedWiki.valid)||completedWiki.valid<10000;const wikiInterval=wikiLoaded&&!wikiIncomplete?30*24*60*60*1000:24*60*60*1000;if(!lastWikiCheck||Date.now()-lastWikiCheck>=wikiInterval||(wikiLoaded&&!wikiPacks.length&&Date.now()-Number(localStorage.getItem(DG_PACK_CHECK_KEY)||0)>24*60*60*1000))await dgFetchWikiV6Catalog(true);if(!importedCatalog.some(x=>x.source==='hotwheels-data'))await dgFetchExtendedCatalog();}});
 </script>
 <script>
 // PWA shell caching. Cloud sync still requires an internet connection.
