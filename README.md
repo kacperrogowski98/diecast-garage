@@ -10,7 +10,7 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 
 ## Current capabilities
 
-- Interactive 3D garage preview for individual releases, with colour-aware procedural car body, touch/mouse orbit and local GLB preview. It is **not** a verified 3D scan of any particular Hot Wheels release.
+- Interactive 3D garage preview for individual releases, with colour-aware procedural car body, touch/mouse orbit and locally persisted per-release GLB models (up to 25 MB each, stored in IndexedDB). It is **not** a verified 3D scan of any particular Hot Wheels release.
 - Three-zone 3D collector showroom (Supercars, Racing, Other) with up to four owned vehicles per zone and page controls. Visual representations are generic; multiple exact diecast meshes are not yet included.
 - Three.js and GLB import dependencies are bundled into the published `viewer3d.js` using esbuild; browser runtime does not require remote CDN and the PWA caches the bundled viewer for offline use.
 - Responsive single-page collector app (index.html) with Garage, Catalogue, Wishlist, Racing, Brands and Multipacks views. On a fresh collection the catalogue opens first; returning collectors with owned cars see their garage.
