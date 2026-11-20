@@ -1,3 +1,10 @@
+## v1.41 — 20 November 2026
+
+- Added 15 numbered 2008 five-packs plus the Ferrari GT 5-Pack (80 vehicles total), including General Motors, Heat Fleet, Max Steel and Top Speed GT.
+- Added 10 numbered 2007 five-packs (50 vehicles) plus the Easter Eggs-Treme 8-Pack, Fright Cars 7-Pack and Gotham City 6-Pack.
+- Existing 2007 Exotics and Ferrari packs were retained; variant-only rows were excluded from base pack compositions.
+- Added exact pack-size tests for the 6-, 7- and 8-car assortments.
+
 ## v1.40 — 20 November 2026
 
 - Added 16 complete numbered 2009 five-packs (80 vehicle entries), including Dream Garage, Easter Raceway, HW Daredevils, Mustang 45th, Track Aces, Volcano Shooters and World Racers.
