@@ -1,3 +1,9 @@
+## v1.25 — 20 November 2026
+
+- Multipack contents without casting IDs are now linked to the main catalogue only when normalized model names produce one unique exact match.
+- Ambiguous and unmatched pack contents are explicitly labelled instead of being guessed; uniquely linked contents can now correctly reflect owned-model status.
+- Added regression checks for conservative matching and visible match-status labels.
+
 ## v1.24 — 20 November 2026
 
 - Added 2007 Exotics and 2011 HW Exotics five-packs, 10 source-linked vehicle entries from the community catalogue.
