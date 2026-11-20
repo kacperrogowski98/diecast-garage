@@ -12,6 +12,8 @@ assert.ok(shellHtml.includes("t.dataset.view===view"), 'Initially active tab mus
 assert.ok(shellHtml.includes('const PACK_PAGE_SIZE=36') && shellHtml.includes('function renderPackGrid()'), 'Multipack catalogue must render in bounded pages');
 assert.ok(shellHtml.includes('id="packSearchField"') && shellHtml.includes('contentIndex.get(p.pack_id)'), 'Multipack search must index vehicles inside each pack');
 assert.ok(shellHtml.includes('packYear=this.value;packPage=0;renderPackGrid()'), 'Multipack year filter must update visible cards');
+assert.ok(shellHtml.includes('function dgPacksForModel(model)') && shellHtml.includes('W jakich multipackach występuje?'), 'Model details must link to matching multipacks');
+assert.ok(shellHtml.includes('Kolor i konkretne wydanie mogą się różnić'), 'Matching multipacks must not be represented as exact release matches');
 assert.ok(!shellHtml.includes('const SEED='), 'Large source catalogue must be separate from the HTML shell');
 const manifest = JSON.parse(fs.readFileSync('manifest.webmanifest', 'utf8'));
 const schema = fs.readFileSync('supabase/schema.sql', 'utf8');
