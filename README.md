@@ -12,7 +12,7 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 
 - Responsive single-page collector app (index.html) with Garage, Catalogue, Wishlist, Racing, Brands and Multipacks views.
 - Add/edit owned models, wishlist entries, multiple copies, purchase details, notes and photos.
-- Add, edit and delete custom multipacks with year, pack type, code, model list and notes; built-in multipack coverage currently includes 569 pack records / 2,842 vehicle entries, with source and verification status retained.
+- Add, edit and delete custom multipacks with year, pack type, code, model list and notes; built-in multipack coverage currently includes 579 pack records / 2,892 vehicle entries, with source and verification status retained.
 - Link pack contents to catalogue castings through conservative unique exact-name matching; ambiguous and unmatched entries remain clearly marked.
 - Local collection persistence in browser storage, catalogue persistence in IndexedDB.
 - Backup export/import in JSON.
@@ -29,7 +29,7 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 
 ## Important current limitations
 
-- The online index is a broad release-level catalogue: upstream coverage is Mainline 1968–2027, Premium 2012–2027 and Silver Series 2009 plus 2012–2027 (about 17,800 releases). This is distinct from the 72 locally seeded casting records and the 537 built-in multipack records. It is not a fully verified global Hot Wheels database; promotional products, regional exclusives and many variants still need separate sources.
+- The online index is a broad release-level catalogue: upstream coverage is Mainline 1968–2027, Premium 2012–2027 and Silver Series 2009 plus 2012–2027 (about 17,800 releases). This is distinct from the 72 locally seeded casting records and the 579 built-in multipack records. It is not a fully verified global Hot Wheels database; promotional products, regional exclusives and many variants still need separate sources.
 - Brand and Supercar/Hypercar classification are partly heuristic and need review. Unknown values must remain unknown; do not treat automated classifications as verified facts.
 - The catalogue is currently stored per browser/device in IndexedDB. It is not yet served from the app's Supabase catalogue tables.
 - Collection sync is user-triggered, not real-time/background. Atomic normalized sync requires applying `supabase/migrations/20261118_atomic_collection_sync.sql` in the connected Supabase project; until then, the app falls back to the legacy JSON snapshot.
