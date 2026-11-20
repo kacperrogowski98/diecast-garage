@@ -3,7 +3,11 @@ import vm from 'node:vm';
 import { spawnSync } from 'node:child_process';
 import assert from 'node:assert/strict';
 
-const html = fs.readFileSync('index.html', 'utf8');
+const shellHtml = fs.readFileSync('index.html', 'utf8');
+const seedScript = fs.readFileSync('seed.js', 'utf8');
+const html = shellHtml.replace('const KEY=', seedScript + '\nconst KEY=');
+assert.ok(shellHtml.includes('<script src="./seed.js"></script>'), 'App shell must load the local source catalogue before main script');
+assert.ok(!shellHtml.includes('const SEED='), 'Large source catalogue must be separate from the HTML shell');
 const manifest = JSON.parse(fs.readFileSync('manifest.webmanifest', 'utf8'));
 const schema = fs.readFileSync('supabase/schema.sql', 'utf8');
 const syncMigration = fs.readFileSync('supabase/migrations/20261118_atomic_collection_sync.sql', 'utf8');
@@ -11,9 +15,9 @@ const syncVerification = fs.readFileSync('supabase/verify_sync_setup.sql', 'utf8
 const serviceWorker = fs.readFileSync('sw.js', 'utf8');
 
 assert.match(html, /<html lang="pl">/i, 'Polish document language is present');
-assert.ok(html.includes('<title>Diecast Garage · v1.74</title>'), 'Current app release title must be v1.74');
-assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.74') && html.includes('Diecast Garage · v1.74 ·'), 'Visible app version labels must match the release title');
-assert.ok(serviceWorker.includes('diecast-garage-shell-v1.74.0'), 'PWA shell cache must be versioned with the current release');
+assert.ok(html.includes('<title>Diecast Garage · v1.75</title>'), 'Current app release title must be v1.75');
+assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.75') && html.includes('Diecast Garage · v1.75 ·'), 'Visible app version labels must match the release title');
+assert.ok(serviceWorker.includes('diecast-garage-shell-v1.75.0'), 'PWA shell cache must be versioned with the current release');
 assert.match(html, /id="content"/, 'Main app content mount exists');
 assert.match(html, /id="assortmentFilter"/, 'Catalogue assortment filter exists');
 assert.match(html, /id="sortFilter"/, 'Catalogue sort control exists');
