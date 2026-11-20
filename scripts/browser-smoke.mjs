@@ -64,6 +64,10 @@ try {
    await page.locator('#modalRoot button:has-text("Zamknij")').click();
  }
  await page.locator('[data-view="packs"]').click();
+ await page.locator('[aria-label="Typ zestawu"]').selectOption('5pack');
+ assert.ok(await page.locator('#packList .car').count()>0,'5-pack filter must list real packages');
+ await page.locator('[aria-label="Źródło zestawu"]').selectOption('starter');
+ assert.ok(await page.locator('#packList .car').count()>0,'Starter pack source must be selectable');
  await page.locator('#packList .btn:has-text("Zawartość")').first().click();
  assert.ok(await page.locator('#modalRoot .modal').count(),'Multipack details should open');
  const pack3d=page.locator('#modalRoot button:has-text("Podgląd zestawu 3D")');
