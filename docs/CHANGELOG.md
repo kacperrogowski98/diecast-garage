@@ -1,3 +1,9 @@
+## v1.36 — 20 November 2026
+
+- Added 16 complete numbered 2015 five-packs (80 vehicle entries), including Batman, Color Splash Science Lab, Dino Riders, Nitrobot Attack, Origin of Awesome and X-Raycers.
+- Existing 2015 HW Exotics pack was retained without duplication; incomplete/variant-only rows were not guessed into extra packs.
+- Added source-listed colours and source provenance with packaging-photo verification flags.
+
 ## v1.35 — 20 November 2026
 
 - Filled seven previously empty Ferrari 5-Pack records from 2009–2014, including both 2009 five-car assortments (35 vehicle entries).
