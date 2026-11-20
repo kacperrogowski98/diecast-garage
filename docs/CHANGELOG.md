@@ -1,3 +1,9 @@
+## v1.60 — 20 November 2026
+
+- Added 10 additional 2017 five-pack reissue/colour variants (50 vehicle entries): Batman, Dino Riders, HW City Works, HW Exotics, HW Flames, HW Snow Stormers, Muscle Mania, Street Beasts, Track Builder and Track Stars.
+- Kept each reissue separate from its base assortment and marked it as a variant; the incomplete 3-car Speed Graphics colour run was not presented as a complete five-pack.
+- Added source provenance and packaging-photo verification flags.
+
 ## v1.59 — 20 November 2026
 
 - Reviewed five alternate-colour 2008 five-pack series: Easter Speedsters, Heat Fleet, Rescue Rods, Scary Cars and Trick Tracks.
