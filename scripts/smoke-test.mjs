@@ -103,6 +103,12 @@ try {
   await page.waitForFunction(() => document.querySelector('#ownedCount')?.textContent === '1');
 
   await page.locator('.tab[data-view="packs"]').click();
+  assert.equal(await page.locator('#packList .car').count(),36,'Multipack browser should initially show at most 36 packs');
+  await page.locator('#packSearchField').fill('HFV80');
+  await page.waitForFunction(() => document.querySelectorAll('#packList .car').length === 1);
+  assert.match(await page.locator('#packList .car').first().innerText(), /HFV80/, 'Multipack search should find package codes');
+  await page.locator('#packSearchField').fill('');
+  await page.waitForFunction(() => document.querySelectorAll('#packList .car').length === 36);
   await page.getByRole('button', { name: /Dodaj własny multipack/ }).click();
   await page.locator('#customPackName').fill('E2E Test 5-Pack');
   await page.locator('#customPackYear').fill('2026');
