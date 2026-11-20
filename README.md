@@ -1,6 +1,6 @@
 # Diecast Garage
 
-Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.97**.
+Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.98**.
 
 ## Live app
 
@@ -17,7 +17,8 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 - Responsive single-page collector app (index.html) with Garage, Catalogue, Wishlist, Racing, Brands and Multipacks views. On a fresh collection the catalogue opens first; returning collectors with owned cars see their garage.
 - Add/edit owned models, wishlist entries, multiple copies, purchase details, notes and photos.
 - Search multipacks by set name, catalogue code, year or a vehicle inside the pack; filter by year and page through 36 cards at a time.
-- Separate multipack wishlist, backed up and included in cloud collection snapshots; a purchased pack leaves its wishlist automatically. Pack cards and details show how many casting families from the pack are already owned, while warning that exact colour/year release matching is unverified.
+- Separate multipack wishlist, backed up and included in cloud collection snapshots; a purchased pack leaves its wishlist automatically.
+- Unified Wishlist shows hunted cars and multipacks together, with direct 5-pack acquisition actions. Pack cards and details show how many casting families from the pack are already owned, while warning that exact colour/year release matching is unverified.
 - Unified Wishlist screen now includes wanted 5-packs/multipacks as well as individual cars, with direct details and acquisition actions.
 - A missing multipack archive is retried on its own without fetching 57k vehicle records again; automated checks cover the standalone pack importer and cached-data fallback.
 - Pack details distinguish an owned exactly matched release from ownership of a casting family.
@@ -75,6 +76,12 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 
 The generated `catalog/wiki-stats.json` currently confirms **57,348 release/product rows and 859 pack rows**, together with compressed assets. These are source-documented records, not a deduplicated census of every Hot Wheels on Earth, and not a guarantee that each row is a car. The CI workflow now validates the compressed streams against this manifest before publishing.
 
+## Safety and first-run improvements
+
+- When only the 5-pack catalogue is missing, the app fetches its compressed pack archive separately instead of redownloading the full release history.
+- After an interrupted Wiki v6 import, previously cached catalogue data remains available, and an incomplete import is retried after a shorter backoff period.
+- Cloud collection download triggers a local JSON backup first, before replacing local data, to reduce accidental loss on a second device.
+
 ## Full Wiki v6 catalogue pipeline
 
 - `.github/workflows/wiki-catalog.yml` rebuilds the approximately 57,000-release Wiki v6 source via the documented MediaWiki API and upstream open-source parser, on the first workflow-file push, manually, and monthly.
@@ -110,13 +117,13 @@ The repository is public, so source code is visible. User collection rows are no
 4. Create/connect the real Supabase project, apply schema.sql (or the incremental migration on an existing project), run verify_sync_setup.sql and validate normalized sync on two devices/accounts.
 5. Validate Auth, RLS, Storage policies and cross-device behavior on phone and desktop.
 
-## Reliability update v1.97
+## Reliability update v1.98
 
 - A Wiki v6 import is considered complete only after all streamed batches and the final collection-state save succeed.
 - Multipack matching reconciles casting families shared across Ferrari seed and Wiki/diecastDb sources, without treating a same-name match as proof of an exact release. Matching by toy code, year and body color remains conservative.
 - Regression tests cover duplicate source casting IDs, cross-source 5-pack completion and failed import completion markers.
 
-## Reliability update v1.97
+## Reliability update v1.98
 
 - The Wiki v6 importer checks the number of JSONL records against the separately published `catalog/wiki-stats.json` manifest before marking an import complete; a mismatch is treated as incomplete.
 - The application explicitly labels a local Wiki v6 index as completed versus partial / unconfirmed.
