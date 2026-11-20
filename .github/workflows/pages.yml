@@ -24,6 +24,8 @@ jobs:
         uses: actions/configure-pages@v5
         with:
           enablement: true
+      - name: Validate application JavaScript and PWA assets
+        run: node scripts/validate-app.mjs
       - name: Bundle full catalogue index for reliable first launch
         shell: bash
         run: |
