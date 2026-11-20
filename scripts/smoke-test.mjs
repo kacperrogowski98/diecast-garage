@@ -68,6 +68,8 @@ try {
   const catalogRefreshedAt = await page.evaluate(() => Number(localStorage.getItem('diecast_garage_catalog_refresh_v1')));
   assert.ok(catalogRefreshedAt > 0, 'Successful catalogue import should record its refresh timestamp');
 
+  const linkedFerrariPacks = await page.evaluate(() => dgPacksForModel({canonical_name:'Ferrari F40',model_name_as_source:'Ferrari F40'}).map(p => p.pack_id));
+  assert.ok(linkedFerrariPacks.includes('ferrari-5pack-2014'),'Known Ferrari F40 family should link back to its sourced 2014 multipack');
   await page.locator('.tab[data-view="catalog"]').click();
   await page.locator('#search').fill('Ferrari');
   await page.waitForFunction(() => document.querySelectorAll('#content .car').length > 0);
