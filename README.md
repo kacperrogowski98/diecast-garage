@@ -1,6 +1,6 @@
 # Diecast Garage
 
-Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.80**.
+Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.81**.
 
 ## Live app
 
@@ -19,8 +19,8 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 - Open prefilled Hot Wheels searches on Allegro and eBay from any model detail; these links do not claim live stock, price or exact variant availability.
 - Local collection persistence in browser storage, catalogue persistence in IndexedDB.
 - Backup export/import in JSON.
-- PWA manifest, service worker and app icons for installation on supported phones/desktops.
-- Deployment workflow includes JavaScript/PWA validation and catalogue normalization tests (`node scripts/validate-app.mjs` and `node scripts/test-catalog.mjs`) before publishing.
+- PWA manifest, service worker and app icons for installation on supported phones/desktops. The service worker uses network-first HTML updates and cached offline fallback.
+- Deployment workflow includes JavaScript/PWA validation, catalogue normalization tests and a mobile Chromium smoke flow (`node scripts/validate-app.mjs`, `node scripts/test-catalog.mjs`, `node scripts/browser-smoke.mjs`) before publishing.
 - Automated Chromium smoke test covering PWA/offline behavior, online catalogue import, Mainline/Premium/Silver Series filtering, sorting, search, details, adding a car to the garage and creating, editing and deleting a custom multipack.
 - Mocked Supabase browser test covering atomic cloud push, normalized pull and stale-write conflict handling. This does not replace validation against a live Supabase project.
 - Optional Supabase Auth and manual collection sync. When the atomic sync migration is applied, one transaction updates the compatibility JSON snapshot and normalized garage/wishlist rows, with stale-write protection; older projects retain a clearly reported legacy fallback.
@@ -57,7 +57,7 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 
 - `.github/workflows/wiki-catalog.yml` rebuilds the approximately 57,000-release Wiki v6 source via the documented MediaWiki API and upstream open-source parser, on the first workflow-file push, manually, and monthly.
 - Successful jobs verify a minimum row count, publish `catalog/wiki-v6.jsonl.gz` and deploy Pages directly. This direct deployment is necessary because commits made using `GITHUB_TOKEN` do not automatically trigger another workflow.
-- On app launch, the optional prebuilt compressed dataset is imported to IndexedDB if not already present. A `Pełne Wiki v6` button can retry the import, and the JSON importer accepts independently generated `hotwheels_db_v6.jsonl` files.
+- On app launch, the optional prebuilt compressed dataset is imported to IndexedDB if not already present. The app retries a missing archive after 24 hours and refreshes successfully loaded data every 30 days. A `Pełne Wiki v6` button can retry the import, and the JSON importer accepts independently generated `hotwheels_db_v6.jsonl` files.
 - The external source labels version records as `product_type`, including non-vehicle records; their classifications and pack memberships are not guaranteed to be exhaustive or correct. Wiki v6 records can overlap with diecastDb.
 - The source project and generated data are licensed CC BY-SA 4.0, with attribution required. Photographs and trademarks may have separate rights. See https://github.com/ktrizolio/hotwheels-fandom-db for documentation.
 - **Do not claim a fully loaded 57k-release database until the workflow completes and the compressed file has been verified on the deployed website.** If the Fandom API or external parser fails, the app continues with the previously available indexed catalogue.
