@@ -1,6 +1,6 @@
 # Diecast Garage
 
-Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.92**.
+Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.93**.
 
 ## Live app
 
@@ -38,6 +38,7 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 - Combined catalogue filters for vehicle class, TH/STH rarity (only when marked in source), year, brand and assortment (Mainline / Premium / Silver Series), plus sorting by name, release year and brand.
 - Catalogue ownership filters distinguish exact releases already owned, missing or on the wishlist; an owned casting alone does not incorrectly mark every colour/year variant as collected.
 - Optional authenticated GLB synchronization uses a separate private Supabase Storage bucket (`diecast-models`), user-scoped by RLS; requires the 2026-11-20 SQL migration and live account setup.
+- Bulk transfer of private 3D GLB files from the cloud panel. A bulk upload never overwrites existing remote GLB data; downloads add only missing local files, and per-model replacement requires confirmation.
 - Indexed release lookup avoids a full multi-thousand-record scan for each garage or wishlist item, improving large collections on mobile.
 - Review and manually override heuristic vehicle classifications; user corrections are preserved separately from source catalogue data.
 - Automatic catalogue refresh every seven days, matching the upstream weekly data refresh; cached records remain usable if the network is unavailable.
