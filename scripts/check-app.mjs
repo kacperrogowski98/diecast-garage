@@ -11,9 +11,9 @@ const syncVerification = fs.readFileSync('supabase/verify_sync_setup.sql', 'utf8
 const serviceWorker = fs.readFileSync('sw.js', 'utf8');
 
 assert.match(html, /<html lang="pl">/i, 'Polish document language is present');
-assert.ok(html.includes('<title>Diecast Garage · v1.26</title>'), 'Current app release title must be v1.26');
-assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.26') && html.includes('Diecast Garage · v1.26 ·'), 'Visible app version labels must match the release title');
-assert.ok(serviceWorker.includes('diecast-garage-shell-v1.26.0'), 'PWA shell cache must be versioned with the current release');
+assert.ok(html.includes('<title>Diecast Garage · v1.27</title>'), 'Current app release title must be v1.27');
+assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.27') && html.includes('Diecast Garage · v1.27 ·'), 'Visible app version labels must match the release title');
+assert.ok(serviceWorker.includes('diecast-garage-shell-v1.27.0'), 'PWA shell cache must be versioned with the current release');
 assert.match(html, /id="content"/, 'Main app content mount exists');
 assert.match(html, /id="assortmentFilter"/, 'Catalogue assortment filter exists');
 assert.match(html, /id="sortFilter"/, 'Catalogue sort control exists');
@@ -35,6 +35,15 @@ assert.match(html, /dgFetchOnlineCatalog/, 'Online catalogue importer is wired')
 assert.ok(html.includes('https://cdn.jsdelivr.net/gh/danyjoy/diecastDb@main/data/scan-index.json'), 'Catalogue index must have a jsDelivr fallback');
 assert.ok(html.includes("let sources=['https://raw.githubusercontent.com/danyjoy/diecastDb/main/data/'+key+'.json','https://cdn.jsdelivr.net/gh/danyjoy/diecastDb@main/data/'+key+'.json','https://danyjoy.github.io/diecastDb/data/'+key+'.json']"), 'Lazy year-file enrichment must retry multiple public mirrors');
 assert.match(html, /marek rozpoznanych.*kandydatów Supercar\/Hypercar/, 'Catalogue import status must report recognized brands and supercar candidates');
+const seedMatch = html.match(/const SEED=(\\{.*?\\});\\nconst KEY/s);
+assert.ok(seedMatch, 'Seed catalogue JSON can be extracted for data integrity checks');
+const seedData = JSON.parse(seedMatch[1]);
+const packs2022 = seedData.packs.filter(p => p.pack_id.startsWith('hw-5pack-2022-'));
+const contents2022 = seedData.pack_contents.filter(p => p.pack_id.startsWith('hw-5pack-2022-'));
+assert.equal(packs2022.length, 18, '2022 five-pack catalogue includes all 18 distinct package codes/variants in the checklist');
+assert.equal(contents2022.length, 90, '2022 five-pack catalogue includes 90 vehicle entries');
+assert.ok(packs2022.every(p => contents2022.filter(c => c.pack_id === p.pack_id).length === 5), 'Every 2022 five-pack has exactly five listed contents');
+assert.ok(packs2022.every(p => p.source_url === 'https://www.wheelwonderland.com/en/5-packs/2022/'), 'Every 2022 pack retains its source provenance');
 assert.ok(html.includes('function packMatchKey(value)'), 'Pack contents use conservative normalized exact-name matching');
 assert.ok(html.includes("match_status:'exact'") && html.includes("ids.length>1?'ambiguous':'unmatched'"), 'Pack matching links only unique exact casting matches and flags ambiguity');
 assert.ok(html.includes('Połączono z katalogiem') && html.includes('Brak dokładnego dopasowania'), 'Pack details disclose catalogue matching status');
