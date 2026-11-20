@@ -21,6 +21,9 @@ try {
  await page.waitForFunction(()=>document.querySelector('#ownedCount')?.textContent==='1');
  assert.ok((await page.locator('#content').innerText()).includes('Diecast Smoke Test Ferrari F40'),'Owned car must survive reload and cached release lookup');
  await page.locator('#cloudBtn').click();
+ await page.locator('#modalRoot button:has-text("Sprawdź pamięć urządzenia")').click();
+ await page.waitForFunction(()=>!document.querySelector('#dgStorageStatus')?.textContent?.includes('Dane lokalne i pliki 3D nie są automatycznie chronione'));
+ assert.ok((await page.locator('#dgStorageStatus').innerText()).includes('Backup JSON')|| (await page.locator('#dgStorageStatus').innerText()).includes('backup kolekcji'));
  assert.equal(await page.locator('#modalRoot [data-cloud-auth]').count(),4,'Two collection and two 3D sync actions are required');
  assert.equal(await page.locator('#modalRoot [data-cloud-auth]:disabled').count(),4,'Cloud actions must be disabled when logged out');
  await page.locator('#modalRoot .modalhead button').click();
