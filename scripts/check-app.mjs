@@ -11,9 +11,9 @@ const syncVerification = fs.readFileSync('supabase/verify_sync_setup.sql', 'utf8
 const serviceWorker = fs.readFileSync('sw.js', 'utf8');
 
 assert.match(html, /<html lang="pl">/i, 'Polish document language is present');
-assert.ok(html.includes('<title>Diecast Garage · v1.18</title>'), 'Current app release title must be v1.18');
-assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.18') && html.includes('Diecast Garage · v1.18 ·'), 'Visible app version labels must match the release title');
-assert.ok(serviceWorker.includes('diecast-garage-shell-v1.18.0'), 'PWA shell cache must be versioned with the current release');
+assert.ok(html.includes('<title>Diecast Garage · v1.19</title>'), 'Current app release title must be v1.19');
+assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.19') && html.includes('Diecast Garage · v1.19 ·'), 'Visible app version labels must match the release title');
+assert.ok(serviceWorker.includes('diecast-garage-shell-v1.19.0'), 'PWA shell cache must be versioned with the current release');
 assert.match(html, /id="content"/, 'Main app content mount exists');
 assert.match(html, /id="assortmentFilter"/, 'Catalogue assortment filter exists');
 assert.match(html, /id="sortFilter"/, 'Catalogue sort control exists');
@@ -29,6 +29,8 @@ assert.match(html, /assortmentFilter==='all'\|\|x\.assortment===assortmentFilter
 assert.match(html, /getElementById\('assortmentFilter'\)\.addEventListener\('change'/, 'Assortment filter updates the catalogue');
 assert.match(html, /getElementById\('sortFilter'\)\.addEventListener\('change'/, 'Sort control updates the catalogue');
 assert.match(html, /dgFetchOnlineCatalog/, 'Online catalogue importer is wired');
+assert.match(html, /cdn\\.jsdelivr\\.net\\/gh\\/danyjoy\\/diecastDb/, 'Catalogue index and detail fetchers must have a jsDelivr fallback');
+assert.match(html, /async function dgGetYearFile[\\s\\S]*?sources=\\[/, 'Lazy year-file enrichment must retry multiple public mirrors');
 assert.match(html, /marek rozpoznanych.*kandydatów Supercar\/Hypercar/, 'Catalogue import status must report recognized brands and supercar candidates');
 assert.ok(html.includes('function addCustomPack()'), 'Collectors must be able to create custom multipacks');
 assert.ok(html.includes('function removeCustomPack('), 'Collectors must be able to delete custom multipacks');
@@ -79,7 +81,7 @@ const start = html.indexOf('const DG_BRANDS=');
 const end = html.indexOf('async function dgReadCatalogFile', start);
 assert.ok(start >= 0 && end > start, 'Catalogue normalizer source must be present');
 const context = { location: { href: 'https://app.test/' }, URL };
-vm.runInNewContext(html.slice(start, end) + '\nglobalThis.testNormalize = dgNormalizeRecord; globalThis.testExtract = dgExtractRows; globalThis.testClassify = dgClassify; globalThis.testSafeUrl = dgSafeHttpUrl;', context);
+vm.runInNewContext(html.slice(start, end) + '\nglobalThis.testNormalize = dgNormalizeRecord; globalThis.testExtract = dgExtractRows; globalThis.testClassify = dgClassify; globalThis.testSafeUrl = dgSafeHttpUrl; globalThis.testBrand = dgInferBrand;', context);
 
 const sample = {
   id: 'JBB06_1',
@@ -95,6 +97,9 @@ const sample = {
 const normalized = context.testNormalize(sample, 'diecastdb', 0, {});
 assert.equal(normalized.brand, 'Land Rover', 'Brand inference must recognize model names with a year prefix');
 assert.equal(context.testNormalize({title: "Custom '70 Honda N600", year: '1970', assortment: 'mainline'}, 'diecastdb', 1, {}).brand, 'Honda', 'Brand inference must find OEM names after custom prefixes');
+assert.equal(context.testBrand('2021 Bugatti Bolide'), 'Bugatti', 'Brand inference must handle year-prefixed hypercars');
+assert.equal(context.testBrand('Porsche 911 GT3'), 'Porsche', 'Brand inference must recognize Porsche casting names');
+assert.equal(context.testBrand('Mercedes Benz 300 SL'), 'Mercedes-Benz', 'Brand aliases must normalize Mercedes Benz spelling');
 assert.equal(normalized.release_year, 2025, 'Year must map from scan-index year field');
 assert.equal(normalized.assortment, 'mainline', 'Collection key must be retained');
 assert.equal(normalized.source_record_id, 'JBB06_1', 'Upstream source ID must be retained');
