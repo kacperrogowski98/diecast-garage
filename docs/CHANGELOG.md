@@ -1,3 +1,8 @@
+## v1.20 — 20 November 2026
+
+- Added the 2020 HW Exotics 5-Pack with all five vehicles listed in Mattel's official announcement: Cadillac Elmiraj, Jaguar F-Type Project 7, Porsche 911 GT3 RS, McLaren F1 GTR and Aston Martin V8 Vantage.
+- Added a source-backed regression check for the pack and its five contents.
+
 ## v1.19 — 20 November 2026
 
 - Added three-source fallback for catalogue index and lazy year-file downloads (GitHub raw, jsDelivr, GitHub Pages) to reduce CDN/network failures on mobile.
