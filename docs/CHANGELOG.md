@@ -1,3 +1,9 @@
+## v1.59 — 20 November 2026
+
+- Added five alternate-colour 2008 five-pack assortments (25 entries): Easter Speedsters, Heat Fleet, Rescue Rods, Scary Cars and Trick Tracks.
+- Kept alternate colourways distinct from the original numbered releases and labelled them as pack variants rather than inventing new toy numbers.
+- Source provenance and photo-verification status are shown for all variant records.
+
 ## v1.58 — 20 November 2026
 
 - Added nine early Hot Wheels five-packs from 1985–1987, covering 45 vehicles.
