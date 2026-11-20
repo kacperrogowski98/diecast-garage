@@ -24,6 +24,19 @@ try {
  await page.locator('#brandFilter').selectOption('Ferrari');
  await page.locator('[data-view="garage"]').click();
  assert.equal(await page.locator('#ownedCount').innerText(),'1');
- assert.ok(!errors.length,'Page JavaScript errors: '+errors.join(' | '));
- console.log('PASS browser smoke: mobile viewport, create/save, garage persistence, catalogue filters');
+ await page.locator('#showroomBtn').click();
+ await page.waitForFunction(()=>Boolean(document.querySelector('#dg3dStage canvas')||document.querySelector('#modalRoot')?.textContent?.includes('Garaż 3D niedostępny')));
+ if(await page.locator('#dg3dStage canvas').count()){
+   assert.equal(await page.locator('#dg3dNext').count(),1);
+   assert.equal(await page.locator('#dg3dPrev').count(),1);
+   assert.ok((await page.locator('#dg3dPageLabel').innerText()).includes('1 / 1'));
+   await page.locator('#dg3dClose').click();
+   assert.equal(await page.locator('#dg3dStage').count(),0);
+   console.log('PASS: 3D showroom rendered with owned models and closed cleanly');
+ }else{
+   console.warn('WARNING: WebGL unavailable in headless CI; verified 3D fallback screen');
+   await page.locator('#modalRoot button:has-text("Zamknij")').click();
+ }
+  assert.ok(!errors.length,'Page JavaScript errors: '+errors.join(' | '));
+ console.log('PASS browser smoke: mobile viewport, create/save, garage persistence, catalogue filters, 3D showroom fallback');
 } finally {await browser.close();}
