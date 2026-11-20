@@ -1,6 +1,6 @@
 # Diecast Garage
 
-Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.89**.
+Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.90**.
 
 ## Live app
 
@@ -22,6 +22,8 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 - Link pack contents to catalogue castings through conservative unique exact-name matching; ambiguous and unmatched entries remain clearly marked.
 - Show catalogue-sourced representative car photographs within pack contents where a linked casting/unique name has an image, explicitly labelled as illustrative rather than the verified exact colour variant.
 - Filter packs to 5-packs only and switch between seed, Wiki v6 and user-created pack sources.
+- Filter multipacks by ownership (in garage vs still missing); conservative toy/year/color matching now explicitly separates exact variant candidates from generic casting-family matches.
+- Front and back packaging photos can be attached to each owned multipack, resized in the browser and included in collection backups.
 - Show matching multipack appearances inside each model's details (name-family matches only; colours and exact releases may differ).
 - Open prefilled Hot Wheels searches on Allegro and eBay from any model detail; these links do not claim live stock, price or exact variant availability.
 - Local collection persistence in browser storage, catalogue persistence in IndexedDB. Catalogue rendering caches prepared models and debounces search for larger databases.
