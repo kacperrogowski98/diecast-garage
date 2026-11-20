@@ -18,6 +18,10 @@ try {
  await page.waitForFunction(()=>document.querySelector('#ownedCount')?.textContent==='1');
  assert.ok((await page.locator('#content').innerText()).includes('Diecast Smoke Test Ferrari F40'));
  await page.locator('[data-view="catalog"]').click();
+ assert.equal(await page.locator('#ownershipFilter').count(),1);
+ await page.locator('#ownershipFilter').selectOption("owned");
+ assert.ok((await page.locator('#resultCount').innerText()).includes("1 wydań"),"Only owned variant must remain visible");
+ await page.locator('#ownershipFilter').selectOption("all");
  assert.equal(await page.locator('#rarityFilter').count(),1);
  assert.equal(await page.locator('#sourceFilter').count(),1);
  await page.locator('#search').fill('Ferrari F40');
