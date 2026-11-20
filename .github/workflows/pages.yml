@@ -28,6 +28,8 @@ jobs:
         run: node scripts/validate-app.mjs
       - name: Validate catalog normalization and classification
         run: node scripts/test-catalog.mjs
+      - name: Verify full Wiki v6 archive and 5-pack contents
+        run: node scripts/validate-full-catalog.mjs
       - name: Install Chromium and local 3D build dependencies
         run: |
           npm install --no-save playwright three@0.170.0 esbuild@0.24.2
