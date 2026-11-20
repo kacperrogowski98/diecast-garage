@@ -416,6 +416,18 @@ const packs2007 = seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-
 const contents2007 = seedData2022.pack_contents.filter(p => packs2007.some(pack => pack.pack_id === p.pack_id));
 assert.equal(packs2007.length, 10, '2007 adds 10 numbered non-Exotics five-packs');
 assert.equal(contents2007.length, 50, '2007 numbered five-pack catalogue includes 50 vehicle entries');
+
+const variants2007 = seedData2022.packs.filter(p => p.release_year === 2007 && p.pack_type === '5-pack variant');
+const variantContents2007 = seedData2022.pack_contents.filter(c => variants2007.some(p => p.pack_id === c.pack_id));
+assert.equal(variants2007.length, 4, '2007 includes four five-pack reissue variants');
+assert.equal(variantContents2007.length, 20, '2007 five-pack reissues include 20 vehicle entries');
+assert.ok(variants2007.every(p => variantContents2007.filter(c => c.pack_id === p.pack_id).length === 5), 'Every 2007 five-pack reissue has five vehicles');
+const multipackVariants2007 = seedData2022.packs.filter(p => p.release_year === 2007 && ['7-pack variant','8-pack variant'].includes(p.pack_type));
+const multipackVariantContents2007 = seedData2022.pack_contents.filter(c => multipackVariants2007.some(p => p.pack_id === c.pack_id));
+assert.equal(multipackVariants2007.length, 2, '2007 preserves the Easter Eggs-Treme 8-pack and Fright Cars 7-pack reissues');
+assert.equal(multipackVariantContents2007.length, 15, '2007 larger reissue assortments include all 15 listed vehicles');
+assert.ok(multipackVariants2007.every(p => multipackVariantContents2007.filter(c => c.pack_id === p.pack_id).length === (p.pack_type === '8-pack variant' ? 8 : 7)), '2007 multipack reissues retain their original assortment sizes');
+
 const reissue2007 = seedData2022.packs.filter(p => p.pack_id.includes('2007-reissue-'));
 const reissue2007Contents = seedData2022.pack_contents.filter(c => reissue2007.some(p => p.pack_id === c.pack_id));
 assert.equal(reissue2007.length, 6, '2007 reissue assortments are retained separately from the base packs');
