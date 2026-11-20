@@ -63,6 +63,24 @@ try {
    console.warn('WARNING: WebGL unavailable in headless CI; verified 3D fallback screen');
    await page.locator('#modalRoot button:has-text("Zamknij")').click();
  }
+ await page.locator('[data-view="packs"]').click();
+ await page.locator('#packList .btn:has-text("Zawartość")').first().click();
+ assert.ok(await page.locator('#modalRoot .modal').count(),'Multipack details should open');
+ const pack3d=page.locator('#modalRoot button:has-text("Podgląd zestawu 3D")');
+ assert.equal(await pack3d.count(),1,'Pack details must expose 3D preview');
+ const packRows=await page.locator('#modalRoot .modal').innerText();
+ if(!packRows.includes('Brak udokumentowanej zawartości')){
+   await pack3d.click();
+   await page.waitForFunction(()=>Boolean(document.querySelector('#dg3dStage canvas')||document.querySelector('#modalRoot')?.textContent?.includes('Podgląd zestawu niedostępny')));
+   if(await page.locator('#dg3dStage canvas').count()){
+     assert.ok((await page.locator('#dg3dNotice').innerText()).includes('Poglądowa wizualizacja'));
+     await page.locator('#dg3dClose').click();
+     console.log('PASS: multipack 3D visualization renders and closes');
+   }else{
+     console.warn('WARNING: WebGL unavailable for multipack preview in CI');
+     await page.locator('#modalRoot button:has-text("Zamknij")').click();
+   }
+ }
   assert.ok(!errors.length,'Page JavaScript errors: '+errors.join(' | '));
  console.log('PASS browser smoke: mobile viewport, create/save, garage persistence, catalogue filters, 3D showroom fallback');
 } finally {await browser.close();}
