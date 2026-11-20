@@ -26,7 +26,8 @@ const progressEnd=html.indexOf('let packSearch=',progressStart);
 assert.ok(progressStart>0&&progressEnd>progressStart,'Pack completion logic missing');
 const progressCtx=vm.createContext({
  state:{items:[{status:'owned',releaseId:'f40'},{status:'wishlist',releaseId:'p1'}]},
- dgReleaseById:id=>({f40:{casting_id:'ferrari-f40'},p1:{casting_id:'mclaren-p1'}}[id]),
+ dgReleaseById:id=>({f40:{casting_id:'ferrari-f40',brand:'Ferrari',canonical_name:'Ferrari F40'},p1:{casting_id:'mclaren-p1',brand:'McLaren',canonical_name:'McLaren P1'}}[id]),
+ dgCastingFamilyKey:model=>model?.brand?.toLowerCase()+'|'+model?.canonical_name?.toLowerCase(),
  packContents:()=>[{casting_id:'ferrari-f40'},{casting_id:'mclaren-p1'},{model_name_as_source:'Unlinked'}]
 });
 vm.runInContext(html.slice(progressStart,progressEnd),progressCtx);
