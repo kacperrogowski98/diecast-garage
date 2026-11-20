@@ -1,3 +1,9 @@
+## v1.38 — 20 November 2026
+
+- Added 22 complete numbered 2013 five-packs (110 vehicle entries), including three separately numbered HW Test Facility assortments and World Race.
+- Added 16 complete numbered 2012 five-packs (80 entries) plus the six-car Halloween pack, correctly typed as a 6-pack.
+- Existing Ferrari 2012/2013 pack records were retained without duplication; source-listed colours and provenance are preserved.
+
 ## v1.37 — 20 November 2026
 
 - Added 18 complete numbered 2014 five-packs (90 vehicle entries), including Double Jump Duel, multiple Max Steel packs, Mustang 50th, Street Beasts, Track Aces and X-Games.
