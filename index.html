@@ -201,7 +201,7 @@ closeModal();view='packs';save();document.querySelectorAll('.tab').forEach(t=>t.
 }
 function editCustomPack(packId){let p=(state.customPacks||[]).find(x=>x.pack_id===packId);if(!p)return;addCustomPack();document.getElementById('customPackName').value=p.pack_name||'';document.getElementById('customPackYear').value=p.release_year||'';document.getElementById('customPackType').value=p.pack_type||'Multipack';document.getElementById('customPackNumber').value=p.package_number||'';document.getElementById('customPackContents').value=(p.contents||[]).join('\n');document.getElementById('customPackNotes').value=p.notes||'';document.querySelector('#modalRoot .modal h3').textContent='Edytuj własny multipack';let button=document.querySelector('#modalRoot .modalfoot .btn.primary');button.textContent='Zapisz zmiany';button.onclick=()=>saveCustomPack(packId)}
 function packMatchKey(value){return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ')}
-function dgCastingFamilyKey(model){return packMatchKey(model?.brand||'')+'|'+packMatchKey(model?.canonical_name||model?.model_name_as_source||model?.name||'')}
+function dgCastingFamilyKey(model){const name=packMatchKey(model?.canonical_name||model?.model_name_as_source||model?.name||'');return name?packMatchKey(model?.brand||'')+'|'+name:''}
 function dgPackVariantMatch(item,model){
  const toy=String(item.toy_number||'').trim().toUpperCase();
  const known=String(model.toy_number||model.sku||'').trim().toUpperCase();
