@@ -85,6 +85,18 @@ try {
      await page.locator('#modalRoot button:has-text("Zamknij")').click();
    }
  }
+ await page.locator('#packList .btn:has-text("Zawartość")').first().click();
+ await page.locator('#modalRoot .modalfoot button:has-text("Dodaj do kolekcji")').click();
+ await page.locator('#packList .btn:has-text("Zawartość")').first().click();
+ await page.locator('#modalRoot button:has-text("Edytuj egzemplarz")').first().click();
+ assert.equal(await page.locator('#piFrontPreview').count(),1);
+ assert.equal(await page.locator('#piBackPreview').count(),1);
+ const pixel=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScLZAAAAAElFTkSuQmCC','base64');
+ await page.locator('#piFrontPreview').locator('..').locator('input[type="file"]').setInputFiles({name:'front.png',mimeType:'image/png',buffer:pixel});
+ await page.waitForFunction(()=>Boolean(document.querySelector('#piFrontPreview img')));
+ await page.locator('#modalRoot button:has-text("Zapisz")').click();
+ assert.equal(await page.locator('#modalRoot img[alt="Przód opakowania"]').count(),1);
+ console.log('PASS: add multipack, compress and persist front packaging photo');
   assert.ok(!errors.length,'Page JavaScript errors: '+errors.join(' | '));
  console.log('PASS browser smoke: mobile viewport, create/save, garage persistence, catalogue filters, 3D showroom fallback');
 } finally {await browser.close();}
