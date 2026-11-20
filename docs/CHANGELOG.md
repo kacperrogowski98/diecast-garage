@@ -1,3 +1,9 @@
+## v1.45 — 20 November 2026
+
+- Added 11 complete numbered 2003 five-packs (55 entries): B-Day Gift, Concrete Cruisers, Cop Squad, Flag Flyers, Heat Fleet, Hot Haulers, Raptor Blast, Robo Zoo, Serpent Cyclone, T-Wrecks and Tiki Blasters.
+- Retained the existing 2003 Ferrari pack; non-numbered alternate-colour rows were not added as separate packs.
+- Preserved toy numbers, source-listed colours and provenance.
+
 ## v1.44 — 20 November 2026
 
 - Added 12 complete numbered 2004 five-packs (60 vehicle entries): B-Day Gift, Batman, Camoflamage, Chrome Burnerz, Cyborg Assault, HW Racing, Night Breed, Smashville, Speed Circus, Tiki Torchers, Truckus 500 and Zero-G.
