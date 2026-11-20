@@ -87,6 +87,8 @@ try {
  }
  await page.locator('#packList .btn:has-text("Zawartość")').first().click();
  await page.locator('#modalRoot .modalfoot button:has-text("Dodaj do kolekcji")').click();
+ await page.locator('[aria-label="Status multipacka"]').selectOption("owned");
+ assert.equal(await page.locator("#packList .car").count(),1,"Only one pack was added to the test collection");
  await page.locator('#packList .btn:has-text("Zawartość")').first().click();
  await page.locator('#modalRoot button:has-text("Edytuj egzemplarz")').first().click();
  assert.equal(await page.locator('#piFrontPreview').count(),1);
