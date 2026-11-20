@@ -112,11 +112,12 @@ async function dgImportWikiReleaseStream(stream){
   await flush();
  }finally{reader.releaseLock()}
  if(valid<10000)throw new Error('Niekompletne archiwum Wiki v6: '+valid+' poprawnych wydań');
- try{localStorage.setItem(DG_WIKI_COMPLETE_KEY,JSON.stringify({valid,total,completedAt:Date.now()}))}catch(_){}
  importedCatalog=[...map.values()];
  dgCachedModels=null;
  state.brands=[...brands];
- save();dgRefreshFilters();
+ if(!save())throw new Error('Nie udało się zapisać aktualizacji katalogu. Zwolnij miejsce i ponów import.');
+ try{localStorage.setItem(DG_WIKI_COMPLETE_KEY,JSON.stringify({valid,total,completedAt:Date.now()}))}catch(_){}
+ dgRefreshFilters();
  dgUpdateCatalogStatus('Wiki v6: zapisano '+valid.toLocaleString('pl-PL')+' wydań, pominięto '+invalid+' błędnych rekordów. Dane źródłowe mogą powtarzać inne katalogi.');
  return {valid,total,invalid};
 }
