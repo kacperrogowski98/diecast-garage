@@ -223,3 +223,8 @@ The browser app can import the upstream scan index and lazily load year/assortme
 ## 1994 five- and six-packs
 
 - Wheel Wonderland 1994: https://www.wheelwonderland.com/fr/5-packs/1994/ — six additional complete five-packs / 30 entries plus the six-car Action Command assortment. Existing Ferrari 5-Packs were not duplicated.
+
+
+## 1993 five-packs
+
+- Wheel Wonderland 1993: https://www.wheelwonderland.com/fr/5-packs/1993/ — six complete numbered five-packs / 30 entries. Only numbered 1/5–5/5 compositions were imported.
