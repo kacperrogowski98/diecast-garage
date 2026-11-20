@@ -1,3 +1,9 @@
+## v1.50 — 20 November 2026
+
+- Added 11 complete numbered 1998 five-packs (55 vehicle entries), including Figure 8 Racers, G-Force Stunt Riders, Off Road 4x4 and Showroom Specials.
+- Imported only the five numbered positions (1/5–5/5); alternate colour/reissue rows and incomplete series remain separate for verification.
+- Preserved source links and verification flags for each pack and car.
+
 ## v1.49 — 20 November 2026
 
 - Added 12 complete numbered 1999 five-packs (60 entries): '50s Cruisers, Alien Attack, Baja Blazers, City Center, City Police, Crazy Classics III, Criss Cross Crash, House Calls, Ocean Blasters, Show Biz, Snow Patrol and World Racers.
