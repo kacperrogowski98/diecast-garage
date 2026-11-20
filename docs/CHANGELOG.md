@@ -1,3 +1,9 @@
+## v1.66 — 20 November 2026
+
+- Added 12 additional 2011 five-pack reissue/colour variants (60 entries): Attack Pack, Batman, Creature Cars, Easter Rides, Ferrari, Graffiti Rides, Halloween, Holiday Hot Rods, HW City Works, HW Exotics, HW Hot Rods and Police Pursuit, plus Team Hot Wheels.
+- Kept reissue colourways distinct from the base assortments and preserved source spelling/colour descriptions.
+- Marked the imported variants for packaging-photo verification.
+
 ## v1.65 — 20 November 2026
 
 - Added 10 additional 2012 five-pack reissue/colour variants (50 entries): Corvette, Creature Cars, Demolition Derby, Ferrari, Heat Fleet, HW City Works, Jungle Rally, Police Pursuit, Team Hot Wheels and X-Raycers.
