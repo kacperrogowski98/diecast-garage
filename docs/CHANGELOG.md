@@ -1,3 +1,10 @@
+## v1.30 — 20 November 2026
+
+- Added 2020 and 2021 numbered five-pack compositions: 33 additional packs and 165 vehicle entries. Existing HW Exotics packs were not duplicated.
+- Added source-listed colour variants where available; fantasy castings are retained as catalogued.
+- Fixed a performance issue in the multipack grid: it now displays stored content counts without running catalogue matching for every pack. Matching is built once only when a pack is opened, and ownership checks reuse one release index.
+- Added regression checks for pack totals, provenance and lazy matching performance.
+
 ## v1.29 — 20 November 2026
 
 - Added 2025 and 2026 five-pack checklists: 35 additional package codes and 175 vehicle entries, including two separately coded Stunt Tracks packs in each year.
