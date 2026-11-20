@@ -234,3 +234,10 @@ The browser app can import the upstream scan index and lazily load year/assortme
 
 - Wheel Wonderland 1991: https://www.wheelwonderland.com/fr/5-packs/1991/ — seven complete numbered five-packs / 35 entries.
 - Wheel Wonderland 1992: https://www.wheelwonderland.com/fr/5-packs/1992/ — five complete numbered five-packs / 25 entries plus six-entry Off Road Explorers variant assortment. Ambiguous double-numbered Classic Collection rows were excluded.
+
+
+## 1988–1990 historical packs
+
+- Wheel Wonderland 1988: https://www.wheelwonderland.com/fr/5-packs/1988/ — seven numbered five-packs / 35 entries.
+- Wheel Wonderland 1989: https://www.wheelwonderland.com/fr/5-packs/1989/ — four five-packs / 20 entries and one six-car Trailbusters Gift Pack. The ambiguous Super Sportscars list was excluded.
+- Wheel Wonderland 1990: https://www.wheelwonderland.com/fr/5-packs/1990/ — six numbered five-packs / 30 entries.
