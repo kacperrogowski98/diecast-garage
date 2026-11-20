@@ -79,6 +79,10 @@ try {
  assert.ok(await page.locator('#packList .car').count()>0,'5-pack filter must list real packages');
  await page.locator('[aria-label="Źródło zestawu"]').selectOption('starter');
  assert.ok(await page.locator('#packList .car').count()>0,'Starter pack source must be selectable');
+ await page.locator('#packList button:has-text("Chcę ten zestaw")').first().click();
+ await page.locator('[aria-label="Status multipacka"]').selectOption('wishlist');
+ assert.equal(await page.locator('#packList .car').count(),1,'Only wished pack must remain in pack wishlist filter');
+ await page.locator('[aria-label="Status multipacka"]').selectOption('all');
  await page.locator('#packList .btn:has-text("Zawartość")').first().click();
  assert.ok(await page.locator('#modalRoot .modal').count(),'Multipack details should open');
  const pack3d=page.locator('#modalRoot button:has-text("Podgląd zestawu 3D")');
@@ -98,6 +102,7 @@ try {
  }
  await page.locator('#packList .btn:has-text("Zawartość")').first().click();
  await page.locator('#modalRoot .modalfoot button:has-text("Dodaj do kolekcji")').click();
+ assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('diecast_garage_mvp_02')).packWishlist.length),0,'Acquired pack must leave wishlist');
  await page.locator('[aria-label="Status multipacka"]').selectOption("owned");
  assert.equal(await page.locator("#packList .car").count(),1,"Only one pack was added to the test collection");
  await page.locator('#packList .btn:has-text("Zawartość")').first().click();
