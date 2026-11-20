@@ -94,3 +94,10 @@ The browser app can import the upstream scan index and lazily load year/assortme
 ## 2019 five-packs
 
 - Wheel Wonderland 2019: https://www.wheelwonderland.com/fr/5-packs/2019/ — 15 complete numbered package compositions / 75 entries added. The already curated HW Exotics pack was not duplicated; incomplete X-Raycers content was excluded.
+
+
+## 2017–2018 five-packs
+
+- Wheel Wonderland 2017: https://www.wheelwonderland.com/fr/5-packs/2017/ — 19 complete numbered package compositions / 95 entries added; the curated HW Exotics pack was not duplicated.
+- Wheel Wonderland 2018: https://www.wheelwonderland.com/fr/5-packs/2018/ — 18 complete numbered package compositions / 90 entries added, including two separately coded City packs; the curated HW Exotics pack was not duplicated.
+- Variant-only rows without a separate numbered composition were not guessed into extra pack records.
