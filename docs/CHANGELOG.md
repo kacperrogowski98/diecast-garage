@@ -1,3 +1,9 @@
+## v1.40 — 20 November 2026
+
+- Added 16 complete numbered 2009 five-packs (80 vehicle entries), including Dream Garage, Easter Raceway, HW Daredevils, Mustang 45th, Track Aces, Volcano Shooters and World Racers.
+- The two existing 2009 Ferrari assortments were retained without duplication; variant-only colour rows were excluded from base compositions.
+- Added source-listed colours and provenance with packaging-photo verification flags.
+
 ## v1.39 — 20 November 2026
 
 - Added 41 complete numbered 2010–2011 five-packs (205 vehicle entries), including 2010 Mopar Mania, Hot Tunerz, Road Course Race and 2011 American Performance, Indy 500, HW Hot Rods and World Racers.
