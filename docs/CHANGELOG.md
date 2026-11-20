@@ -1,3 +1,9 @@
+## v1.37 — 20 November 2026
+
+- Added 18 complete numbered 2014 five-packs (90 vehicle entries), including Double Jump Duel, multiple Max Steel packs, Mustang 50th, Street Beasts, Track Aces and X-Games.
+- Existing Ferrari and HW Exotics packs were retained without duplication.
+- Included source-listed colours and preserved source provenance/verification status.
+
 ## v1.36 — 20 November 2026
 
 - Added 16 complete numbered 2015 five-packs (80 vehicle entries), including Batman, Color Splash Science Lab, Dino Riders, Nitrobot Attack, Origin of Awesome and X-Raycers.
