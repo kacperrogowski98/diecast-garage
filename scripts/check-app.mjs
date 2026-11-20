@@ -36,7 +36,7 @@ assert.ok(html.includes('https://cdn.jsdelivr.net/gh/danyjoy/diecastDb@main/data
 assert.ok(html.includes("let sources=['https://raw.githubusercontent.com/danyjoy/diecastDb/main/data/'+key+'.json','https://cdn.jsdelivr.net/gh/danyjoy/diecastDb@main/data/'+key+'.json','https://danyjoy.github.io/diecastDb/data/'+key+'.json']"), 'Lazy year-file enrichment must retry multiple public mirrors');
 assert.match(html, /marek rozpoznanych.*kandydatów Supercar\/Hypercar/, 'Catalogue import status must report recognized brands and supercar candidates');
 const seedJsonStart2022 = html.indexOf('const SEED=') + 'const SEED='.length;
-const seedJsonEnd2022 = html.indexOf(';\\nconst KEY', seedJsonStart2022);
+const seedJsonEnd2022 = html.indexOf(';' + '\n' + 'const KEY', seedJsonStart2022);
 assert.ok(seedJsonStart2022 >= 'const SEED='.length && seedJsonEnd2022 > seedJsonStart2022, 'Seed catalogue JSON can be located for data integrity checks');
 const seedData2022 = JSON.parse(html.slice(seedJsonStart2022, seedJsonEnd2022));
 const packs2022 = seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-2022-'));
