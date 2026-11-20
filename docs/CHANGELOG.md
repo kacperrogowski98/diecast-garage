@@ -1,3 +1,9 @@
+## v1.48 — 20 November 2026
+
+- Added 13 complete numbered 2000 five-packs (65 entries): Big City Trucks, Forces of Nature, Grand Prix, hotwheels.com, Max Steel, Motorin' Music, Powershift Garage, Sports Stars, Star Explorers, Super Launcher, Tornado Twister, World Racers 2 and World Tour.
+- Alternate-colour duplicate entries within the Max Steel and Powershift Garage groupings were not incorrectly added as separate base packs.
+- Preserved source colours, toy numbers and provenance.
+
 ## v1.47 — 20 November 2026
 
 - Added ten complete numbered 2001 five-packs (50 entries) and two six-packs (12 entries): City Service, Cyborg City, Harley-Davidson, Hot Rods, Police Cruisers, Rescue Rods, Shark Park, Skateboarders, Spider Slam, Victory Lane, Fireball and Truck Stoppers.
