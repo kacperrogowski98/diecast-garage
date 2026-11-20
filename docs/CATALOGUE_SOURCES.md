@@ -207,3 +207,9 @@ The browser app can import the upstream scan index and lazily load year/assortme
 ## 1997 five-packs
 
 - Wheel Wonderland 1997: https://www.wheelwonderland.com/fr/5-packs/1997/ — 12 complete numbered five-packs / 60 entries. Only numbered 1/5–5/5 compositions were imported; incomplete/variant rows were excluded.
+
+
+## 1996 five-packs and multipacks
+
+- Wheel Wonderland 1996: https://www.wheelwonderland.com/fr/5-packs/1996/ — nine complete numbered five-packs / 45 entries plus the six-car Super Show Cars 6-Pack.
+- The Super Show Cars set is preserved as a 6-pack based on its 1/6–6/6 numbering; incomplete/variant-only rows are not inferred.
