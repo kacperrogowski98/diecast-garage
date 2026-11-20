@@ -82,3 +82,10 @@ The browser app can import the upstream scan index and lazily load year/assortme
 - Wheel Wonderland 2025: https://www.wheelwonderland.com/fr/5-packs/2025/ — 18 fully enumerated package codes and 90 vehicle entries; the two Stunt Tracks codes are kept as separate packs.
 - Wheel Wonderland 2026: https://www.wheelwonderland.com/fr/5-packs/2026/ — 17 additional fully enumerated package codes and 85 vehicle entries; the separately curated Ferrari 5-Pack is not duplicated.
 - Source-listed colours are included where available. All community database records remain flagged for packaging-photo verification.
+
+
+## 2020–2021 five-packs
+
+- Wheel Wonderland 2020: https://www.wheelwonderland.com/fr/5-packs/2020/ — 17 complete numbered pack compositions / 85 entries added; the curated HW Exotics set was not duplicated.
+- Wheel Wonderland 2021: https://www.wheelwonderland.com/fr/5-packs/2021/ — 16 complete numbered pack compositions / 80 entries added; the curated HW Exotics set was not duplicated.
+- Variant-only rows without a separate numbered composition were not guessed into additional packs.
