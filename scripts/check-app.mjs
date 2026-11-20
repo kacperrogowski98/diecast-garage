@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 
 const shellHtml = fs.readFileSync('index.html', 'utf8');
 const seedScript = fs.readFileSync('seed.js', 'utf8');
-const html = shellHtml.replace('const KEY=', seedScript + '\nconst KEY=');
+const html = shellHtml.replace('const KEY=', seedScript.trimEnd() + '\nconst KEY=');
 assert.ok(shellHtml.includes('<script src="./seed.js"></script>'), 'App shell must load the local source catalogue before main script');
 assert.ok(!shellHtml.includes('const SEED='), 'Large source catalogue must be separate from the HTML shell');
 const manifest = JSON.parse(fs.readFileSync('manifest.webmanifest', 'utf8'));
