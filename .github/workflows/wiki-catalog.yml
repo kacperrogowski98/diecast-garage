@@ -102,10 +102,17 @@ jobs:
         run: |
           node scripts/validate-app.mjs
           node scripts/test-catalog.mjs
+      - name: Prepare minimal production site
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _site/catalog
+          cp index.html seed.js sw.js manifest.webmanifest icon.svg icon-192.png _site/
+          cp -a catalog/. _site/catalog/
       - name: Upload Pages site with Wiki v6 catalogue
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
       - name: Deploy updated site to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
