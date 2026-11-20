@@ -6,7 +6,7 @@ const html=fs.readFileSync('index.html','utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].filter(m=>!m[0].startsWith('<script type="importmap"')).map(m=>m[1]).filter(Boolean);
 assert.ok(scripts.length>=2,'Missing application scripts');
 for(const [i,code] of scripts.entries())new vm.Script(code,{filename:'inline-'+i+'.js'});
-const required=['id="rarityFilter"','id="classFilter"','id="brandFilter"','id="yearFilter"','id="assortmentFilter"','id="content"','id="modalRoot"','id="catalogStatus"','dgFetchOnlineCatalog','id="showroomBtn"','openShowroom3D','open3D','dgCloudPush','dgCloudPull','exportData','importData','dgRarity'];
+const required=['id="rarityFilter"','id="photoFilter"','id="classFilter"','id="brandFilter"','id="yearFilter"','id="assortmentFilter"','id="content"','id="modalRoot"','id="catalogStatus"','dgFetchOnlineCatalog','id="showroomBtn"','openShowroom3D','open3D','dgCloudPush','dgCloudPull','exportData','importData','dgRarity'];
 for(const token of required)assert.ok(html.includes(token),'Missing UI/API: '+token);
 assert.ok(fs.existsSync('viewer3d.js'),'Missing interactive 3D viewer');
 assert.ok(html.includes('type="importmap"'),'Missing Three.js import map');
