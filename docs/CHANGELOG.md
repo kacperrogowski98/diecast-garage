@@ -1,3 +1,9 @@
+## v1.42 — 20 November 2026
+
+- Added 13 complete numbered 2006 five-packs (65 entries), including 2006 First Editions, Aerial Attack, Big Blocks, Corvette, Off Road Warriors, Sci-Fi Hiway and Wish List.
+- Added the six-car X-Raycers assortment as a 6-pack rather than forcing it into a five-pack schema.
+- Preserved source colours, toy numbers and provenance; non-numbered duplicate colour variants were excluded.
+
 ## v1.41 — 20 November 2026
 
 - Added 15 numbered 2008 five-packs plus the Ferrari GT 5-Pack (80 vehicles total), including General Motors, Heat Fleet, Max Steel and Top Speed GT.
