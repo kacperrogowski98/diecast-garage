@@ -58,10 +58,17 @@ jobs:
             rm -f catalog/scan-index.json
           done
           test -s catalog/scan-index.json || { echo "::error::No valid catalog index available"; exit 1; }
+      - name: Prepare minimal production site
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _site/catalog
+          cp index.html seed.js sw.js manifest.webmanifest icon.svg icon-192.png _site/
+          cp -a catalog/. _site/catalog/
       - name: Upload static site
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
   deploy:
     environment:
       name: github-pages
