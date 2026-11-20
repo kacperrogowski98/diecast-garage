@@ -76,6 +76,10 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 
 The generated `catalog/wiki-stats.json` currently confirms **57,348 release/product rows and 859 pack rows**, together with compressed assets. These are source-documented records, not a deduplicated census of every Hot Wheels on Earth, and not a guarantee that each row is a car. The CI workflow now validates the compressed streams against this manifest before publishing.
 
+## Year-by-year 5-pack coverage
+
+The Multipacks tab now provides one-tap year shortcuts for **HW Exotics (2015–2021)** and **HW Motor Show (2022–2026)**, using loaded pack source records. It counts source entries rather than asserting unique or globally exhaustive releases. Missing matches should be investigated rather than interpreted as proof a pack never existed.
+
 ## Safety and first-run improvements
 
 - When only the 5-pack catalogue is missing, the app fetches its compressed pack archive separately instead of redownloading the full release history.
