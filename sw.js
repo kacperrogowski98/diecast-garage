@@ -1,4 +1,4 @@
-const CACHE_NAME = 'diecast-garage-shell-v1.71.0';
+const CACHE_NAME = 'diecast-garage-shell-v1.72.0';
 const base = self.registration.scope;
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icon-192.png']
   .map(path => new URL(path, base).toString());
