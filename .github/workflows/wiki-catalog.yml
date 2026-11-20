@@ -87,7 +87,17 @@ jobs:
           git add catalog/wiki-v6.jsonl.gz catalog/wiki-packs.jsonl.gz catalog/wiki-stats.json
           if git diff --cached --quiet; then echo "Catalogue unchanged"; exit 0; fi
           git commit -m "data: refresh Wiki v6 catalogue"
-          git push
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then
+              echo "Catalogue committed on main"
+              exit 0
+            fi
+            echo "Remote main moved during catalogue generation; rebasing attempt $attempt"
+            git fetch origin main
+            git rebase origin/main
+          done
+          echo "::error::Could not publish refreshed Wiki catalogue"
+          exit 1
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
         with:
