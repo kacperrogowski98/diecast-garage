@@ -1,5 +1,10 @@
 ## v1.62 — 20 November 2026
 
+- Added six 2015 five-pack reissue variants (30 vehicle entries): Dino Riders, Graffiti Rides, HW Exotics, Police Pursuit, Rescue Racers and Track Aces.
+- Kept each reissue distinct from the base assortment and preserved package codes, source-listed colours and verification flags.
+
+## v1.62 — 20 November 2026
+
 - Added six complete 2015 five-pack reissue/colour variants (30 entries): Dino Riders, Graffiti Rides, HW Exotics, Police Pursuit, Rescue Racers and Track Aces.
 - Kept reissue colourways separate from base assortments and flagged them for packaging-photo verification.
 - Partial X-Raycers variant rows and non-pack “Included cars” grouping were not misrepresented as complete five-packs.
