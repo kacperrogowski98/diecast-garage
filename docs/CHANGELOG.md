@@ -1,3 +1,9 @@
+## v1.49 — 20 November 2026
+
+- Added 12 complete numbered 1999 five-packs (60 entries): '50s Cruisers, Alien Attack, Baja Blazers, City Center, City Police, Crazy Classics III, Criss Cross Crash, House Calls, Ocean Blasters, Show Biz, Snow Patrol and World Racers.
+- Excluded non-numbered colour and toy-number variants from being misrepresented as additional complete packs.
+- Preserved package numbers, source colours and provenance.
+
 ## v1.48 — 20 November 2026
 
 - Added 13 complete numbered 2000 five-packs (65 entries): Big City Trucks, Forces of Nature, Grand Prix, hotwheels.com, Max Steel, Motorin' Music, Powershift Garage, Sports Stars, Star Explorers, Super Launcher, Tornado Twister, World Racers 2 and World Tour.
