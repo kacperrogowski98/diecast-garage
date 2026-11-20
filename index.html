@@ -286,7 +286,7 @@ async function dgCloudPull(){
    }
   }else if(!dgIsMissingNormalizedColumn(normalizedError))throw normalizedError;
   state=normalizeBackup({app:'Diecast Garage',state:restored});
-  localStorage.setItem(KEY,JSON.stringify(state));dgSetSyncMeta(data.updated_at);render();
+  dgCachedModels=null;localStorage.setItem(KEY,JSON.stringify(state));dgSetSyncMeta(data.updated_at);render();
   dgCloudStatus='Pobrano '+state.items.filter(i=>i.status==='owned').length+' modeli w garażu i '+state.items.filter(i=>i.status==='wishlist').length+' na wishliście ('+new Date(data.updated_at).toLocaleString('pl-PL')+'). '+(normalizedMode?'Źródło: znormalizowane rekordy.':'Źródło: kopia zgodności JSON — zastosuj migrację, aby włączyć nowe tabele.');
   toast('Kolekcja i zdjęcia pobrane');dgRenderCloudPanel();
  }catch(e){
