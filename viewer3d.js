@@ -163,7 +163,7 @@ async function deleteSavedMesh(id){
   })}finally{db.close()}
 }
 
-export function openViewer(model, root) {
+export function openViewer(model, root, cloud = null) {
   closeViewer();
   const gallery = Array.isArray(model.garageCars) ? model.garageCars : null;
   const packPreview = Boolean(gallery && model.packPreview);
@@ -177,6 +177,7 @@ export function openViewer(model, root) {
         <button class="btn" id="dg3dReset">↻ Reset widoku</button>
         <label class="btn dg3d-upload" style="${gallery ? 'display:none' : ''}">↑ Wczytaj i zapisz GLB<input type="file" id="dg3dFile" accept=".glb,model/gltf-binary" hidden></label>
         ${!gallery&&releaseId ? '<button class="btn" id="dg3dDownload">↓ Pobierz zapisany GLB</button><button class="btn" id="dg3dDelete">Usuń zapisany model 3D</button>' : ''}
+        ${!gallery&&releaseId&&cloud ? '<button class="btn" id="dg3dCloudUpload">☁ Wyślij GLB</button><button class="btn" id="dg3dCloudDownload">☁ Pobierz GLB</button>' : ''}
       </div>
       <p class="notice" id="dg3dNotice">${gallery ? (packPreview ? 'Poglądowa wizualizacja samochodów wymienionych w multipacku. Nie potwierdza kolorów ani zgodności z dokładnym wydaniem; modele 3D nie są skanami oryginalnych Hot Wheels.' : 'Trzy strefy: Supercars, Racing, Pozostałe. Modele są uproszczonymi wizualizacjami 3D, nie wiernymi replikami Hot Wheels. Pokazujemy maksymalnie 12 egzemplarzy naraz.') : 'To interaktywna poglądowa sylwetka 3D, a nie wierny model tego konkretnego Hot Wheels. Przeciągnij palcem/myszką, aby obracać, i użyj gestu szczypania lub kółka, aby przybliżać. Własne pliki .glb zapisują się wyłącznie na tym urządzeniu (bez synchronizacji chmurowej).'}</p>
       ${gallery && !packPreview ? '<div class="dg3d-controls"><button class="btn" id="dg3dPrev">← Poprzednie auta</button><span id="dg3dPageLabel" class="meta"></span><button class="btn" id="dg3dNext">Następne auta →</button></div><div id="dg3dCars" class="meta"></div>' : ''}
@@ -357,6 +358,34 @@ export function openViewer(model, root) {
         notice.textContent='Pobrano własny model GLB. Możesz wczytać go na innym urządzeniu.';
       } catch(error){notice.textContent='Nie udało się pobrać pliku GLB: '+String(error.message||error)}
     });
+    if(cloud&&releaseId) {
+      const uploadButton=root.querySelector('#dg3dCloudUpload');
+      const downloadButton=root.querySelector('#dg3dCloudDownload');
+      uploadButton?.addEventListener('click',async()=>{
+        uploadButton.disabled=true;
+        try{
+          const stored=await readSavedMesh(releaseId);
+          if(!stored?.file){notice.textContent='Najpierw wczytaj i zapisz własny model GLB na tym urządzeniu.';return}
+          notice.textContent='Wysyłam model 3D do prywatnej chmury…';
+          await cloud.upload(releaseId,stored.file);
+          if(!state.closed)notice.textContent='Model GLB zapisany w prywatnej chmurze. Możesz pobrać go na drugim urządzeniu.';
+        }catch(error){if(!state.closed)notice.textContent='Wysyłanie GLB: '+String(error.message||error)}
+        finally{if(!state.closed)uploadButton.disabled=false}
+      });
+      downloadButton?.addEventListener('click',async()=>{
+        if(!confirm('Pobrać model 3D z chmury? Zastąpi lokalny model GLB przypisany do tego wydania.'))return;
+        downloadButton.disabled=true;
+        try{
+          notice.textContent='Pobieram prywatny model 3D…';
+          const blob=await cloud.download(releaseId);
+          if(blob.size>25*1024*1024)throw new Error('Model jest większy niż 25 MB');
+          const file=new File([blob],'cloud-model.glb',{type:'model/gltf-binary'});
+          await storeMesh(releaseId,file);
+          if(!state.closed)loadBlob(file,false);
+        }catch(error){if(!state.closed)notice.textContent='Pobieranie GLB: '+String(error.message||error)}
+        finally{if(!state.closed)downloadButton.disabled=false}
+      });
+    }
     const deleteButton=root.querySelector('#dg3dDelete');
     deleteButton?.addEventListener('click',async()=>{
       try{await deleteSavedMesh(releaseId);if(!state.closed){uploadSequence++;modelGroup.remove(active);disposeGroup(active);active=createCar(bodyColor(model.body_color||model.color_variant),name);modelGroup.add(active);notice.textContent='Usunięto zapisany model GLB. Przywrócono poglądową sylwetkę.'}}
