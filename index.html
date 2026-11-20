@@ -111,7 +111,7 @@ function renderPackGrid(){
  let root=document.getElementById('packList'),pager=document.getElementById('packPager');if(!root||!pager)return;
  let packs=[...(SEED.packs||[]),...(state.customPacks||[])];
  let contentIndex=new Map();for(const c of (SEED.pack_contents||[])){let k=c.pack_id,rows=contentIndex.get(k)||[];rows.push(c.model_name_as_source||'');contentIndex.set(k,rows)}
- let words=packSearch.trim().toLowerCase().split(/\\s+/).filter(Boolean);
+ let words=packSearch.trim().toLowerCase().split(/\s+/).filter(Boolean);
  let filtered=packs.filter(p=>{if(packYear!=='all'&&String(p.release_year||'')!==packYear)return false;if(!words.length)return true;let body=[p.pack_name,p.package_number,p.release_year,p.pack_type,...(contentIndex.get(p.pack_id)||[]),...(p.contents||[])].join(' ').toLowerCase();return words.every(w=>body.includes(w))});
  filtered.sort((a,b)=>(Number(b.release_year)||0)-(Number(a.release_year)||0)||String(a.pack_name||'').localeCompare(String(b.pack_name||''),'pl'));
  let pages=Math.max(1,Math.ceil(filtered.length/PACK_PAGE_SIZE));packPage=Math.max(0,Math.min(packPage,pages-1));
