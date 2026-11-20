@@ -253,3 +253,8 @@ The browser app can import the upstream scan index and lazily load year/assortme
 ## 2008 alternate-colour five-pack assortments
 
 - Wheel Wonderland 2008: https://www.wheelwonderland.com/fr/5-packs/2008/ — five alternate-colour assortments recorded separately from the numbered five-packs. The source lists colourway differences but some entries do not show separate toy numbers; these are explicitly marked as variants pending packaging-photo verification.
+
+
+## 2017 reissue and colour-variant five-packs
+
+- Wheel Wonderland 2017: https://www.wheelwonderland.com/fr/5-packs/2017/ — 10 additional complete five-pack reissue/colour variants (50 entries) recorded separately from the base assortments. The partial 3-car Speed Graphics colour run is not represented as a complete pack.
