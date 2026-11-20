@@ -32,6 +32,8 @@ Do not scrape or bulk-import these sources until a permitted export/API and its 
 
 ## Verified and research-stage multipack additions
 
+- 2007 Exotics and 2011 HW Exotics 5-Packs: five entries each from Hot Wheels Wiki community pages; both remain flagged for independent packaging-photo verification.
+
 - HW Exotics 5-Packs 2014 (BFB36), 2015 (CDT27) and 2016 (DJD29): five cars per pack transcribed from South Texas Diecast, HW Collectors News and Hot Wheels Wiki. These are community-reference records and remain flagged for packaging-photo verification.
 
 
