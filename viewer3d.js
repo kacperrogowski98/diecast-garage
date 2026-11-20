@@ -165,16 +165,16 @@ export function openViewer(model, root) {
     }
     function showPage(page) {
       for (const child of [...modelGroup.children]) {modelGroup.remove(child);disposeGroup(child)}
-      const pages=Math.max(1,Math.ceil(gallery.length/12));
+      const buckets=zones.map(zone=>gallery.filter(zone.filter));
+      const pages=Math.max(1,...buckets.map(items=>Math.ceil(items.length/4)));
       galleryPage=Math.min(Math.max(0,page),pages-1);
-      const selected=gallery.slice(galleryPage*12,(galleryPage+1)*12);
       const names=[];
       for (let z=0;z<3;z++) {
         const zone=zones[z],zoneX=(z-1)*8;
         const platform=addPart(modelGroup,new THREE.BoxGeometry(6.9,0.15,10.8),zone.color,zoneX,0.04,0,{metalness:0.25,roughness:0.6});
         platform.receiveShadow=true;
         const title=label(zone.name,zone.color);title.position.set(zoneX,1.0,-5.4);modelGroup.add(title);
-        const cars=selected.filter(zone.filter);
+        const cars=buckets[z].slice(galleryPage*4,(galleryPage+1)*4);
         cars.forEach((item,i)=>{
           const car=createCar(bodyColor(item.body_color||item.color_variant),item.canonical_name||item.model_name_as_source);
           const scale=0.56;car.scale.setScalar(scale);car.position.set(zoneX,0.22,(i-1.5)*2.7);
