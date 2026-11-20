@@ -68,3 +68,10 @@ The browser app can import the upstream scan index and lazily load year/assortme
 ## 2022 five-packs
 
 - Wheel Wonderland, Hot Wheels 5-Packs 2022: https://www.wheelwonderland.com/en/5-packs/2022/ — source for 18 package codes/variants and 90 listed vehicle entries. These are independent collector-database records and remain flagged for packaging-photo verification.
+
+
+## 2023–2024 five-packs
+
+- Wheel Wonderland 2023: https://www.wheelwonderland.com/fr/5-packs/2023/ — 18 complete package codes with five listed vehicles each (90 entries). Incomplete/variant-only series entries were not guessed into pack compositions.
+- Wheel Wonderland 2024: https://www.wheelwonderland.com/fr/5-packs/2024/ — 17 complete package codes with five listed vehicles each (85 entries). Incomplete/variant-only series entries were not guessed into pack compositions.
+- All community database records remain flagged for packaging-photo verification.
