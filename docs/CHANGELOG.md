@@ -1,3 +1,9 @@
+## v1.69 — 20 November 2026
+
+- Added six 2007 reissue assortments (35 entries): Camouflage, Heat Fleet and Hot Trucks (5-packs), Wild Things (5-pack), Easter Eggs-Treme (8-pack) and Fright Cars (7-pack).
+- Preserved the actual assortment sizes instead of forcing every release into a five-pack structure.
+- Added source provenance and packaging-photo verification flags.
+
 ## v1.68 — 20 November 2026
 
 - Added 10 complete 2009 five-pack reissue/colour variants (50 entries): Creature Cars, Easter Raceway, Graffiti Rides, HW City Works, HW Hot Rods, Scary Cars, Track Aces, Trick Tracks, Volkswagen and World Racers.
