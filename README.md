@@ -20,7 +20,7 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 - Local collection persistence in browser storage, catalogue persistence in IndexedDB.
 - Backup export/import in JSON.
 - PWA manifest, service worker and app icons for installation on supported phones/desktops.
-- Deployment workflow includes JavaScript/PWA asset validation (`node scripts/validate-app.mjs`) before publishing.
+- Deployment workflow includes JavaScript/PWA validation and catalogue normalization tests (`node scripts/validate-app.mjs` and `node scripts/test-catalog.mjs`) before publishing.
 - Automated Chromium smoke test covering PWA/offline behavior, online catalogue import, Mainline/Premium/Silver Series filtering, sorting, search, details, adding a car to the garage and creating, editing and deleting a custom multipack.
 - Mocked Supabase browser test covering atomic cloud push, normalized pull and stale-write conflict handling. This does not replace validation against a live Supabase project.
 - Optional Supabase Auth and manual collection sync. When the atomic sync migration is applied, one transaction updates the compatibility JSON snapshot and normalized garage/wishlist rows, with stale-write protection; older projects retain a clearly reported legacy fallback.
@@ -30,7 +30,7 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 - Review and manually override heuristic vehicle classifications; user corrections are preserved separately from source catalogue data.
 - Automatic catalogue refresh every seven days, matching the upstream weekly data refresh; cached records remain usable if the network is unavailable.
 - Manual JSON and folder import adapters for danyjoy/diecastDb and pvwnthem/Hotwheels-Data.
-- An optional historical archive download button fetches a second Hot Wheels Wiki-derived source (1974–2023). Cross-source duplicate release matching is not yet fully verified, so archive records are identified by source.
+- The app fetches the additional Hot Wheels Wiki-derived historical archive (1974–2023) automatically on first launch, with a manual import button available for retries. Cross-source duplicate release matching is not yet fully verified, so archive records are identified by source.
 
 ## Important current limitations
 
