@@ -187,3 +187,8 @@ The browser app can import the upstream scan index and lazily load year/assortme
 ## 2001 five- and six-packs
 
 - Wheel Wonderland 2001: https://www.wheelwonderland.com/en/5-packs/2001/ — ten five-packs / 50 entries and two six-packs / 12 entries. The actual numbered card counts are retained.
+
+
+## 2000 five-packs
+
+- Wheel Wonderland 2000: https://www.wheelwonderland.com/fr/5-packs/2000/ — 13 complete numbered five-packs / 65 entries. Variant-only duplicate rows were excluded.
