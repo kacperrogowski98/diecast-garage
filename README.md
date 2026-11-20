@@ -1,6 +1,6 @@
 # Diecast Garage
 
-Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.100**.
+Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.101**.
 
 ## Live app
 
@@ -23,6 +23,7 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 - A missing multipack archive is retried on its own without fetching 57k vehicle records again; automated checks cover the standalone pack importer and cached-data fallback.
 - Pack details distinguish an owned exactly matched release from ownership of a casting family.
 - Add, edit and delete custom multipacks with year, pack type, code, model list and notes; built-in multipack coverage currently includes 663 pack records / 3,312 vehicle entries, with source and verification status retained.
+- Custom pack records can include front and back package photographs, resized in the browser and shown on the pack card and details. These photos remain user-supplied evidence, not certified source artwork.
 - Wiki v6's documented pack containers are also bundled as a separate compressed archive, imported to their own IndexedDB store and shown in the multipack search and model details. The number depends on the completed upstream extraction.
 - Link pack contents to catalogue castings through conservative unique exact-name matching; ambiguous and unmatched entries remain clearly marked.
 - Show catalogue-sourced representative car photographs within pack contents where a linked casting/unique name has an image, explicitly labelled as illustrative rather than the verified exact colour variant.
@@ -121,28 +122,28 @@ The repository is public, so source code is visible. User collection rows are no
 4. Create/connect the real Supabase project, apply schema.sql (or the incremental migration on an existing project), run verify_sync_setup.sql and validate normalized sync on two devices/accounts.
 5. Validate Auth, RLS, Storage policies and cross-device behavior on phone and desktop.
 
-## Reliability update v1.100
+## Reliability update v1.101
 
 - A Wiki v6 import is considered complete only after all streamed batches and the final collection-state save succeed.
 - Multipack matching reconciles casting families shared across Ferrari seed and Wiki/diecastDb sources, without treating a same-name match as proof of an exact release. Matching by toy code, year and body color remains conservative.
 - Regression tests cover duplicate source casting IDs, cross-source 5-pack completion and failed import completion markers.
 
-## Reliability update v1.100
+## Reliability update v1.101
 
 - The Wiki v6 importer checks the number of JSONL records against the separately published `catalog/wiki-stats.json` manifest before marking an import complete; a mismatch is treated as incomplete.
 - The application explicitly labels a local Wiki v6 index as completed versus partial / unconfirmed.
 - Importers reconcile identical casting families across distinct source-specific IDs while keeping exact-release matching conservative.
 
-## Storage and backups v1.100
+## Storage and backups v1.101
 
 - The account panel offers a read-only browser storage estimate, warns that deleting Safari/browser data can remove local collections and IndexedDB GLB files, and provides a one-click JSON collection backup shortcut.
 - This storage diagnostic does **not** provide an automatic cloud backup; private cross-device collection/GLB sync still requires a configured Supabase account.
 
-## Catalog photograph filter v1.100
+## Catalog photograph filter v1.101
 
 - Collector catalogue can filter variants to those with source photograph URLs or to those missing photographic documentation. This is a metadata availability filter, not verification that an external photo URL is reachable or depicts the exact edition.
 
-## Brand completion v1.100
+## Brand completion v1.101
 
 - Brands screen displays unique casting-family ownership progress instead of double-counting multiple copies or the same casting appearing under independent source-specific IDs.
 - A mobile browser smoke assertion checks that brand ownership progress is visible.
