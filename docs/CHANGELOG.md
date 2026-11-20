@@ -1,3 +1,10 @@
+## v1.77 — 20 November 2026
+
+- First-time collectors now land in the full online catalogue rather than an empty garage; collectors with owned models continue to land in their garage.
+- Brand overview now counts casting families in a single pass instead of scanning the entire broad catalogue for every brand.
+- Full source index is bundled with Pages at deploy time and loaded before remote mirrors; the source seed is stored separately in `seed.js` for smaller app HTML.
+- Added checks for the startup view and active navigation tab.
+
 ## v1.74 — 20 November 2026
 
 - Added three 2002 reissue assortments (17 entries): Ferrari (5-pack), Happy Birthday (7-pack) and Heat Fleet (5-pack).
