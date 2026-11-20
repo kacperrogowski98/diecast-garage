@@ -1,3 +1,9 @@
+## v1.70 — 20 November 2026
+
+- Added five 2006 reissue assortments (26 entries): Corvette, Easter Eggs-Treme, First Editions, Hot Trucks AKA Hot Truckus 500 and X-Raycers.
+- Preserved the six-car X-Raycers variant as a six-pack rather than coercing it into a five-pack.
+- Added source provenance and packaging-photo verification flags.
+
 ## v1.69 — 20 November 2026
 
 - Added six 2007 reissue assortments (35 entries): Camouflage, Heat Fleet and Hot Trucks (5-packs), Wild Things (5-pack), Easter Eggs-Treme (8-pack) and Fright Cars (7-pack).
