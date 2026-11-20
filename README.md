@@ -1,6 +1,6 @@
 # Diecast Garage
 
-Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.95**.
+Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.96**.
 
 ## Live app
 
@@ -28,7 +28,7 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 - Show matching multipack appearances inside each model's details (name-family matches only; colours and exact releases may differ).
 - Open prefilled Hot Wheels searches on Allegro and eBay from any model detail; these links do not claim live stock, price or exact variant availability.
 - Local collection persistence in browser storage, catalogue persistence in IndexedDB. Catalogue rendering caches prepared models and debounces search for larger databases.
-- Compressed Wiki v6 releases now import by streaming JSONL in chunks of 750 releases to limit peak RAM on iPhone. Database write failures are fatal rather than silently reported as successful. The CI suite includes a 10k-row streaming stress test.
+- Compressed Wiki v6 releases now import by streaming JSONL in chunks of 750 releases to limit peak RAM on iPhone. A successful full import writes a completion receipt; interrupted imports are retried daily rather than being incorrectly treated as finished for a month. Database write failures are fatal rather than silently reported as successful. The CI suite includes a 10k-row streaming stress test.
 - Backup export/import in JSON.
 - PWA manifest, service worker and app icons for installation on supported phones/desktops. The service worker uses network-first HTML updates and cached offline fallback.
 - Deployment workflow includes JavaScript/PWA validation, catalogue normalization tests and a mobile Chromium smoke flow (`node scripts/validate-app.mjs`, `node scripts/test-catalog.mjs`, `node scripts/browser-smoke.mjs`) before publishing.
@@ -106,3 +106,9 @@ The repository is public, so source code is visible. User collection rows are no
 3. Improve catalogue normalization/deduplication and pack/variant coverage without inventing missing records.
 4. Create/connect the real Supabase project, apply schema.sql (or the incremental migration on an existing project), run verify_sync_setup.sql and validate normalized sync on two devices/accounts.
 5. Validate Auth, RLS, Storage policies and cross-device behavior on phone and desktop.
+
+## Reliability update v1.96
+
+- A Wiki v6 import is considered complete only after all streamed batches and the final collection-state save succeed.
+- Multipack matching reconciles casting families shared across Ferrari seed and Wiki/diecastDb sources, without treating a same-name match as proof of an exact release. Matching by toy code, year and body color remains conservative.
+- Regression tests cover duplicate source casting IDs and failed import completion markers.
