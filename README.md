@@ -1,6 +1,6 @@
 # Diecast Garage
 
-Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.93**.
+Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.94**.
 
 ## Live app
 
@@ -27,6 +27,7 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 - Show matching multipack appearances inside each model's details (name-family matches only; colours and exact releases may differ).
 - Open prefilled Hot Wheels searches on Allegro and eBay from any model detail; these links do not claim live stock, price or exact variant availability.
 - Local collection persistence in browser storage, catalogue persistence in IndexedDB. Catalogue rendering caches prepared models and debounces search for larger databases.
+- Compressed Wiki v6 releases now import by streaming JSONL in chunks of 750 releases to limit peak RAM on iPhone. Database write failures are fatal rather than silently reported as successful. The CI suite includes a 10k-row streaming stress test.
 - Backup export/import in JSON.
 - PWA manifest, service worker and app icons for installation on supported phones/desktops. The service worker uses network-first HTML updates and cached offline fallback.
 - Deployment workflow includes JavaScript/PWA validation, catalogue normalization tests and a mobile Chromium smoke flow (`node scripts/validate-app.mjs`, `node scripts/test-catalog.mjs`, `node scripts/browser-smoke.mjs`) before publishing.
