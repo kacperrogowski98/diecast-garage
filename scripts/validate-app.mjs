@@ -3,11 +3,13 @@ import vm from 'node:vm';
 import assert from 'node:assert/strict';
 
 const html=fs.readFileSync('index.html','utf8');
-const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(m=>m[1]).filter(Boolean);
+const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].filter(m=>!m[0].startsWith('<script type="importmap"')).map(m=>m[1]).filter(Boolean);
 assert.ok(scripts.length>=2,'Missing application scripts');
 for(const [i,code] of scripts.entries())new vm.Script(code,{filename:'inline-'+i+'.js'});
-const required=['id="rarityFilter"','id="classFilter"','id="brandFilter"','id="yearFilter"','id="assortmentFilter"','id="content"','id="modalRoot"','id="catalogStatus"','dgFetchOnlineCatalog','dgCloudPush','dgCloudPull','exportData','importData','dgRarity'];
+const required=['id="rarityFilter"','id="classFilter"','id="brandFilter"','id="yearFilter"','id="assortmentFilter"','id="content"','id="modalRoot"','id="catalogStatus"','dgFetchOnlineCatalog','open3D','dgCloudPush','dgCloudPull','exportData','importData','dgRarity'];
 for(const token of required)assert.ok(html.includes(token),'Missing UI/API: '+token);
+assert.ok(fs.existsSync('viewer3d.js'),'Missing interactive 3D viewer');
+assert.ok(html.includes('type="importmap"'),'Missing Three.js import map');
 const sw=fs.readFileSync('sw.js','utf8');
 new vm.Script(sw,{filename:'sw.js'});
 const release=html.match(/<title>Diecast Garage · (v[0-9.]+)<\/title>/)?.[1];
