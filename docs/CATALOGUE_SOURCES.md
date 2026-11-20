@@ -157,3 +157,8 @@ The browser app can import the upstream scan index and lazily load year/assortme
 
 - Wheel Wonderland 2007: https://www.wheelwonderland.com/fr/5-packs/2007/ — 10 complete numbered five-packs / 50 entries, plus the eight-car Easter Eggs-Treme, seven-car Fright Cars and six-car Gotham City packs. Existing Ferrari and Exotics records were retained.
 - Wheel Wonderland 2008: https://www.wheelwonderland.com/fr/5-packs/2008/ — 15 complete numbered non-Ferrari five-packs / 75 entries, plus the five-car Ferrari GT pack. Variant-only rows were not duplicated.
+
+
+## 2006 five-packs
+
+- Wheel Wonderland 2006: https://www.wheelwonderland.com/fr/5-packs/2006/ — 13 numbered five-packs / 65 entries and the six-car X-Raycers assortment. Duplicate non-numbered colour variants were not imported as separate pack records.
