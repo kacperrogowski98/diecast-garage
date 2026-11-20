@@ -438,7 +438,7 @@ assert.equal(alternate2008.length, 5, '2008 alternate-colour pack variants are r
 assert.equal(alternate2008Contents.length, 25, 'Five alternate 2008 assortments contain 25 entries');
 assert.ok(alternate2008.every(p => p.pack_type === '5-pack variant' && alternate2008Contents.filter(c => c.pack_id === p.pack_id).length === 5), 'Every 2008 alternate assortment has five entries and is labelled as a variant');
 
-assert.equal(seedData.packs.length, 569, 'All seeded multipack pack records must remain accounted for');
+assert.equal(seedData.packs.length, 579, 'All seeded multipack pack records must remain accounted for');
 const reissue2017 = seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-2017-reissue-'));
 const reissue2017Contents = seedData2022.pack_contents.filter(c => reissue2017.some(p => p.pack_id === c.pack_id));
 assert.equal(reissue2017.length, 10, '2017 reissue/colour variants are retained separately from numbered base assortments');
