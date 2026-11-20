@@ -7,6 +7,8 @@ const shellHtml = fs.readFileSync('index.html', 'utf8');
 const seedScript = fs.readFileSync('seed.js', 'utf8');
 const html = shellHtml.replace('const KEY=', seedScript.trimEnd() + '\nconst KEY=');
 assert.ok(shellHtml.includes('<script src="./seed.js"></script>'), 'App shell must load the local source catalogue before main script');
+assert.ok(shellHtml.includes("let view=state.items.some(i=>i.status==='owned')?'garage':'catalog'"), 'First-time collectors should land directly in the full catalogue');
+assert.ok(shellHtml.includes("t.dataset.view===view"), 'Initially active tab must reflect the saved collection state');
 assert.ok(!shellHtml.includes('const SEED='), 'Large source catalogue must be separate from the HTML shell');
 const manifest = JSON.parse(fs.readFileSync('manifest.webmanifest', 'utf8'));
 const schema = fs.readFileSync('supabase/schema.sql', 'utf8');
