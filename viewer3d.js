@@ -91,9 +91,45 @@ export function closeViewer() {
   session.element?.remove();
   session = null;
 }
+
+const MESH_DB='diecast_garage_catalog_v1',MESH_STORE='meshes3d';
+function meshDatabase(){
+  return new Promise((resolve,reject)=>{
+    const req=indexedDB.open(MESH_DB,3);
+    req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains(MESH_STORE))db.createObjectStore(MESH_STORE,{keyPath:'release_id'})};
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error||new Error('Nie udało się otworzyć magazynu 3D'));
+  });
+}
+async function readSavedMesh(id){
+  const db=await meshDatabase();
+  try{return await new Promise((resolve,reject)=>{
+    const req=db.transaction(MESH_STORE,'readonly').objectStore(MESH_STORE).get(id);
+    req.onsuccess=()=>resolve(req.result||null);
+    req.onerror=()=>reject(req.error);
+  })}finally{db.close()}
+}
+async function storeMesh(id,file){
+  const db=await meshDatabase();
+  try{await new Promise((resolve,reject)=>{
+    const tx=db.transaction(MESH_STORE,'readwrite');
+    tx.objectStore(MESH_STORE).put({release_id:id,file:new Blob([file],{type:'model/gltf-binary'}),filename:file.name||'model.glb',saved_at:new Date().toISOString()});
+    tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||new Error('Brak miejsca na zapis 3D'));
+  })}finally{db.close()}
+}
+async function deleteSavedMesh(id){
+  const db=await meshDatabase();
+  try{await new Promise((resolve,reject)=>{
+    const tx=db.transaction(MESH_STORE,'readwrite');
+    tx.objectStore(MESH_STORE).delete(id);
+    tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);
+  })}finally{db.close()}
+}
+
 export function openViewer(model, root) {
   closeViewer();
   const gallery = Array.isArray(model.garageCars) ? model.garageCars : null;
+  const releaseId = gallery ? '' : String(model.release_id||model.custom_id||'');
   const name = gallery ? 'Twoja kolekcja' : (model.canonical_name || model.model_name_as_source || 'Samochód');
   root.innerHTML = `<div class="modalback" id="dg3dBackdrop">
     <div class="modal dg3d-modal" role="dialog" aria-modal="true" aria-label="Podgląd 3D">
@@ -101,9 +137,10 @@ export function openViewer(model, root) {
       <div id="dg3dStage" class="dg3d-stage" role="img" aria-label="Obracany podgląd trójwymiarowy samochodu"></div>
       <div class="dg3d-controls">
         <button class="btn" id="dg3dReset">↻ Reset widoku</button>
-        <label class="btn dg3d-upload" style="${gallery ? 'display:none' : ''}">↑ Wczytaj własny model GLB<input type="file" id="dg3dFile" accept=".glb,model/gltf-binary" hidden></label>
+        <label class="btn dg3d-upload" style="${gallery ? 'display:none' : ''}">↑ Wczytaj i zapisz GLB<input type="file" id="dg3dFile" accept=".glb,model/gltf-binary" hidden></label>
+        ${!gallery&&releaseId ? '<button class="btn" id="dg3dDelete">Usuń zapisany model 3D</button>' : ''}
       </div>
-      <p class="notice" id="dg3dNotice">${gallery ? 'Trzy strefy: Supercars, Racing, Pozostałe. Modele są uproszczonymi wizualizacjami 3D, nie wiernymi replikami Hot Wheels. Pokazujemy maksymalnie 12 egzemplarzy naraz.' : 'To interaktywna poglądowa sylwetka 3D, a nie wierny model tego konkretnego Hot Wheels. Przeciągnij palcem/myszką, aby obracać, i użyj gestu szczypania lub kółka, aby przybliżać. Możesz wczytać własny model .glb.'}</p>
+      <p class="notice" id="dg3dNotice">${gallery ? 'Trzy strefy: Supercars, Racing, Pozostałe. Modele są uproszczonymi wizualizacjami 3D, nie wiernymi replikami Hot Wheels. Pokazujemy maksymalnie 12 egzemplarzy naraz.' : 'To interaktywna poglądowa sylwetka 3D, a nie wierny model tego konkretnego Hot Wheels. Przeciągnij palcem/myszką, aby obracać, i użyj gestu szczypania lub kółka, aby przybliżać. Własne pliki .glb zapisują się wyłącznie na tym urządzeniu (bez synchronizacji chmurowej).'}</p>
       ${gallery ? '<div class="dg3d-controls"><button class="btn" id="dg3dPrev">← Poprzednie auta</button><span id="dg3dPageLabel" class="meta"></span><button class="btn" id="dg3dNext">Następne auta →</button></div><div id="dg3dCars" class="meta"></div>' : ''}
     </div></div>`;
   const stage = root.querySelector('#dg3dStage');
@@ -214,33 +251,45 @@ export function openViewer(model, root) {
   root.querySelector('#dg3dReset').addEventListener('click', () => {
     camera.position.set(...startPosition); controls.target.set(0,gallery ? 0 : 0.65,0);controls.update();
   });
-  if (!gallery) root.querySelector('#dg3dFile').addEventListener('change', e => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const notice = root.querySelector('#dg3dNotice');
-    if (!/\.glb$/i.test(file.name) || file.size > 30 * 1024 * 1024) {
-      notice.textContent = 'Wybierz plik .glb nie większy niż 30 MB.'; return;
+  if (!gallery) {
+    const notice=root.querySelector('#dg3dNotice');
+    let uploadSequence=0;
+    async function loadBlob(file,saveToDevice=false) {
+      const sequence=++uploadSequence;
+      const url=URL.createObjectURL(file);
+      const loader=new GLTFLoader();
+      notice.textContent='Wczytywanie modelu GLB…';
+      loader.load(url,async gltf=>{
+        URL.revokeObjectURL(url);
+        if(state.closed||sequence!==uploadSequence){disposeGroup(gltf.scene);return}
+        const mesh=gltf.scene;
+        const bounds=new THREE.Box3().setFromObject(mesh);
+        const size=bounds.getSize(new THREE.Vector3());
+        if(!Number.isFinite(size.x)||Math.max(size.x,size.y,size.z)<=0){disposeGroup(mesh);notice.textContent='Model GLB nie zawiera widocznej geometrii.';return}
+        mesh.scale.multiplyScalar(4/Math.max(size.x,size.y,size.z));
+        const center=new THREE.Box3().setFromObject(mesh).getCenter(new THREE.Vector3());
+        mesh.position.sub(center);mesh.position.y+=0.55;
+        modelGroup.remove(active);disposeGroup(active);
+        active=mesh;modelGroup.add(active);
+        notice.textContent='Wyświetlany jest własny model GLB (zapis lokalny na tym urządzeniu).';
+        if(saveToDevice&&releaseId) {
+          try{await storeMesh(releaseId,file);if(!state.closed)notice.textContent='Zapisano własny model 3D do tego wydania na tym urządzeniu.'}
+          catch(error){if(!state.closed)notice.textContent='Model działa w podglądzie, ale nie udało się go zachować: '+String(error.message||error)}
+        }
+      },undefined,error=>{URL.revokeObjectURL(url);if(!state.closed&&sequence===uploadSequence)notice.textContent='Błąd pliku GLB: '+String(error?.message||'nieznany błąd')});
     }
-    notice.textContent = 'Wczytywanie lokalnego modelu GLB…';
-    const url = URL.createObjectURL(file);
-    const loader = new GLTFLoader();
-    loader.load(url, gltf => {
-      URL.revokeObjectURL(url);
-      if (state.closed) {disposeGroup(gltf.scene); return}
-      modelGroup.remove(active);disposeGroup(active);
-      active = gltf.scene;
-      const bounds = new THREE.Box3().setFromObject(active);
-      const size = bounds.getSize(new THREE.Vector3());
-      if (Math.max(size.x,size.y,size.z) === 0) {notice.textContent='Model GLB nie ma widocznej geometrii.';return}
-      active.scale.multiplyScalar(4 / Math.max(size.x,size.y,size.z));
-      const center = new THREE.Box3().setFromObject(active).getCenter(new THREE.Vector3());
-      active.position.sub(center);
-      active.position.y += 0.55;
-      modelGroup.add(active);
-      notice.textContent = 'Wyświetlany jest Twój plik GLB. Model jest używany tylko podczas bieżącego podglądu; nie jest wysyłany na serwer.';
-    }, undefined, error => {
-      URL.revokeObjectURL(url);
-      notice.textContent = 'Nie udało się wczytać modelu GLB: ' + String(error?.message || 'nieznany błąd');
+    root.querySelector('#dg3dFile').addEventListener('change',event=>{
+      const file=event.target.files?.[0];if(!file)return;
+      if(!/\\.glb$/i.test(file.name)||file.size>25*1024*1024){notice.textContent='Wybierz plik .glb do 25 MB.';return}
+      loadBlob(file,true);
     });
-  });
+    const deleteButton=root.querySelector('#dg3dDelete');
+    deleteButton?.addEventListener('click',async()=>{
+      try{await deleteSavedMesh(releaseId);if(!state.closed)notice.textContent='Usunięto zapisany model GLB. Poglądowa sylwetka pozostanie dostępna.'}
+      catch(error){if(!state.closed)notice.textContent='Nie udało się usunąć modelu: '+String(error.message||error)}
+    });
+    if(releaseId)readSavedMesh(releaseId).then(record=>{
+      if(!state.closed&&record?.file)loadBlob(record.file,false);
+    }).catch(error=>console.warn('Saved 3D model:',error));
+  }
 }
