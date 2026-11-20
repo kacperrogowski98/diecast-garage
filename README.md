@@ -53,10 +53,17 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 - docs/MULTIPACK_IMPORT_SPEC.md — multipack catalogue data model, source review and import rules.
 - docs/ — catalogue, sync, deployment and implementation notes.
 
+## Catalogue completeness and interpretation
+
+The built-in Ferrari starter set, bundled Mainline/Premium/Silver index and supplementary 1974–2023 Wiki-derived archive are **not** a guaranteed complete, fully deduplicated global history. Historical source records may overlap with index records: counts of entries are not necessarily counts of unique physical releases. Imported records remain source-labelled and classification remains heuristic unless explicitly reviewed.
+
+For external coverage comparison (not a licence to copy or hotlink all content), independently maintained catalogues report materially larger totals. Until the physical variants, exclusives, promotional lines and regional releases are reconciled, Diecast Garage should be treated as a broad research and collection-management app rather than a definitive all-releases reference.
+
 ## Catalogue sources and provenance
 
 - danyjoy/diecastDb — structured year-based Mainline, Premium and Silver Series records; its README identifies findmyhw.com as its upstream public data source.
-- pvwnthem/Hotwheels-Data — secondary enrichment/import source.
+- pvwnthem/Hotwheels-Data — supplementary historical archive import (1974–2023), derived from Hot Wheels Wiki community data.
+- Hot Wheels Wiki community contributions are under CC BY-SA 3.0; original facts, illustrations and images can have different attribution and rights requirements.
 
 Data fields, images and trademarks belong to their respective rights holders. The app is an unofficial fan-made collector tool and does not claim ownership or affiliation with Mattel. Retain source provenance and respect upstream terms and takedown requests.
 
