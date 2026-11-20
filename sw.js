@@ -1,6 +1,6 @@
-const CACHE_NAME = 'diecast-garage-shell-v1.81';
+const CACHE_NAME = 'diecast-garage-shell-v1.82';
 const base = self.registration.scope;
-const APP_SHELL = ['./', './index.html', './seed.js', './manifest.webmanifest', './icon.svg', './icon-192.png']
+const APP_SHELL = ['./', './index.html', './seed.js', './viewer3d.js', './manifest.webmanifest', './icon.svg', './icon-192.png']
   .map(path => new URL(path, base).toString());
 
 self.addEventListener('install', event => {
