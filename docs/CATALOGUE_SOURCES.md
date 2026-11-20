@@ -303,3 +303,8 @@ The browser app can import the upstream scan index and lazily load year/assortme
 ## 2007 reissue multipacks
 
 - Wheel Wonderland 2007: https://www.wheelwonderland.com/fr/5-packs/2007/ — four complete five-pack reissues plus the alternate eight-car Easter Eggs-Treme and seven-car Fright Cars assortments. These are typed by their actual car counts rather than all being labelled as five-packs.
+
+
+## 2006 reissue multipacks
+
+- Wheel Wonderland 2006: https://www.wheelwonderland.com/fr/5-packs/2006/ — four complete five-pack reissues and one six-car X-Raycers reissue. The six-pack is recorded with its actual size.
