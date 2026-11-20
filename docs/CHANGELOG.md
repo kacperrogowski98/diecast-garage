@@ -1,3 +1,9 @@
+## v1.55 — 20 November 2026
+
+- Added six complete numbered 1993 five-packs (30 vehicle entries), including all four 25th Anniversary themed packs, Construction Crew and Emergency Squad.
+- Kept only verified numbered 1/5–5/5 contents; extra variant rows are not treated as additional cars in the pack.
+- Preserved source links, colours and verification flags.
+
 ## v1.54 — 20 November 2026
 
 - Added six complete 1994 five-packs and one six-pack (36 vehicle entries): Blimp & Support Team, Ford, Off Road Explorers, Racing Team, Speed Demons, World Cup and Action Command.
