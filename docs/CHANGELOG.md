@@ -1,3 +1,9 @@
+## v1.34 — 20 November 2026
+
+- Filled the previously empty 2002, 2003 and 2005 Ferrari 5-Pack records with all 15 model entries and source-listed colours.
+- Added source provenance to the existing pack records; no duplicate packs were created.
+- Added regression checks for all five models and source links in each Ferrari pack.
+
 ## v1.33 — 20 November 2026
 
 - Added 16 complete numbered 2016 five-packs (80 vehicle entries), including Captain America: Civil War, HW Formula Space, Muscle Mania, Race Aces, and two separately coded Track Builder packs.
