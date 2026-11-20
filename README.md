@@ -1,6 +1,6 @@
 # Diecast Garage
 
-Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.81**.
+Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.82**.
 
 ## Live app
 
@@ -10,6 +10,9 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 
 ## Current capabilities
 
+- Interactive 3D garage preview for individual releases, with colour-aware procedural car body, touch/mouse orbit and local GLB preview. It is **not** a verified 3D scan of any particular Hot Wheels release.
+- Three-zone 3D collector showroom (Supercars, Racing, Other) with up to four owned vehicles per zone and page controls. Visual representations are generic; multiple exact diecast meshes are not yet included.
+- Three.js and GLB import dependencies are bundled into the published `viewer3d.js` using esbuild; browser runtime does not require remote CDN and the PWA caches the bundled viewer for offline use.
 - Responsive single-page collector app (index.html) with Garage, Catalogue, Wishlist, Racing, Brands and Multipacks views. On a fresh collection the catalogue opens first; returning collectors with owned cars see their garage.
 - Add/edit owned models, wishlist entries, multiple copies, purchase details, notes and photos.
 - Search multipacks by set name, catalogue code, year or a vehicle inside the pack; filter by year and page through 36 cards at a time.
@@ -18,7 +21,7 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 - Link pack contents to catalogue castings through conservative unique exact-name matching; ambiguous and unmatched entries remain clearly marked.
 - Show matching multipack appearances inside each model's details (name-family matches only; colours and exact releases may differ).
 - Open prefilled Hot Wheels searches on Allegro and eBay from any model detail; these links do not claim live stock, price or exact variant availability.
-- Local collection persistence in browser storage, catalogue persistence in IndexedDB.
+- Local collection persistence in browser storage, catalogue persistence in IndexedDB. Catalogue rendering caches prepared models and debounces search for larger databases.
 - Backup export/import in JSON.
 - PWA manifest, service worker and app icons for installation on supported phones/desktops. The service worker uses network-first HTML updates and cached offline fallback.
 - Deployment workflow includes JavaScript/PWA validation, catalogue normalization tests and a mobile Chromium smoke flow (`node scripts/validate-app.mjs`, `node scripts/test-catalog.mjs`, `node scripts/browser-smoke.mjs`) before publishing.
