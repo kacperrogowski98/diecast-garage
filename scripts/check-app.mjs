@@ -37,9 +37,9 @@ assert.ok(html.includes("let sources=['https://raw.githubusercontent.com/danyjoy
 assert.match(html, /marek rozpoznanych.*kandydatów Supercar\/Hypercar/, 'Catalogue import status must report recognized brands and supercar candidates');
 const seedMatch = html.match(/const SEED=(\\{.*?\\});\\nconst KEY/s);
 assert.ok(seedMatch, 'Seed catalogue JSON can be extracted for data integrity checks');
-const seedData = JSON.parse(seedMatch[1]);
-const packs2022 = seedData.packs.filter(p => p.pack_id.startsWith('hw-5pack-2022-'));
-const contents2022 = seedData.pack_contents.filter(p => p.pack_id.startsWith('hw-5pack-2022-'));
+const seedData2022 = JSON.parse(seedMatch[1]);
+const packs2022 = seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-2022-'));
+const contents2022 = seedData2022.pack_contents.filter(p => p.pack_id.startsWith('hw-5pack-2022-'));
 assert.equal(packs2022.length, 18, '2022 five-pack catalogue includes all 18 distinct package codes/variants in the checklist');
 assert.equal(contents2022.length, 90, '2022 five-pack catalogue includes 90 vehicle entries');
 assert.ok(packs2022.every(p => contents2022.filter(c => c.pack_id === p.pack_id).length === 5), 'Every 2022 five-pack has exactly five listed contents');
