@@ -280,6 +280,13 @@ assert.equal(packs2014.length, 18, '2014 adds 18 complete numbered packs beyond 
 assert.equal(contents2014.length, 90, '2014 additional five-pack catalogue includes 90 vehicle entries');
 assert.ok(packs2014.every(p => contents2014.filter(c => c.pack_id === p.pack_id).length === 5 && p.source_url === 'https://www.wheelwonderland.com/fr/5-packs/2014/'), 'Every additional 2014 pack has five contents and source provenance');
 
+const variants2014 = seedData2022.packs.filter(p => p.release_year === 2014 && p.pack_type === '5-pack variant');
+const variantContents2014 = seedData2022.pack_contents.filter(c => variants2014.some(p => p.pack_id === c.pack_id));
+assert.equal(variants2014.length, 11, '2014 includes eleven documented five-pack reissues');
+assert.equal(variantContents2014.length, 55, '2014 reissue variants include 55 vehicle entries');
+assert.ok(variants2014.every(p => variantContents2014.filter(c => c.pack_id === p.pack_id).length === 5), 'Every 2014 reissue variant contains exactly five vehicles');
+
+
 
 const reissue2014 = seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-2014-reissue-'));
 const reissue2014Contents = seedData2022.pack_contents.filter(c => reissue2014.some(p => p.pack_id === c.pack_id));
