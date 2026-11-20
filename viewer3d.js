@@ -40,10 +40,47 @@ function createCar(color, name) {
   const tall = /suv|defender|truck|jeep|g.?class|bronco/i.test(name || '');
   const y = tall ? 0.7 : low ? 0.42 : 0.5;
 
-  addPart(car, new THREE.BoxGeometry(4.1, 0.48, 1.9), paint, 0, y, 0);
-  addPart(car, new THREE.BoxGeometry(3.7, 0.13, 1.84), paint, 0, y + 0.27, 0);
-  const cockpit = addPart(car, new THREE.BoxGeometry(tall ? 2.5 : 2.2, tall ? 0.86 : 0.58, 1.47), glass, -0.2, y + (tall ? 0.74 : 0.56), 0);
-  cockpit.castShadow = false;
+  const hyper = /f40|f50|enzo|laferrari|chiron|veyron|bolide|jesko|koenigsegg|regera|zonda|huayra|aventador|huracan|revuelto|veneno|senna|720s|765lt|p1|918 spyder|utopia|nevera|speedtail|valkyrie|mc20/i.test(name || '');
+  // Three body profiles give distinct, honest-to-source *illustrative* silhouettes.
+  const outline = new THREE.Shape();
+  if (tall) {
+    outline.moveTo(-2.05, y-0.22);
+    outline.lineTo(-2.05, y+0.22);
+    outline.lineTo(1.70, y+0.25);
+    outline.lineTo(2.06, y+0.06);
+    outline.lineTo(2.06, y-0.22);
+  } else if (hyper || low) {
+    outline.moveTo(-2.05, y-0.2);
+    outline.lineTo(-2.05, y+0.05);
+    outline.lineTo(-1.47, y+0.28);
+    outline.lineTo(0.48, y+0.31);
+    outline.lineTo(1.66, y+0.14);
+    outline.lineTo(2.05, y-0.04);
+    outline.lineTo(2.05, y-0.2);
+  } else {
+    outline.moveTo(-2.05, y-0.22);
+    outline.lineTo(-2.05, y+0.13);
+    outline.lineTo(-1.60, y+0.28);
+    outline.lineTo(1.36, y+0.28);
+    outline.lineTo(2.05, y+0.12);
+    outline.lineTo(2.05, y-0.22);
+  }
+  outline.closePath();
+  const chassis = new THREE.ExtrudeGeometry(outline, {
+    depth:1.76, bevelEnabled:true, bevelThickness:0.06, bevelSize:0.055, bevelSegments:2, curveSegments:4,
+  });
+  addPart(car, chassis, paint, 0, 0, -0.88);
+  const roof = new THREE.Shape();
+  const roofHeight=tall?0.92:hyper?0.47:0.64;
+  const roofLeft=tall?-1.46:-0.98, roofRight=tall?1.13:0.83;
+  roof.moveTo(roofLeft-0.37,y+0.28);
+  roof.lineTo(roofLeft,y+0.28+roofHeight);
+  roof.lineTo(roofRight-0.2,y+0.28+roofHeight);
+  roof.lineTo(roofRight+0.38,y+0.28);
+  roof.closePath();
+  const cabin=new THREE.ExtrudeGeometry(roof,{depth:1.39,bevelEnabled:true,bevelThickness:0.035,bevelSize:0.03,bevelSegments:2});
+  const cockpit=addPart(car,cabin,glass,0,0,-0.695);
+  cockpit.castShadow=false;
   addPart(car, new THREE.BoxGeometry(0.09, 0.08, 1.65), dark, 1.91, y - 0.08, 0);
   addPart(car, new THREE.BoxGeometry(0.09, 0.08, 1.65), dark, -1.91, y - 0.08, 0);
   for (const side of [-1, 1]) {
