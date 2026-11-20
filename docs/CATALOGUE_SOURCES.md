@@ -113,3 +113,13 @@ The browser app can import the upstream scan index and lazily load year/assortme
 - 2002: https://www.wheelwonderland.com/fr/series/ferrari-5-pack-2002/ — five numbered models and colours.
 - 2003: https://www.wheelwonderland.com/fr/series/ferrari-5-pack-2003/ — five numbered models and colours; the base five-model composition was used, not duplicate colour-variant rows.
 - 2005: https://www.wheelwonderland.com/fr/series/ferrari-5-pack-2005/ — five numbered models and colours.
+
+
+## Ferrari 5-Packs (2009–2014)
+
+- 2009: https://www.wheelwonderland.com/fr/series/ferrari-5-pack-2009/ — 10 listed vehicles split into two five-car assortments.
+- 2010: https://www.wheelwonderland.com/fr/series/ferrari-5-pack-2010/ — five numbered vehicles.
+- 2011: https://www.wheelwonderland.com/fr/series/ferrari-5-pack-2011/ — five numbered vehicles.
+- 2012: https://www.wheelwonderland.com/fr/series/ferrari-5-pack-2012/ — five numbered vehicles.
+- 2013: https://www.wheelwonderland.com/fr/5-packs/2013/ — five numbered vehicles.
+- 2014: https://www.wheelwonderland.com/fr/series/ferrari-5-pack-2014/ — five numbered vehicles.
