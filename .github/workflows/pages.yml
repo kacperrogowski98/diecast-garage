@@ -28,14 +28,22 @@ jobs:
         run: node scripts/validate-app.mjs
       - name: Validate catalog normalization and classification
         run: node scripts/test-catalog.mjs
-      - name: Install Playwright and Chromium for browser smoke
+      - name: Install Chromium and local 3D build dependencies
         run: |
-          npm install --no-save playwright
+          npm install --no-save playwright three@0.170.0 esbuild@0.24.2
           npx playwright install --with-deps chromium
+      - name: Build self-contained 3D app for browser tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _site/catalog
+          cp index.html seed.js sw.js manifest.webmanifest icon.svg icon-192.png _site/
+          npx esbuild viewer3d.js --bundle --format=esm --target=es2020 --minify --outfile=_site/viewer3d.js
+          test -s _site/viewer3d.js
       - name: Mobile app browser smoke test
         shell: bash
         run: |
-          python3 -m http.server 8000 --bind 127.0.0.1 >/tmp/diecast-http.log 2>&1 &
+          python3 -m http.server 8000 --bind 127.0.0.1 --directory _site >/tmp/diecast-http.log 2>&1 &
           sleep 2
           node scripts/browser-smoke.mjs
       - name: Bundle full catalogue index for reliable first launch
@@ -63,7 +71,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p _site/catalog
-          cp index.html seed.js sw.js viewer3d.js manifest.webmanifest icon.svg icon-192.png _site/
+          cp index.html seed.js sw.js manifest.webmanifest icon.svg icon-192.png _site/
           cp -a catalog/. _site/catalog/
       - name: Upload static site
         uses: actions/upload-pages-artifact@v3
