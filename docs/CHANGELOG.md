@@ -1,3 +1,9 @@
+## v1.63 — 20 November 2026
+
+- Added 11 additional 2014 five-pack reissue/colour variants (55 entries): Attack Pack, Demolition Derby, Max Steel Aerial and Land Invasion, Monster Mission, Police Pursuit, Rescue Racers, Street Beasts, Stunt Circuit, Track Aces and Track Builder.
+- Kept the variants separate from base assortments and preserved unknown source colours as unknown rather than guessing.
+- Source provenance and packaging-photo verification flags are included.
+
 ## v1.62 — 20 November 2026
 
 - Added six 2015 five-pack reissue variants (30 vehicle entries): Dino Riders, Graffiti Rides, HW Exotics, Police Pursuit, Rescue Racers and Track Aces.
