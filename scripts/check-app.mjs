@@ -14,6 +14,8 @@ assert.ok(shellHtml.includes('id="packSearchField"') && shellHtml.includes('cont
 assert.ok(shellHtml.includes('packYear=this.value;packPage=0;renderPackGrid()'), 'Multipack year filter must update visible cards');
 assert.ok(shellHtml.includes('function dgPacksForModel(model)') && shellHtml.includes('W jakich multipackach występuje?'), 'Model details must link to matching multipacks');
 assert.ok(shellHtml.includes('Kolor i konkretne wydanie mogą się różnić'), 'Matching multipacks must not be represented as exact release matches');
+assert.ok(shellHtml.includes('https://allegro.pl/listing?string=${marketQuery}') && shellHtml.includes('https://www.ebay.com/sch/i.html?_nkw=${marketQuery}'), 'Each car exposes external Allegro and eBay search links');
+assert.ok(shellHtml.includes('nie potwierdzenie dostępności') && shellHtml.includes('rel="noopener noreferrer"'), 'Marketplace links must be cautious and safe');
 assert.ok(!shellHtml.includes('const SEED='), 'Large source catalogue must be separate from the HTML shell');
 const manifest = JSON.parse(fs.readFileSync('manifest.webmanifest', 'utf8'));
 const schema = fs.readFileSync('supabase/schema.sql', 'utf8');
