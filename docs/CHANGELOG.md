@@ -1,3 +1,10 @@
+## v1.28 — 20 November 2026
+
+- Expanded the five-pack catalogue with 2023 and 2024 checklists: 35 additional package codes and 175 vehicle entries.
+- Included two separate HW City packages in 2023 and retained source-listed fantasy castings; only complete five-car package compositions were imported.
+- Every pack and content row retains its Wheel Wonderland source and remains flagged for packaging-photo verification.
+- Added regression checks for 2023/2024 pack totals, five cars per pack and source attribution.
+
 ## v1.27 — 20 November 2026
 
 - Added the complete 2022 five-pack checklist: 18 distinct package codes/variants and 90 vehicle entries, including both HW City assortments and the PTMI 30th variant.
