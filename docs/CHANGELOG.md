@@ -1,3 +1,9 @@
+## v1.65 — 20 November 2026
+
+- Added 10 additional 2012 five-pack reissue/colour variants (50 entries): Corvette, Creature Cars, Demolition Derby, Ferrari, Heat Fleet, HW City Works, Jungle Rally, Police Pursuit, Team Hot Wheels and X-Raycers.
+- Added the alternate Halloween 6-Pack with all six cars, correctly typed as a 6-pack variant.
+- Kept reissue colourways distinct from base assortments and marked them for packaging-photo verification.
+
 ## v1.64 — 20 November 2026
 
 - Added nine complete 2013 five-pack reissue/colour variants (45 entries): Attack Pack, HW City Works, Jungle Rally, Monster Mission, Muscle Mania, Police Pursuit, Street Beasts, Stunt Circuit and Track Aces.
