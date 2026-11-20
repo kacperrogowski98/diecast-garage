@@ -1,3 +1,9 @@
+## v1.74 — 20 November 2026
+
+- Added three 2002 reissue assortments (17 entries): Ferrari (5-pack), Happy Birthday (7-pack) and Heat Fleet (5-pack).
+- Preserved the seven-car Happy Birthday variant as a seven-pack rather than truncating it to five cars.
+- Added source provenance and packaging-photo verification flags.
+
 ## v1.73 — 20 November 2026
 
 - Added five 2003 reissue assortments (26 entries): B-Day Gift, Ferrari (six-car variant), Flag Flyers, Heat Fleet and Hot Haulers.
