@@ -273,3 +273,8 @@ The browser app can import the upstream scan index and lazily load year/assortme
 ## 2015 reissue and colour-variant five-packs
 
 - Wheel Wonderland 2015: https://www.wheelwonderland.com/fr/5-packs/2015/ — six additional complete reissue/colour variants (30 entries): Dino Riders, Graffiti Rides, HW Exotics, Police Pursuit, Rescue Racers and Track Aces. Partial X-Raycers rows and the non-pack “Included cars” grouping were excluded.
+
+
+## 2014 reissue and colour-variant five-packs
+
+- Wheel Wonderland 2014: https://www.wheelwonderland.com/fr/5-packs/2014/ — 11 additional complete reissue/colour variants (55 entries). Ferrari and HW Exotics records already represented in the base catalogue were not duplicated. Source-listed unknown colours remain null.
