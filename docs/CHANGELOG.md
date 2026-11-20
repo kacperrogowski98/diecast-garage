@@ -1,3 +1,9 @@
+## v1.57 — 20 November 2026
+
+- Added 18 verified historical 1988–1990 pack records, covering 91 vehicles.
+- 1988: seven five-packs; 1989: four five-packs and the six-car Trailbusters Gift Pack; 1990: six five-packs.
+- Kept pack size explicit, retained source links, and excluded the ambiguous 1989 Super Sportscars double-numbered listing.
+
 ## v1.56 — 20 November 2026
 
 - Added 12 historical pack records for 1991–1992, totalling 66 vehicle entries.
