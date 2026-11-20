@@ -199,7 +199,7 @@ assert.ok(packs2019.every(p => contents2019.filter(c => c.pack_id === p.pack_id)
 
 
 const packs2018 = seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-2018-') && p.pack_type !== '5-pack variant');
-const contents2018 = seedData2022.pack_contents.filter(p => p.pack_id.startsWith('hw-5pack-2018-'));
+const contents2018 = seedData2022.pack_contents.filter(c => packs2018.some(p => p.pack_id === c.pack_id));
 assert.equal(packs2018.length, 18, '2018 adds 18 complete numbered packs beyond the curated Exotics pack');
 assert.equal(contents2018.length, 90, '2018 additional five-pack catalogue includes 90 vehicle entries');
 assert.ok(packs2018.every(p => contents2018.filter(c => c.pack_id === p.pack_id).length === 5 && p.source_url === 'https://www.wheelwonderland.com/fr/5-packs/2018/'), 'Every additional 2018 pack has five contents and source provenance');
@@ -478,8 +478,8 @@ assert.ok(dualCool2005 && dualCool2005.pack_type === '6-pack' && seedData2022.pa
 const packs2004 = seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-2004-') && p.pack_type !== '5-pack variant');
 const contents2004 = seedData2022.pack_contents.filter(p => packs2004.some(pack => pack.pack_id === p.pack_id));
 assert.equal(packs2004.length, 12, '2004 adds twelve complete numbered five-packs');
-assert.equal(contents2004.length, 60, '2004 five-pack catalogue includes 60 vehicle entries');
-assert.ok(packs2004.every(p => contents2004.filter(c => c.pack_id === p.pack_id).length === 5 && p.source_url === 'https://www.wheelwonderland.com/es/5-packs/2004/' || p.source_url === 'https://www.wheelwonderland.com/fr/5-packs/2004/'), 'Every 2004 five-pack has five contents and source provenance');
+assert.equal(contents2004.length, 61, '2004 package catalogue includes 61 entries, including a six-car box');
+assert.ok(packs2004.every(p => contents2004.filter(c => c.pack_id === p.pack_id).length === (p.pack_type === '6-pack' ? 6 : 5) && ['https://www.wheelwonderland.com/es/5-packs/2004/','https://www.wheelwonderland.com/fr/5-packs/2004/'].includes(p.source_url)), 'Every 2004 pack has the correct count and provenance');
 
 
 const reissue2004 = seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-2004-reissue-'));
@@ -617,13 +617,13 @@ assert.equal(alternate2008.length, 5, '2008 alternate-colour pack variants are r
 assert.equal(alternate2008Contents.length, 25, 'Five alternate 2008 assortments contain 25 entries');
 assert.ok(alternate2008.every(p => p.pack_type === '5-pack variant' && alternate2008Contents.filter(c => c.pack_id === p.pack_id).length === 5), 'Every 2008 alternate assortment has five entries and is labelled as a variant');
 
-assert.equal(seedData.packs.length, 682, 'All seeded multipack pack records must remain accounted for');
+assert.equal(seedData.packs.length, 683, 'All seeded multipack pack records must remain accounted for');
 const reissue2017 = seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-2017-reissue-'));
 const reissue2017Contents = seedData2022.pack_contents.filter(c => reissue2017.some(p => p.pack_id === c.pack_id));
 assert.equal(reissue2017.length, 10, '2017 reissue/colour variants are retained separately from numbered base assortments');
 assert.equal(reissue2017Contents.length, 50, 'Ten 2017 reissue assortments contain 50 vehicle entries');
 assert.ok(reissue2017.every(p => p.pack_type === '5-pack variant' && reissue2017Contents.filter(c => c.pack_id === p.pack_id).length === 5), 'Every 2017 reissue has five vehicles and explicit variant status');
-assert.equal(seedData.pack_contents.length, 3412, 'All seeded multipack content rows must remain accounted for');
+assert.equal(seedData.pack_contents.length, 3417, 'All seeded multipack content rows must remain accounted for');
 const exotics2020 = seedData.pack_contents.filter(item => item.pack_id === 'hw-exotics-5pack-2020');
 assert.equal(exotics2020.length, 5, '2020 HW Exotics 5-pack must contain five vehicles');
 assert.ok(exotics2020.every(item => item.source_url.includes('community.creations.mattel.com')), '2020 HW Exotics contents must cite the official Mattel source');
