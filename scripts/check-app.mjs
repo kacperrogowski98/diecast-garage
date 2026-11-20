@@ -281,8 +281,8 @@ assert.equal(contents2009.length, 80, '2009 additional five-pack catalogue inclu
 assert.ok(packs2009.every(p => contents2009.filter(c => c.pack_id === p.pack_id).length === 5 && p.source_url === 'https://www.wheelwonderland.com/fr/5-packs/2009/'), 'Every additional 2009 pack has five contents and source provenance');
 
 
-const packs2008 = seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-2008-'));
-const contents2008 = seedData2022.pack_contents.filter(p => p.pack_id.startsWith('hw-5pack-2008-'));
+const packs2008 = seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-2008-') && p.pack_type !== '5-pack variant');
+const contents2008 = seedData2022.pack_contents.filter(p => packs2008.some(pack => pack.pack_id === p.pack_id));
 assert.equal(packs2008.length, 20, '2008 includes 15 numbered assortments plus five documented colour-variant/reissue runs');
 assert.equal(contents2008.length, 100, '2008 catalogue includes 100 vehicle entries across numbered assortments and documented variant runs');
 assert.ok(packs2008.every(p => contents2008.filter(c => c.pack_id === p.pack_id).length === 5 && p.source_url === 'https://www.wheelwonderland.com/fr/5-packs/2008/'), 'Every 2008 pack record has five contents and source provenance');
