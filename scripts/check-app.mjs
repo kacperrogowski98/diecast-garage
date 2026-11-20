@@ -148,7 +148,7 @@ for (const [packId, year] of [['ferrari-5pack-1994-gift', '1994'], ['ferrari-5pa
   assert.equal(contents.length, 5, `Ferrari ${year} 5-pack must contain exactly five linked records`);
   assert.ok(contents.every(item => item.source_url.includes(`_(${year})`)), `Ferrari ${year} pack contents must point to the matching source year`);
 }
-assert.equal(seedData.pack_contents.length, 65, 'All seeded multipack content rows must remain accounted for');
+assert.equal(seedData.pack_contents.length, 155, 'All seeded multipack content rows must remain accounted for');
 const exotics2020 = seedData.pack_contents.filter(item => item.pack_id === 'hw-exotics-5pack-2020');
 assert.equal(exotics2020.length, 5, '2020 HW Exotics 5-pack must contain five vehicles');
 assert.ok(exotics2020.every(item => item.source_url.includes('community.creations.mattel.com')), '2020 HW Exotics contents must cite the official Mattel source');
