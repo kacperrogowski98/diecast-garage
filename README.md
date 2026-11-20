@@ -12,6 +12,7 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 
 - Interactive 3D garage preview for individual releases, with colour-aware procedural car body, touch/mouse orbit and locally persisted per-release GLB models (up to 25 MB each, stored in IndexedDB). It is **not** a verified 3D scan of any particular Hot Wheels release.
 - Three-zone 3D collector showroom (Supercars, Racing, Other) with up to four owned vehicles per zone and page controls. Visual representations are generic; multiple exact diecast meshes are not yet included.
+- Multipack-specific 3D showroom launched from each set's details, depicting up to 12 documented contents on a common stage. Body silhouettes vary across hypercars, sports cars and tall vehicles, but remain illustrative rather than true Hot Wheels scans.
 - Three.js and GLB import dependencies are bundled into the published `viewer3d.js` using esbuild; browser runtime does not require remote CDN and the PWA caches the bundled viewer for offline use.
 - Responsive single-page collector app (index.html) with Garage, Catalogue, Wishlist, Racing, Brands and Multipacks views. On a fresh collection the catalogue opens first; returning collectors with owned cars see their garage.
 - Add/edit owned models, wishlist entries, multiple copies, purchase details, notes and photos.
@@ -56,6 +57,10 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 - docs/SUPABASE_SETUP.md — step-by-step setup for a real Supabase project.
 - docs/MULTIPACK_IMPORT_SPEC.md — multipack catalogue data model, source review and import rules.
 - docs/ — catalogue, sync, deployment and implementation notes.
+
+## Verified packaged Wiki v6 snapshot (20 November 2026)
+
+The generated `catalog/wiki-stats.json` currently confirms **57,348 release/product rows and 859 pack rows**, together with compressed assets. These are source-documented records, not a deduplicated census of every Hot Wheels on Earth, and not a guarantee that each row is a car. The CI workflow now validates the compressed streams against this manifest before publishing.
 
 ## Full Wiki v6 catalogue pipeline
 
