@@ -318,3 +318,8 @@ The browser app can import the upstream scan index and lazily load year/assortme
 ## 2004 reissues and assortment-size correction
 
 - Wheel Wonderland 2004: https://www.wheelwonderland.com/fr/5-packs/2004/ — three complete reissue variants (15 entries). The source lists Smashville with six vehicles; the app now records all six and labels the pack correctly.
+
+
+## 2003 reissue assortments
+
+- Wheel Wonderland 2003: https://www.wheelwonderland.com/fr/5-packs/2003/ — four complete five-pack reissues plus a six-car Ferrari variant (26 entries). The Tiki Blasters reissue was held back because the source duplicates one model row.
