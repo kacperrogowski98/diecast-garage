@@ -1,3 +1,9 @@
+## v1.51 — 20 November 2026
+
+- Added 12 complete numbered 1997 five-packs (60 vehicle entries), including California Dreamin', City Action, Fire Fighting, Police Force, Race Team II and Racing World.
+- Imported only exact numbered 1/5–5/5 sets; incomplete or mixed/variant assortments remain out until verified.
+- Preserved source links and verification flags for every pack and vehicle entry.
+
 ## v1.50 — 20 November 2026
 
 - Added 11 complete numbered 1998 five-packs (55 vehicle entries), including Figure 8 Racers, G-Force Stunt Riders, Off Road 4x4 and Showroom Specials.
