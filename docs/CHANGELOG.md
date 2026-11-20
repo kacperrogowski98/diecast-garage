@@ -1,3 +1,9 @@
+## v1.47 — 20 November 2026
+
+- Added ten complete numbered 2001 five-packs (50 entries) and two six-packs (12 entries): City Service, Cyborg City, Harley-Davidson, Hot Rods, Police Cruisers, Rescue Rods, Shark Park, Skateboarders, Spider Slam, Victory Lane, Fireball and Truck Stoppers.
+- Pack sizes are based on numbered source checklists; 6-car assortments are typed separately rather than forced into five-pack records.
+- Preserved toy numbers, colours and source provenance.
+
 ## v1.46 — 20 November 2026
 
 - Added 12 complete numbered 2002 five-packs (60 entries): 4x4 Monsters, Air Circus, Asphalt Assault, Extreme City, Happy Birthday, Heat Fleet, HW Side Show, Insectiride, Octoblast, Sci-Fi Monsters, Sports and Turbo Jet City.
