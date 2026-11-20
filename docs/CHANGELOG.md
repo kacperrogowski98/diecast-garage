@@ -1,3 +1,8 @@
+## v1.26 — 20 November 2026
+
+- Clarified the first-run catalogue message: the app automatically downloads the broad Mainline, Premium and Silver Series index, while cached records remain available offline.
+- Added a regression check for the startup download flow and the user-facing explanation.
+
 ## v1.25 — 20 November 2026
 
 - Multipack contents without casting IDs are now linked to the main catalogue only when normalized model names produce one unique exact match.
