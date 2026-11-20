@@ -1,3 +1,9 @@
+## v1.64 — 20 November 2026
+
+- Added nine complete 2013 five-pack reissue/colour variants (45 entries): Attack Pack, HW City Works, Jungle Rally, Monster Mission, Muscle Mania, Police Pursuit, Street Beasts, Stunt Circuit and Track Aces.
+- Kept reissue colourways separate from base assortments; source-listed colour details are preserved.
+- Marked all reissues for packaging-photo verification.
+
 ## v1.63 — 20 November 2026
 
 - Added 11 additional 2014 five-pack reissue/colour variants (55 entries): Attack Pack, Demolition Derby, Max Steel Aerial and Land Invasion, Monster Mission, Police Pursuit, Rescue Racers, Street Beasts, Stunt Circuit, Track Aces and Track Builder.
