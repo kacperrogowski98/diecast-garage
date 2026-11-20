@@ -27,6 +27,11 @@ assert.ok(viewer.includes("name:'SUPERCARS'") && viewer.includes("name:'RACING'"
 const viewerSyntax=viewer.replace(/^import .*;$/gm,'').replace(/^export /gm,'');
 new vm.Script(viewerSyntax,{filename:'viewer3d.js'});
 
+const pullStart=html.indexOf('async function dgCloudPull(){');
+const pullEnd=html.indexOf('function exportData(){',pullStart);
+assert.ok(pullStart>=0&&pullEnd>pullStart,'Cloud pull and backup implementation missing');
+const cloudPull=html.slice(pullStart,pullEnd);
+assert.ok(cloudPull.includes('exportData();')&&cloudPull.indexOf('exportData();')<cloudPull.indexOf('state=normalizeBackup('),'Cloud pull must export backup before replacing local state');
 const sw=fs.readFileSync('sw.js','utf8');
 new vm.Script(sw,{filename:'sw.js'});
 const release=html.match(/<title>Diecast Garage · (v[0-9.]+)<\/title>/)?.[1];
