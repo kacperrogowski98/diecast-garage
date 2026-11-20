@@ -22,6 +22,14 @@ The full schema includes the atomic sync RPC, user-owned collection tables, row-
 
 If a project already has the original Diecast Garage schema, do not rerun a partial setup by guesswork. Apply [the atomic sync migration](../supabase/migrations/20261118_atomic_collection_sync.sql) after the original schema.
 
+## 2a. Enable optional private 3D model sync
+
+Run [supabase/migrations/20261120_private_glb_storage.sql](../supabase/migrations/20261120_private_glb_storage.sql) in the same project's SQL Editor. It creates a **private** `diecast-models` Storage bucket (25 MB per GLB) with per-user object policies. Never make the bucket public.
+
+Once connected and signed in, open an individual car's 3D viewer. After importing a `.glb` file, choose **☁ Wyślij GLB**. On the second device, sign into the same Supabase account and use **☁ Pobierz GLB** in that car's viewer. Downloading replaces that car's locally stored 3D model on the receiving device, after confirmation.
+
+Cloud GLB transfer is an explicit action, separate from collection photo/garage push-pull. A live two-device end-to-end test is still required.
+
 ## 3. Verify database and security setup
 
 1. Open [supabase/verify_sync_setup.sql](../supabase/verify_sync_setup.sql).
