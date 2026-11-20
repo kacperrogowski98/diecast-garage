@@ -32,6 +32,8 @@ Do not scrape or bulk-import these sources until a permitted export/API and its 
 
 ## Verified multipack additions
 
+- HW Exotics 5-Packs 2017, 2019 and 2021: five vehicles per pack, transcribed from Mattel's official yearly announcements. Production color and packaging variations remain unverified; the articles note that production items may vary.
+
 - 2020 HW Exotics 5-Pack: the five contents are recorded from Mattel's official 2020 announcement. Production colors and packaging variations remain unverified; the source itself notes that production cars may vary from photos.
 
 ## Multipack source candidates
