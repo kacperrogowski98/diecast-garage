@@ -75,3 +75,10 @@ The browser app can import the upstream scan index and lazily load year/assortme
 - Wheel Wonderland 2023: https://www.wheelwonderland.com/fr/5-packs/2023/ — 18 complete package codes with five listed vehicles each (90 entries). Incomplete/variant-only series entries were not guessed into pack compositions.
 - Wheel Wonderland 2024: https://www.wheelwonderland.com/fr/5-packs/2024/ — 17 complete package codes with five listed vehicles each (85 entries). Incomplete/variant-only series entries were not guessed into pack compositions.
 - All community database records remain flagged for packaging-photo verification.
+
+
+## 2025–2026 five-packs
+
+- Wheel Wonderland 2025: https://www.wheelwonderland.com/fr/5-packs/2025/ — 18 fully enumerated package codes and 90 vehicle entries; the two Stunt Tracks codes are kept as separate packs.
+- Wheel Wonderland 2026: https://www.wheelwonderland.com/fr/5-packs/2026/ — 17 additional fully enumerated package codes and 85 vehicle entries; the separately curated Ferrari 5-Pack is not duplicated.
+- Source-listed colours are included where available. All community database records remain flagged for packaging-photo verification.
