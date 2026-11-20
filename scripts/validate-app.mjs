@@ -10,7 +10,8 @@ const required=['id="rarityFilter"','id="classFilter"','id="brandFilter"','id="y
 for(const token of required)assert.ok(html.includes(token),'Missing UI/API: '+token);
 const sw=fs.readFileSync('sw.js','utf8');
 new vm.Script(sw,{filename:'sw.js'});
-assert.ok(sw.includes('v1.76'),'Outdated PWA shell version');
+const release=html.match(/<title>Diecast Garage · (v[0-9.]+)<\/title>/)?.[1];
+assert.ok(release && sw.includes('diecast-garage-shell-'+release),'Outdated PWA shell version');
 const manifest=JSON.parse(fs.readFileSync('manifest.webmanifest','utf8'));
 assert.equal(manifest.display,'standalone');
 assert.ok(manifest.start_url);
