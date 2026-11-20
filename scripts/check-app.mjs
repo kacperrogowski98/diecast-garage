@@ -11,9 +11,9 @@ const syncVerification = fs.readFileSync('supabase/verify_sync_setup.sql', 'utf8
 const serviceWorker = fs.readFileSync('sw.js', 'utf8');
 
 assert.match(html, /<html lang="pl">/i, 'Polish document language is present');
-assert.ok(html.includes('<title>Diecast Garage · v1.28</title>'), 'Current app release title must be v1.28');
-assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.28') && html.includes('Diecast Garage · v1.28 ·'), 'Visible app version labels must match the release title');
-assert.ok(serviceWorker.includes('diecast-garage-shell-v1.28.0'), 'PWA shell cache must be versioned with the current release');
+assert.ok(html.includes('<title>Diecast Garage · v1.29</title>'), 'Current app release title must be v1.29');
+assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.29') && html.includes('Diecast Garage · v1.29 ·'), 'Visible app version labels must match the release title');
+assert.ok(serviceWorker.includes('diecast-garage-shell-v1.29.0'), 'PWA shell cache must be versioned with the current release');
 assert.match(html, /id="content"/, 'Main app content mount exists');
 assert.match(html, /id="assortmentFilter"/, 'Catalogue assortment filter exists');
 assert.match(html, /id="sortFilter"/, 'Catalogue sort control exists');
@@ -55,6 +55,17 @@ const contents2024 = seedData2022.pack_contents.filter(p => p.pack_id.startsWith
 assert.equal(packs2024.length, 17, '2024 five-pack catalogue includes 17 fully enumerated package codes');
 assert.equal(contents2024.length, 85, '2024 five-pack catalogue includes 85 vehicle entries');
 assert.ok(packs2024.every(p => contents2024.filter(c => c.pack_id === p.pack_id).length === 5 && p.source_url === 'https://www.wheelwonderland.com/fr/5-packs/2024/'), 'Every 2024 pack has five contents and source provenance');
+const packs2025 = seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-2025-'));
+const contents2025 = seedData2022.pack_contents.filter(p => p.pack_id.startsWith('hw-5pack-2025-'));
+assert.equal(packs2025.length, 18, '2025 five-pack catalogue includes 18 complete package codes');
+assert.equal(contents2025.length, 90, '2025 five-pack catalogue includes 90 vehicle entries');
+assert.ok(packs2025.every(p => contents2025.filter(c => c.pack_id === p.pack_id).length === 5 && p.source_url === 'https://www.wheelwonderland.com/fr/5-packs/2025/'), 'Every 2025 pack has five contents and source provenance');
+const packs2026 = seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-2026-'));
+const contents2026 = seedData2022.pack_contents.filter(p => p.pack_id.startsWith('hw-5pack-2026-'));
+assert.equal(packs2026.length, 17, '2026 five-pack catalogue includes 17 additional complete package codes beyond the separately curated Ferrari pack');
+assert.equal(contents2026.length, 85, '2026 additional five-pack catalogue includes 85 vehicle entries');
+assert.ok(packs2026.every(p => contents2026.filter(c => c.pack_id === p.pack_id).length === 5 && p.source_url === 'https://www.wheelwonderland.com/fr/5-packs/2026/'), 'Every additional 2026 pack has five contents and source provenance');
+
 
 assert.ok(html.includes('function packMatchKey(value)'), 'Pack contents use conservative normalized exact-name matching');
 assert.ok(html.includes("match_status:'exact'") && html.includes("ids.length>1?'ambiguous':'unmatched'"), 'Pack matching links only unique exact casting matches and flags ambiguity');
@@ -159,7 +170,7 @@ for (const [packId, year] of [['ferrari-5pack-1994-gift', '1994'], ['ferrari-5pa
   assert.equal(contents.length, 5, `Ferrari ${year} 5-pack must contain exactly five linked records`);
   assert.ok(contents.every(item => item.source_url.includes(`_(${year})`)), `Ferrari ${year} pack contents must point to the matching source year`);
 }
-assert.equal(seedData.pack_contents.length, 330, 'All seeded multipack content rows must remain accounted for');
+assert.equal(seedData.pack_contents.length, 505, 'All seeded multipack content rows must remain accounted for');
 const exotics2020 = seedData.pack_contents.filter(item => item.pack_id === 'hw-exotics-5pack-2020');
 assert.equal(exotics2020.length, 5, '2020 HW Exotics 5-pack must contain five vehicles');
 assert.ok(exotics2020.every(item => item.source_url.includes('community.creations.mattel.com')), '2020 HW Exotics contents must cite the official Mattel source');
