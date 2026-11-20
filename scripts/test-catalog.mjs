@@ -45,4 +45,15 @@ const wikiFile={name:'hotwheels_db_v6.jsonl',text:async()=>JSON.stringify(wikiRo
 const wikiRecords=await ctx.dgReadCatalogFile(wikiFile);
 assert.equal(wikiRecords.length,2);
 assert.ok(wikiRecords.every(row=>row.source==='hotwheels-wiki-v6'));
-console.log('PASS: normalized catalogues, stable Wiki v6 IDs, archival JSONL, TH/STH, images and source attribution');
+const wikiPackParser=script.match(/^function dgNormalizeWikiPack\(r\).*$/m)?.[0];
+assert.ok(wikiPackParser,'Wiki multipack adapter missing');
+vm.runInContext(wikiPackParser,ctx);
+const pack=ctx.dgNormalizeWikiPack({type:'pack',title:'2025 HW Exotics 5-Pack',page_url:'https://hotwheels.fandom.com/wiki/HW_Exotics_5-Pack',members:[{casting_resolved:'Ferrari F40',color:'Red',year:'2025'},{model_name:'Lamborghini Huracan',color:'Blue'}]});
+assert.equal(pack.pack_type,'5-Pack');
+assert.equal(pack.release_year,2025);
+assert.equal(pack.contents.length,2);
+assert.equal(pack.contents[0].model_name_as_source,'Ferrari F40');
+assert.equal(pack.contents[1].body_color,'Blue');
+assert.equal(pack.source,'hotwheels-wiki-v6');
+assert.equal(ctx.dgNormalizeWikiPack({type:'trackset',title:'Test Track'}),null);
+console.log('PASS: normalized releases and Wiki 5-packs, stable IDs, archival JSONL, TH/STH, images and provenance');
