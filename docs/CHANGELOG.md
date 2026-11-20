@@ -1,3 +1,10 @@
+## v1.32 — 20 November 2026
+
+- Added 37 fully enumerated 2017–2018 five-packs (185 vehicle entries), including licensed character packs, HW Speed Graphics, Muscle Mania, Track Stars, and two separately numbered 2018 City packs.
+- Existing HW Exotics packs for both years were retained without duplication.
+- Added source-listed colours where available and kept fantasy castings in their original pack compositions.
+- Added regression checks for pack totals, five entries per pack and source provenance.
+
 ## v1.31 — 20 November 2026
 
 - Added 15 fully enumerated 2019 five-packs (75 vehicle entries), including Fast & Furious, Rocket League, Police Pursuit, and Wave Cravers.
