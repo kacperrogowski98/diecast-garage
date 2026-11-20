@@ -54,4 +54,19 @@ assert.ok(wantedMarkup.includes('HW Exotics 5-Pack'),'Pack wishlist must appear 
 assert.ok(wantedMarkup.includes('Mam ten zestaw'),'Unified wishlist should allow marking package as owned');
 wantedCtx.search='Ferrari';
 assert.equal(wantedCtx.dgPackWishlistMarkup(),'','Pack wishlist must respect search query');
+const coverageStart=html.indexOf('function dgPackSeriesCoverageMarkup(){');
+const coverageEnd=html.indexOf('function renderPacks(content){',coverageStart);
+assert.ok(coverageStart>0&&coverageEnd>coverageStart,'Missing HW Exotics/Motor Show coverage browser');
+const coverageCtx=vm.createContext({
+ SEED:{packs:[{pack_id:'e15',pack_name:'HW Exotics 5-Pack',release_year:2015},{pack_id:'m22',pack_name:'HW Motor Show',release_year:2022}]},
+ wikiPacks:[],state:{customPacks:[]},packSearch:'',packYear:'all',packSource:'all',packKind:'all',packOwnership:'all',packPage:8,
+ render:()=>{},document:{getElementById:()=>({focus(){}})}
+});
+vm.runInContext(html.slice(coverageStart,coverageEnd),coverageCtx);
+const coverage=coverageCtx.dgPackSeriesCoverageMarkup();
+assert.ok(coverage.includes('2015 · 1 rekord')&&coverage.includes('2022 · 1 rekord'),'Coverage should count year/source names');
+coverageCtx.dgFocusPackSeries(2022,'Motor Show');
+assert.equal(coverageCtx.packYear,'2022');
+assert.equal(coverageCtx.packSearch,'Motor Show');
+assert.equal(coverageCtx.packPage,0);
 console.log('PASS: pack wishlist persists, normalizes backup and supports older states');
