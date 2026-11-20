@@ -28,6 +28,16 @@ jobs:
         run: node scripts/validate-app.mjs
       - name: Validate catalog normalization and classification
         run: node scripts/test-catalog.mjs
+      - name: Install Playwright and Chromium for browser smoke
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Mobile app browser smoke test
+        shell: bash
+        run: |
+          python3 -m http.server 8000 --bind 127.0.0.1 >/tmp/diecast-http.log 2>&1 &
+          sleep 2
+          node scripts/browser-smoke.mjs
       - name: Bundle full catalogue index for reliable first launch
         shell: bash
         run: |
