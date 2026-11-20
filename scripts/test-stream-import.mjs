@@ -31,13 +31,17 @@ function makeContext(fail=false){
  return {ctx,saved,markerWrites};
 }
 const good=makeContext();
-const result=await good.ctx.runImport(streamOf(bytes));
+const result=await good.ctx.runImport(streamOf(bytes),10017);
 assert.equal(result.valid,10014);
 assert.equal(result.total,10017);
 assert.equal(good.saved.length,10014);
 assert.equal(good.ctx.importedCatalog.length,10014);
 assert.equal(good.markerWrites.length,1,'A successful streamed import must write one completion marker');
 assert.equal(JSON.parse(good.markerWrites[0].value).valid,10014);
+assert.equal(JSON.parse(good.markerWrites[0].value).expectedRecords,10017);
+const incomplete=makeContext();
+await assert.rejects(()=>incomplete.ctx.runImport(streamOf(bytes),10018),/Niekompletne archiwum/);
+assert.equal(incomplete.markerWrites.length,0,'Source count mismatch must not confirm completeness');
 const broken=makeContext(true);
 await assert.rejects(()=>broken.ctx.runImport(streamOf(bytes)),/Simulated quota exceeded/);
 assert.equal(broken.ctx.importedCatalog.length,0,'Failed writes must not mark the import as fully complete');
