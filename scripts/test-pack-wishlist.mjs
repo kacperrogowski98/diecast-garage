@@ -35,6 +35,11 @@ const progress=progressCtx.dgPackCollectionProgress('example',progressCtx.dgOwne
 assert.equal(progress.owned,1);
 assert.equal(progress.linked,2);
 assert.equal(progress.total,3);
+const crossSource=progressCtx.dgPackCollectionProgress('example',progressCtx.dgOwnedCastingSet());
+assert.equal(crossSource.owned,1);
+progressCtx.packContents=()=>[{casting_id:'wiki-v6-f40',family_key:'ferrari|ferrari f40'}];
+const reconciled=progressCtx.dgPackCollectionProgress('same-car-different-source',progressCtx.dgOwnedCastingSet());
+assert.equal(reconciled.owned,1,'Owned casting family from seed must match different-source Wiki casting id');
 const wishlistStart=html.indexOf('function dgPackWishlistMarkup(){');
 const wishlistEnd=html.indexOf('function render(){',wishlistStart);
 assert.ok(wishlistStart>0&&wishlistEnd>wishlistStart,'Unified wishlist pack renderer missing');
