@@ -34,4 +34,18 @@ const progress=progressCtx.dgPackCollectionProgress('example',progressCtx.dgOwne
 assert.equal(progress.owned,1);
 assert.equal(progress.linked,2);
 assert.equal(progress.total,3);
+const wishlistStart=html.indexOf('function dgPackWishlistMarkup(){');
+const wishlistEnd=html.indexOf('function render(){',wishlistStart);
+assert.ok(wishlistStart>0&&wishlistEnd>wishlistStart,'Unified wishlist pack renderer missing');
+const wantedCtx=vm.createContext({
+ state:{packWishlist:['pack1']},view:'wishlist',search:'',
+ SEED:{packs:[{pack_id:'pack1',pack_name:'HW Exotics 5-Pack',release_year:2025,pack_type:'5-Pack'}]},wikiPacks:[],
+ esc:s=>String(s)
+});
+vm.runInContext(html.slice(wishlistStart,wishlistEnd),wantedCtx);
+const wantedMarkup=wantedCtx.dgPackWishlistMarkup();
+assert.ok(wantedMarkup.includes('HW Exotics 5-Pack'),'Pack wishlist must appear in unified view');
+assert.ok(wantedMarkup.includes('Mam ten zestaw'),'Unified wishlist should allow marking package as owned');
+wantedCtx.search='Ferrari';
+assert.equal(wantedCtx.dgPackWishlistMarkup(),'','Pack wishlist must respect search query');
 console.log('PASS: pack wishlist persists, normalizes backup and supports older states');
