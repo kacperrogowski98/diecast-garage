@@ -1,6 +1,6 @@
 # Diecast Garage
 
-Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.41**.
+Private collector experience for Hot Wheels / diecast models. Current application baseline: **v1.42**.
 
 ## Live app
 
@@ -12,7 +12,7 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 
 - Responsive single-page collector app (index.html) with Garage, Catalogue, Wishlist, Racing, Brands and Multipacks views.
 - Add/edit owned models, wishlist entries, multiple copies, purchase details, notes and photos.
-- Add, edit and delete custom multipacks with year, pack type, code, model list and notes; built-in pack data is still limited and requires expansion; the 2016–2026 checklists now include 189 additional numbered packs / 945 cars, plus 16 earlier curated sets; 7 earlier Ferrari pack records have now been completed.
+- Add, edit and delete custom multipacks with year, pack type, code, model list and notes; built-in multipack coverage currently includes 376 pack records / 1,933 vehicle entries, with source and verification status retained.
 - Link pack contents to catalogue castings through conservative unique exact-name matching; ambiguous and unmatched entries remain clearly marked.
 - Local collection persistence in browser storage, catalogue persistence in IndexedDB.
 - Backup export/import in JSON.
@@ -21,7 +21,7 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 - Mocked Supabase browser test covering atomic cloud push, normalized pull and stale-write conflict handling. This does not replace validation against a live Supabase project.
 - Optional Supabase Auth and manual collection sync. When the atomic sync migration is applied, one transaction updates the compatibility JSON snapshot and normalized garage/wishlist rows, with stale-write protection; older projects retain a clearly reported legacy fallback.
 - Private photo upload/download through the diecast-photos Supabase Storage bucket (requires correct bucket and policies).
-- Online catalogue index import from danyjoy/diecastDb (approximately 17,800 Mainline, Premium and Silver Series records according to its upstream documentation). The index is fetched by the browser and cached locally in IndexedDB; full details are loaded lazily from year/assortment files.
+- Online catalogue index import from danyjoy/diecastDb (approximately 17,800 Mainline, Premium and Silver Series release records according to upstream documentation). The index is fetched automatically on first launch, cached locally in IndexedDB and refreshed weekly; full records are enriched lazily from year/assortment files.
 - Combined catalogue filters for vehicle class, year, brand and assortment (Mainline / Premium / Silver Series), plus sorting by name, release year and brand.
 - Review and manually override heuristic vehicle classifications; user corrections are preserved separately from source catalogue data.
 - Automatic catalogue refresh every seven days, matching the upstream weekly data refresh; cached records remain usable if the network is unavailable.
@@ -29,7 +29,7 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 
 ## Important current limitations
 
-- The online index is a broad release-level catalogue: upstream coverage is Mainline 1968–2027, Premium 2012–2027 and Silver Series 2009 plus 2012–2027 (about 17,800 cars). It is not a fully verified global Hot Wheels database; multipacks, promotional products, regional exclusives and many variants need additional sources.
+- The online index is a broad release-level catalogue: upstream coverage is Mainline 1968–2027, Premium 2012–2027 and Silver Series 2009 plus 2012–2027 (about 17,800 releases). This is distinct from the 72 locally seeded casting records and the 376 built-in multipack records. It is not a fully verified global Hot Wheels database; promotional products, regional exclusives and many variants still need separate sources.
 - Brand and Supercar/Hypercar classification are partly heuristic and need review. Unknown values must remain unknown; do not treat automated classifications as verified facts.
 - The catalogue is currently stored per browser/device in IndexedDB. It is not yet served from the app's Supabase catalogue tables.
 - Collection sync is user-triggered, not real-time/background. Atomic normalized sync requires applying `supabase/migrations/20261118_atomic_collection_sync.sql` in the connected Supabase project; until then, the app falls back to the legacy JSON snapshot.
