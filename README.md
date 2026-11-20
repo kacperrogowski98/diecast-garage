@@ -14,6 +14,7 @@ The app is published through GitHub Pages. The Mac does not need to stay on: the
 - Add/edit owned models, wishlist entries, multiple copies, purchase details, notes and photos.
 - Search multipacks by set name, catalogue code, year or a vehicle inside the pack; filter by year and page through 36 cards at a time.
 - Add, edit and delete custom multipacks with year, pack type, code, model list and notes; built-in multipack coverage currently includes 663 pack records / 3,312 vehicle entries, with source and verification status retained.
+- Wiki v6's documented pack containers are also bundled as a separate compressed archive, imported to their own IndexedDB store and shown in the multipack search and model details. The number depends on the completed upstream extraction.
 - Link pack contents to catalogue castings through conservative unique exact-name matching; ambiguous and unmatched entries remain clearly marked.
 - Show matching multipack appearances inside each model's details (name-family matches only; colours and exact releases may differ).
 - Open prefilled Hot Wheels searches on Allegro and eBay from any model detail; these links do not claim live stock, price or exact variant availability.
