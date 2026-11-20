@@ -11,9 +11,9 @@ const syncVerification = fs.readFileSync('supabase/verify_sync_setup.sql', 'utf8
 const serviceWorker = fs.readFileSync('sw.js', 'utf8');
 
 assert.match(html, /<html lang="pl">/i, 'Polish document language is present');
-assert.ok(html.includes('<title>Diecast Garage · v1.39</title>'), 'Current app release title must be v1.39');
-assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.39') && html.includes('Diecast Garage · v1.39 ·'), 'Visible app version labels must match the release title');
-assert.ok(serviceWorker.includes('diecast-garage-shell-v1.39.0'), 'PWA shell cache must be versioned with the current release');
+assert.ok(html.includes('<title>Diecast Garage · v1.40</title>'), 'Current app release title must be v1.40');
+assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.40') && html.includes('Diecast Garage · v1.40 ·'), 'Visible app version labels must match the release title');
+assert.ok(serviceWorker.includes('diecast-garage-shell-v1.40.0'), 'PWA shell cache must be versioned with the current release');
 assert.match(html, /id="content"/, 'Main app content mount exists');
 assert.match(html, /id="assortmentFilter"/, 'Catalogue assortment filter exists');
 assert.match(html, /id="sortFilter"/, 'Catalogue sort control exists');
@@ -273,7 +273,14 @@ assert.equal(packs2011.length, 23, '2011 adds 23 complete numbered five-packs be
 assert.equal(contents2011.length, 115, '2011 additional five-pack catalogue includes 115 vehicle entries');
 assert.ok(packs2011.every(p => contents2011.filter(c => c.pack_id === p.pack_id).length === 5 && p.source_url === 'https://www.wheelwonderland.com/fr/5-packs/2011/'), 'Every additional 2011 pack has five contents and source provenance');
 
-assert.equal(seedData.pack_contents.length, 1631, 'All seeded multipack content rows must remain accounted for');
+
+const packs2009 = seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-2009-'));
+const contents2009 = seedData2022.pack_contents.filter(p => p.pack_id.startsWith('hw-5pack-2009-'));
+assert.equal(packs2009.length, 16, '2009 adds 16 complete numbered packs beyond the two curated Ferrari assortments');
+assert.equal(contents2009.length, 80, '2009 additional five-pack catalogue includes 80 vehicle entries');
+assert.ok(packs2009.every(p => contents2009.filter(c => c.pack_id === p.pack_id).length === 5 && p.source_url === 'https://www.wheelwonderland.com/fr/5-packs/2009/'), 'Every additional 2009 pack has five contents and source provenance');
+
+assert.equal(seedData.pack_contents.length, 1711, 'All seeded multipack content rows must remain accounted for');
 const exotics2020 = seedData.pack_contents.filter(item => item.pack_id === 'hw-exotics-5pack-2020');
 assert.equal(exotics2020.length, 5, '2020 HW Exotics 5-pack must contain five vehicles');
 assert.ok(exotics2020.every(item => item.source_url.includes('community.creations.mattel.com')), '2020 HW Exotics contents must cite the official Mattel source');
