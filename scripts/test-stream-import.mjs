@@ -24,8 +24,8 @@ function makeContext(fail=false){
    TextDecoder, console, dgCatalogReady:Promise.resolve(), importedCatalog:[],
    state:{brands:['Ferrari']}, dgCachedModels:null,
    dgNormalizeRecord:(r)=>({release_id:'wiki-'+r.id,brand:'Ferrari'}),
-   dgStoreCatalog:async batch=>{if(fail)throw Error('Simulated quota exceeded');assert.ok(batch.length<=750);saved.push(...batch)},
-   dgUpdateCatalogStatus:()=>{},save:()=>true,dgRefreshFilters:()=>{}
+   dgStoreCatalog:async batch=>{if(fail===true)throw Error('Simulated quota exceeded');assert.ok(batch.length<=750);saved.push(...batch)},
+   dgUpdateCatalogStatus:()=>{},save:()=>fail!=='save',dgRefreshFilters:()=>{}
  });
  vm.runInContext(source+'\nthis.runImport=dgImportWikiReleaseStream;',ctx);
  return {ctx,saved,markerWrites};
@@ -42,4 +42,7 @@ const broken=makeContext(true);
 await assert.rejects(()=>broken.ctx.runImport(streamOf(bytes)),/Simulated quota exceeded/);
 assert.equal(broken.ctx.importedCatalog.length,0,'Failed writes must not mark the import as fully complete');
 assert.equal(broken.markerWrites.length,0,'Failed imports must not write completion markers');
+const failedState=makeContext('save');
+await assert.rejects(()=>failedState.ctx.runImport(streamOf(bytes)),/Nie udało się zapisać aktualizacji/);
+assert.equal(failedState.markerWrites.length,0,'Local state save failure must not mark the catalogue import complete');
 console.log('PASS: streamed 10,017 Wiki rows in fixed chunks, excluded tracks, propagated DB failures');
