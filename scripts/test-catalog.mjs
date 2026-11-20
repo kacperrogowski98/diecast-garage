@@ -63,7 +63,7 @@ const packEnd=script.indexOf('function packContents(packId){',packStart);
 assert.ok(packStart>0&&packEnd>packStart,'Missing package resolution functions');
 vm.runInContext(script.slice(packStart,packEnd),ctx);
 assert.equal(ctx.packMatchKey('  FÉRRARI   F40  '),'ferrari f40','Pack matching must normalize Unicode accents and whitespace');
-const candidate={casting_id:'f40',release_id:'r-f40-red-2020',toy_number:'J1234',release_year:2020,body_color:'Red'};
+const candidate={casting_id:'f40',brand:'Ferrari',canonical_name:'Ferrari F40',release_id:'r-f40-red-2020',toy_number:'J1234',release_year:2020,body_color:'Red'};
 const modelIndex=new Map([['ferrari f40',[candidate]]]);
 const exactPack=ctx.resolvePackContent({model_name_as_source:'Ferrari F40',toy_number:'J1234',release_year:2020,body_color:'Red'},modelIndex);
 assert.equal(exactPack.match_status,'variant');
@@ -73,5 +73,14 @@ assert.equal(familyPack.match_status,'family','A name match must never imply a s
 assert.equal(familyPack.matched_release_id,undefined);
 const incorrectColor=ctx.resolvePackContent({model_name_as_source:'Ferrari F40',toy_number:'J1234',body_color:'Blue'},modelIndex);
 assert.equal(incorrectColor.match_status,'family','Wrong body color must not be marked as a verified variant');
+const secondSource={...candidate,casting_id:'wiki-v6-f40',release_id:'wiki-1995-f40',toy_number:'OTHER',release_year:1995};
+const combined=new Map([['ferrari f40',[candidate,secondSource]]]);
+const reconciled=ctx.resolvePackContent({model_name_as_source:'Ferrari F40',toy_number:'J1234',body_color:'Red'},combined);
+assert.equal(reconciled.match_status,'variant','Cross-source duplicate castings must not appear ambiguous');
+assert.equal(reconciled.family_key,ctx.dgCastingFamilyKey(candidate));
+assert.equal(reconciled.matched_release_id,'r-f40-red-2020');
+const unresolved=ctx.resolvePackContent({model_name_as_source:'Ferrari F40',toy_number:'INVALID'},combined);
+assert.equal(unresolved.match_status,'family','Different releases in the same family must remain matchable without invented variant');
+
 
 console.log('PASS: normalized releases and Wiki 5-packs, stable IDs, archival JSONL, TH/STH, images and provenance');
