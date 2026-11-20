@@ -1,3 +1,9 @@
+## v1.27 — 20 November 2026
+
+- Added the complete 2022 five-pack checklist: 18 distinct package codes/variants and 90 vehicle entries, including both HW City assortments and the PTMI 30th variant.
+- Preserved source attribution to Wheel Wonderland and flagged every pack for packaging-photo verification; fantasy castings are retained as listed.
+- Added data-integrity tests for pack counts, five contents per pack and source provenance.
+
 ## v1.26 — 20 November 2026
 
 - Clarified the first-run catalogue message: the app automatically downloads the broad Mainline, Premium and Silver Series index, while cached records remain available offline.
