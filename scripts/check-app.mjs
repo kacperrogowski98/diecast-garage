@@ -11,9 +11,9 @@ const syncVerification = fs.readFileSync('supabase/verify_sync_setup.sql', 'utf8
 const serviceWorker = fs.readFileSync('sw.js', 'utf8');
 
 assert.match(html, /<html lang="pl">/i, 'Polish document language is present');
-assert.ok(html.includes('<title>Diecast Garage · v1.61</title>'), 'Current app release title must be v1.61');
-assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.61') && html.includes('Diecast Garage · v1.61 ·'), 'Visible app version labels must match the release title');
-assert.ok(serviceWorker.includes('diecast-garage-shell-v1.61.0'), 'PWA shell cache must be versioned with the current release');
+assert.ok(html.includes('<title>Diecast Garage · v1.62</title>'), 'Current app release title must be v1.62');
+assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.62') && html.includes('Diecast Garage · v1.62 ·'), 'Visible app version labels must match the release title');
+assert.ok(serviceWorker.includes('diecast-garage-shell-v1.62.0'), 'PWA shell cache must be versioned with the current release');
 assert.match(html, /id="content"/, 'Main app content mount exists');
 assert.match(html, /id="assortmentFilter"/, 'Catalogue assortment filter exists');
 assert.match(html, /id="sortFilter"/, 'Catalogue sort control exists');
@@ -260,6 +260,13 @@ assert.equal(packs2015.length, 16, '2015 adds 16 complete numbered packs beyond 
 assert.equal(contents2015.length, 80, '2015 additional five-pack catalogue includes 80 vehicle entries');
 assert.ok(packs2015.every(p => contents2015.filter(c => c.pack_id === p.pack_id).length === 5 && p.source_url === 'https://www.wheelwonderland.com/fr/5-packs/2015/'), 'Every additional 2015 pack has five contents and source provenance');
 
+const variants2015 = seedData2022.packs.filter(p => p.release_year === 2015 && p.pack_type === '5-pack variant');
+const variantContents2015 = seedData2022.pack_contents.filter(c => variants2015.some(p => p.pack_id === c.pack_id));
+assert.equal(variants2015.length, 6, '2015 includes six documented five-pack reissues');
+assert.equal(variantContents2015.length, 30, '2015 reissue variants include 30 vehicle entries');
+assert.ok(variants2015.every(p => variantContents2015.filter(c => c.pack_id === p.pack_id).length === 5), 'Every 2015 reissue variant contains exactly five vehicles');
+
+
 
 const reissue2015 = seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-2015-reissue-'));
 const reissue2015Contents = seedData2022.pack_contents.filter(c => reissue2015.some(p => p.pack_id === c.pack_id));
@@ -477,7 +484,7 @@ const reissue2017Contents = seedData2022.pack_contents.filter(c => reissue2017.s
 assert.equal(reissue2017.length, 10, '2017 reissue/colour variants are retained separately from numbered base assortments');
 assert.equal(reissue2017Contents.length, 50, 'Ten 2017 reissue assortments contain 50 vehicle entries');
 assert.ok(reissue2017.every(p => p.pack_type === '5-pack variant' && reissue2017Contents.filter(c => c.pack_id === p.pack_id).length === 5), 'Every 2017 reissue has five vehicles and explicit variant status');
-assert.equal(seedData.pack_contents.length, 2917, 'All seeded multipack content rows must remain accounted for');
+assert.equal(seedData.pack_contents.length, 2947, 'All seeded multipack content rows must remain accounted for');
 const exotics2020 = seedData.pack_contents.filter(item => item.pack_id === 'hw-exotics-5pack-2020');
 assert.equal(exotics2020.length, 5, '2020 HW Exotics 5-pack must contain five vehicles');
 assert.ok(exotics2020.every(item => item.source_url.includes('community.creations.mattel.com')), '2020 HW Exotics contents must cite the official Mattel source');
