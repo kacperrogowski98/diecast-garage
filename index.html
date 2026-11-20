@@ -34,7 +34,7 @@ let importedCatalog=[];
 function allModels(){return [...allReleases,...importedCatalog.map(x=>({...x,...(state.overrides?.[x.release_id]||{})})),...state.custom.map(x=>({...x,...(state.overrides?.[x.custom_id]||{}),source:'custom'}))]}
 // External catalog adapter. Catalog records live in IndexedDB, never in collection localStorage.
 const DG_CATALOG_DB='diecast_garage_catalog_v1',DG_CATALOG_STORE='releases',DG_PACK_STORE='wiki_packs';let wikiPacks=[];let dgCatalogReady=Promise.resolve();
-const DG_CATALOG_REFRESH_KEY='diecast_garage_catalog_refresh_v1',DG_CATALOG_REFRESH_INTERVAL=7*24*60*60*1000;const DG_WIKI_CHECK_KEY='diecast_garage_wiki_catalog_last_attempt_v1';
+const DG_CATALOG_REFRESH_KEY='diecast_garage_catalog_refresh_v1',DG_CATALOG_REFRESH_INTERVAL=7*24*60*60*1000;const DG_WIKI_CHECK_KEY='diecast_garage_wiki_catalog_last_attempt_v1',DG_PACK_CHECK_KEY='diecast_garage_wiki_pack_last_attempt_v1';
 function dgCatalogNeedsRefresh(){let last=0;try{last=Number(localStorage.getItem(DG_CATALOG_REFRESH_KEY))||0}catch(_){}return !last||Date.now()-last>=DG_CATALOG_REFRESH_INTERVAL}
 const DG_BRANDS=['Abarth','Acura','Alfa Romeo','Alpine','AMC','Ariel','Aston Martin','Audi','Austin','BAC','Bentley','BMW','Bugatti','Buick','Cadillac','Caterham','Chevrolet','Chrysler','Citroen','Cupra','Dacia','Datsun','De Tomaso','DeLorean','Dodge','Donkervoort','DS','Ferrari','Fiat','Fisker','Ford','Gordon Murray Automotive','GMC','Holden','Honda','Hummer','Hyundai','Infiniti','Isuzu','Jaguar','Jeep','Kia','Koenigsegg','KTM','Lamborghini','Lancia','Land Rover','Lexus','Ligier','Lincoln','Lotus','Lucid','Maserati','Mazda','McLaren','McMurtry','Mercedes-Benz','Mercedes-AMG','Mercury','MG','Mini','Mitsubishi','Morgan','Mosler','NIO','Nissan','Noble','Opel','Pagani','Panoz','Peugeot','Plymouth','Polestar','Pontiac','Porsche','Radical','Renault','Rimac','Rolls-Royce','Rover','Saab','Saleen','Saturn','Scion','Shelby','Smart','Spyker','SSC','Subaru','Suzuki','Tesla','Toyota','TVR','Volkswagen','Volvo','Wiesmann'];
 const DG_BRAND_ALIASES={'GMA':'Gordon Murray Automotive','Gordon Murray':'Gordon Murray Automotive','Gordon Murray Automotive':'Gordon Murray Automotive','McMurtry Automotive':'McMurtry','Mercedes Benz':'Mercedes-Benz','Mercedes AMG':'Mercedes-AMG','VW':'Volkswagen','A.M.C.':'AMC','De Tomaso':'De Tomaso','Cupra':'CUPRA'};
@@ -79,6 +79,7 @@ async function dgFetchWikiV6Catalog(automatic=false){
   const file=new File([text],'hotwheels_db_v6.jsonl',{type:'application/x-ndjson'});
   await dgImportCatalogFiles([file]);
   try {
+   try{localStorage.setItem(DG_PACK_CHECK_KEY,String(Date.now()))}catch(_){}
    const packsResponse=await fetch('./catalog/wiki-packs.jsonl.gz',{cache:'no-cache'});
    if(packsResponse.ok){
     const packText=await new Response(packsResponse.body.pipeThrough(new DecompressionStream('gzip'))).text();
@@ -289,7 +290,7 @@ async function dgCloudPull(){
  }
 }
 
-dgInitClient();dgInitCatalogImport();document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===view));dgRefreshFilters();render();dgCatalogReady=dgLoadCatalog();dgCatalogReady.then(async()=>{dgRefreshFilters();render();if(/^https?:$/.test(location.protocol)){const needsMain=!importedCatalog.length||dgCatalogNeedsRefresh();if(needsMain)await dgFetchOnlineCatalog();const wikiLoaded=importedCatalog.some(x=>x.source==='hotwheels-wiki-v6');const lastWikiCheck=Number(localStorage.getItem(DG_WIKI_CHECK_KEY)||0);const wikiInterval=wikiLoaded?30*24*60*60*1000:24*60*60*1000;if(!lastWikiCheck||Date.now()-lastWikiCheck>=wikiInterval||(wikiLoaded&&!wikiPacks.length))await dgFetchWikiV6Catalog(true);if(!importedCatalog.some(x=>x.source==='hotwheels-data'))await dgFetchExtendedCatalog();}});
+dgInitClient();dgInitCatalogImport();document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===view));dgRefreshFilters();render();dgCatalogReady=dgLoadCatalog();dgCatalogReady.then(async()=>{dgRefreshFilters();render();if(/^https?:$/.test(location.protocol)){const needsMain=!importedCatalog.length||dgCatalogNeedsRefresh();if(needsMain)await dgFetchOnlineCatalog();const wikiLoaded=importedCatalog.some(x=>x.source==='hotwheels-wiki-v6');const lastWikiCheck=Number(localStorage.getItem(DG_WIKI_CHECK_KEY)||0);const wikiInterval=wikiLoaded?30*24*60*60*1000:24*60*60*1000;if(!lastWikiCheck||Date.now()-lastWikiCheck>=wikiInterval||(wikiLoaded&&!wikiPacks.length&&Date.now()-Number(localStorage.getItem(DG_PACK_CHECK_KEY)||0)>24*60*60*1000))await dgFetchWikiV6Catalog(true);if(!importedCatalog.some(x=>x.source==='hotwheels-data'))await dgFetchExtendedCatalog();}});
 </script>
 <script>
 // PWA shell caching. Cloud sync still requires an internet connection.
