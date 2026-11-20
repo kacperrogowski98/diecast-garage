@@ -102,12 +102,16 @@ jobs:
         run: |
           node scripts/validate-app.mjs
           node scripts/test-catalog.mjs
-      - name: Prepare minimal production site
+      - name: Install 3D module dependencies
+        run: npm install --no-save three@0.170.0 esbuild@0.24.2
+      - name: Prepare standalone production site with bundled 3D
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p _site/catalog
-          cp index.html seed.js sw.js viewer3d.js manifest.webmanifest icon.svg icon-192.png _site/
+          cp index.html seed.js sw.js manifest.webmanifest icon.svg icon-192.png _site/
+          npx esbuild viewer3d.js --bundle --format=esm --target=es2020 --minify --outfile=_site/viewer3d.js
+          test -s _site/viewer3d.js
           cp -a catalog/. _site/catalog/
       - name: Upload Pages site with Wiki v6 catalogue
         uses: actions/upload-pages-artifact@v3
