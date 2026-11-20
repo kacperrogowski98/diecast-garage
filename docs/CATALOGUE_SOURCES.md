@@ -197,3 +197,8 @@ The browser app can import the upstream scan index and lazily load year/assortme
 ## 1999 five-packs
 
 - Wheel Wonderland 1999: https://www.wheelwonderland.com/en/5-packs/1999/ — 12 complete numbered five-packs / 60 entries. Non-numbered alternate-colour records were excluded.
+
+
+## 1998 five-packs
+
+- Wheel Wonderland 1998: https://www.wheelwonderland.com/fr/5-packs/1998/ — 11 complete numbered five-packs / 55 entries. Only numbered 1/5–5/5 compositions were imported; alternate variants and incomplete series were excluded pending verification.
