@@ -283,9 +283,9 @@ assert.ok(packs2009.every(p => contents2009.filter(c => c.pack_id === p.pack_id)
 
 const packs2008 = seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-2008-') && p.pack_type !== '5-pack variant');
 const contents2008 = seedData2022.pack_contents.filter(p => packs2008.some(pack => pack.pack_id === p.pack_id));
-assert.equal(packs2008.length, 15, '2008 includes 15 complete numbered non-Ferrari five-packs');
-assert.equal(contents2008.length, 75, '2008 numbered five-pack catalogue includes 75 vehicle entries');
-assert.ok(packs2008.every(p => contents2008.filter(c => c.pack_id === p.pack_id).length === 5 && p.source_url === 'https://www.wheelwonderland.com/fr/5-packs/2008/'), 'Every 2008 five-pack has five contents and source provenance');
+assert.equal(packs2008.length, 20, '2008 includes 15 numbered assortments plus five documented colour-variant/reissue runs');
+assert.equal(contents2008.length, 100, '2008 catalogue includes 100 vehicle entries across numbered assortments and documented variant runs');
+assert.ok(packs2008.every(p => contents2008.filter(c => c.pack_id === p.pack_id).length === 5 && p.source_url === 'https://www.wheelwonderland.com/fr/5-packs/2008/'), 'Every 2008 non-Ferrari five-pack record has five contents and source provenance');
 const ferrari2008 = seedData2022.pack_contents.filter(c => c.pack_id === 'ferrari-5pack-2008');
 assert.equal(ferrari2008.length, 5, '2008 Ferrari GT pack has five numbered models');
 const packs2007 = seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-2007-'));
@@ -438,7 +438,7 @@ assert.equal(alternate2008.length, 5, '2008 alternate-colour pack variants are r
 assert.equal(alternate2008Contents.length, 25, 'Five alternate 2008 assortments contain 25 entries');
 assert.ok(alternate2008.every(p => p.pack_type === '5-pack variant' && alternate2008Contents.filter(c => c.pack_id === p.pack_id).length === 5), 'Every 2008 alternate assortment has five entries and is labelled as a variant');
 
-assert.equal(seedData.pack_contents.length, 2817, 'All seeded multipack content rows must remain accounted for');
+assert.equal(seedData.pack_contents.length, 2842, 'All seeded multipack content rows must remain accounted for');
 const exotics2020 = seedData.pack_contents.filter(item => item.pack_id === 'hw-exotics-5pack-2020');
 assert.equal(exotics2020.length, 5, '2020 HW Exotics 5-pack must contain five vehicles');
 assert.ok(exotics2020.every(item => item.source_url.includes('community.creations.mattel.com')), '2020 HW Exotics contents must cite the official Mattel source');
