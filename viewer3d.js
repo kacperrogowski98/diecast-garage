@@ -93,22 +93,25 @@ export function closeViewer() {
 }
 export function openViewer(model, root) {
   closeViewer();
-  const name = model.canonical_name || model.model_name_as_source || 'Samochód';
+  const gallery = Array.isArray(model.garageCars) ? model.garageCars : null;
+  const name = gallery ? 'Twoja kolekcja' : (model.canonical_name || model.model_name_as_source || 'Samochód');
   root.innerHTML = `<div class="modalback" id="dg3dBackdrop">
     <div class="modal dg3d-modal" role="dialog" aria-modal="true" aria-label="Podgląd 3D">
       <div class="modalhead"><h3>Garaż 3D · ${escapeText(name)}</h3><button class="btn" id="dg3dClose" aria-label="Zamknij">✕</button></div>
       <div id="dg3dStage" class="dg3d-stage" role="img" aria-label="Obracany podgląd trójwymiarowy samochodu"></div>
       <div class="dg3d-controls">
         <button class="btn" id="dg3dReset">↻ Reset widoku</button>
-        <label class="btn dg3d-upload">↑ Wczytaj własny model GLB<input type="file" id="dg3dFile" accept=".glb,model/gltf-binary" hidden></label>
+        <label class="btn dg3d-upload" style="${gallery ? 'display:none' : ''}">↑ Wczytaj własny model GLB<input type="file" id="dg3dFile" accept=".glb,model/gltf-binary" hidden></label>
       </div>
-      <p class="notice" id="dg3dNotice">To interaktywna **poglądowa sylwetka 3D**, a nie wierny model tego konkretnego Hot Wheels. Przeciągnij palcem/myszką, aby obracać, i użyj gestu szczypania lub kółka, aby przybliżać. Możesz wczytać własny model .glb.</p>
+      <p class="notice" id="dg3dNotice">${gallery ? 'Trzy strefy: Supercars, Racing, Pozostałe. Modele są uproszczonymi wizualizacjami 3D, nie wiernymi replikami Hot Wheels. Pokazujemy maksymalnie 12 egzemplarzy naraz.' : 'To interaktywna poglądowa sylwetka 3D, a nie wierny model tego konkretnego Hot Wheels. Przeciągnij palcem/myszką, aby obracać, i użyj gestu szczypania lub kółka, aby przybliżać. Możesz wczytać własny model .glb.'}</p>
+      ${gallery ? '<div class="dg3d-controls"><button class="btn" id="dg3dPrev">← Poprzednie auta</button><span id="dg3dPageLabel" class="meta"></span><button class="btn" id="dg3dNext">Następne auta →</button></div><div id="dg3dCars" class="meta"></div>' : ''}
     </div></div>`;
   const stage = root.querySelector('#dg3dStage');
   const scene = new THREE.Scene();
   scene.background = new THREE.Color('#10141b');
   const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
-  camera.position.set(6.4, 4.5, 6.6);
+  const startPosition = gallery ? [18, 12, 19] : [6.4, 4.5, 6.6];
+  camera.position.set(...startPosition);
   const renderer = new THREE.WebGLRenderer({antialias: true, alpha: false});
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.shadowMap.enabled = true;
@@ -122,28 +125,72 @@ export function openViewer(model, root) {
   sun.shadow.mapSize.set(1024,1024);
   scene.add(sun);
   const ground = new THREE.Mesh(
-    new THREE.CircleGeometry(7, 64),
+    new THREE.CircleGeometry(gallery ? 20 : 7, 64),
     new THREE.MeshStandardMaterial({color: '#262b36', roughness: 0.9, metalness: 0.08})
   );
   ground.rotation.x = -Math.PI / 2;
   ground.position.y = -0.02;
   ground.receiveShadow = true;
   scene.add(ground);
-  const grid = new THREE.GridHelper(11, 20, '#3f4856', '#2b303c');
+  const grid = new THREE.GridHelper(gallery ? 35 : 11, 28, '#3f4856', '#2b303c');
   grid.position.y = -0.013;
   scene.add(grid);
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.enablePan = false;
-  controls.minDistance = 3.2;
-  controls.maxDistance = 16;
+  controls.minDistance = gallery ? 8 : 3.2;
+  controls.maxDistance = gallery ? 45 : 16;
   controls.maxPolarAngle = Math.PI / 2.05;
-  controls.target.set(0,0.65,0);
+  controls.target.set(0,gallery ? 0 : 0.65,0);
   controls.update();
   const modelGroup = new THREE.Group();
-  let active = createCar(bodyColor(model.body_color || model.color_variant), name);
-  modelGroup.add(active);
+  let active = gallery ? null : createCar(bodyColor(model.body_color || model.color_variant), name);
+  if (active) modelGroup.add(active);
   scene.add(modelGroup);
+  if (gallery) {
+    let galleryPage = 0;
+    const zones = [
+      {name:'SUPERCARS', filter:m=>m.vehicle_class==='supercar_hypercar', color:'#d43542'},
+      {name:'RACING', filter:m=>m.vehicle_class==='racing', color:'#3878c7'},
+      {name:'POZOSTAŁE', filter:m=>!['supercar_hypercar','racing'].includes(m.vehicle_class),color:'#479b7b'},
+    ];
+    function label(text,color) {
+      const canvas = document.createElement('canvas');canvas.width=512;canvas.height=100;
+      const context=canvas.getContext('2d');
+      context.fillStyle=color;context.fillRect(0,0,512,100);
+      context.fillStyle='#ffffff';context.font='bold 38px sans-serif';context.textAlign='center';
+      context.fillText(text,256,62);
+      const texture=new THREE.CanvasTexture(canvas);
+      return new THREE.Mesh(new THREE.PlaneGeometry(3.8,0.78),new THREE.MeshBasicMaterial({map:texture,transparent:true,side:THREE.DoubleSide}));
+    }
+    function showPage(page) {
+      for (const child of [...modelGroup.children]) {modelGroup.remove(child);disposeGroup(child)}
+      const pages=Math.max(1,Math.ceil(gallery.length/12));
+      galleryPage=Math.min(Math.max(0,page),pages-1);
+      const selected=gallery.slice(galleryPage*12,(galleryPage+1)*12);
+      const names=[];
+      for (let z=0;z<3;z++) {
+        const zone=zones[z],zoneX=(z-1)*8;
+        const platform=addPart(modelGroup,new THREE.BoxGeometry(6.9,0.15,10.8),zone.color,zoneX,0.04,0,{metalness:0.25,roughness:0.6});
+        platform.receiveShadow=true;
+        const title=label(zone.name,zone.color);title.position.set(zoneX,1.0,-5.4);modelGroup.add(title);
+        const cars=selected.filter(zone.filter);
+        cars.forEach((item,i)=>{
+          const car=createCar(bodyColor(item.body_color||item.color_variant),item.canonical_name||item.model_name_as_source);
+          const scale=0.56;car.scale.setScalar(scale);car.position.set(zoneX,0.22,(i-1.5)*2.7);
+          modelGroup.add(car);
+          names.push(item.canonical_name||item.model_name_as_source||'Model');
+        });
+      }
+      root.querySelector('#dg3dPageLabel').textContent=(galleryPage+1)+' / '+pages+' · '+gallery.length+' egz.';
+      root.querySelector('#dg3dCars').textContent='Widoczne modele: '+(names.join(' • ')||'Brak samochodów. Dodaj model do garażu.');
+      root.querySelector('#dg3dPrev').disabled=galleryPage===0;
+      root.querySelector('#dg3dNext').disabled=galleryPage>=pages-1;
+    }
+    root.querySelector('#dg3dPrev').addEventListener('click',()=>showPage(galleryPage-1));
+    root.querySelector('#dg3dNext').addEventListener('click',()=>showPage(galleryPage+1));
+    showPage(0);
+  }
   const resizeObserver = new ResizeObserver(() => {
     if (!stage.isConnected) return;
     const width = Math.max(200, stage.clientWidth);
@@ -165,9 +212,9 @@ export function openViewer(model, root) {
   root.querySelector('#dg3dClose').addEventListener('click', close);
   root.querySelector('#dg3dBackdrop').addEventListener('click', e => {if(e.target.id==='dg3dBackdrop')close()});
   root.querySelector('#dg3dReset').addEventListener('click', () => {
-    camera.position.set(6.4,4.5,6.6); controls.target.set(0,0.65,0);controls.update();
+    camera.position.set(...startPosition); controls.target.set(0,gallery ? 0 : 0.65,0);controls.update();
   });
-  root.querySelector('#dg3dFile').addEventListener('change', e => {
+  if (!gallery) root.querySelector('#dg3dFile').addEventListener('change', e => {
     const file = e.target.files?.[0];
     if (!file) return;
     const notice = root.querySelector('#dg3dNotice');
