@@ -45,6 +45,8 @@ const wikiFile={name:'hotwheels_db_v6.jsonl',text:async()=>JSON.stringify(wikiRo
 const wikiRecords=await ctx.dgReadCatalogFile(wikiFile);
 assert.equal(wikiRecords.length,2);
 assert.ok(wikiRecords.every(row=>row.source==='hotwheels-wiki-v6'));
+const rejectedContainer=await ctx.dgReadCatalogFile({name:'wiki_v6.jsonl',text:async()=>[JSON.stringify(wikiRow),JSON.stringify({id:'test-track',model_name:'Loop Track',product_type:'trackset',release_year:'2020'})].join('\n')});
+assert.equal(rejectedContainer.length,1,'Tracksets must not be indexed as diecast cars');
 const wikiPackParser=script.match(/^function dgNormalizeWikiPack\(r\).*$/m)?.[0];
 assert.ok(wikiPackParser,'Wiki multipack adapter missing');
 vm.runInContext(wikiPackParser,ctx);
