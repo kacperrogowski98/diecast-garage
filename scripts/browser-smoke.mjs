@@ -74,6 +74,7 @@ try {
    console.warn('WARNING: WebGL unavailable in headless CI; verified 3D fallback screen');
    await page.locator('#modalRoot button:has-text("Zamknij")').click();
  }
+ await page.locator('#search').fill('');
  await page.locator('[data-view="packs"]').click();
  await page.locator('[aria-label="Typ zestawu"]').selectOption('5pack');
  assert.ok(await page.locator('#packList .car').count()>0,'5-pack filter must list real packages');
