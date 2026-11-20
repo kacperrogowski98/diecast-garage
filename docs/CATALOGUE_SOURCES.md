@@ -30,6 +30,10 @@ These are useful for future coverage and cross-checking, but they are not curren
 
 Do not scrape or bulk-import these sources until a permitted export/API and its terms are confirmed. Keep pack identity separate from individual car releases, and verify the complete pack contents against packaging photos or a reliable source.
 
+## Verified multipack additions
+
+- 2020 HW Exotics 5-Pack: the five contents are recorded from Mattel's official 2020 announcement. Production colors and packaging variations remain unverified; the source itself notes that production cars may vary from photos.
+
 ## Multipack source candidates
 
 - [South Texas Diecast 5-Pack archive](https://www.southtexasdiecast.com/hwguide/5pack.html) — historical 5-pack tables with codes and contents.
