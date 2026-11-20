@@ -1,3 +1,10 @@
+## v1.79 — 20 November 2026
+
+- Each model's detail panel now shows the multipacks where the exact normalized model name is recorded, including the pack year and package code.
+- Links directly to the chosen pack's full contents and user-owned copies.
+- Matches are explicitly labelled name-family matches, not proof that a particular colour or release is included; missing matches are not represented as proof of absence.
+- Added browser and static regression tests for the model-to-pack link.
+
 ## v1.78 — 20 November 2026
 
 - Multipack catalogue now supports searching by pack name, catalogue code, year and included vehicle names.
