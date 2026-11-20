@@ -1,4 +1,7 @@
-## v1.21 — 20 November 2026
+## v1.22 — 20 November 2026
+
+- Added the 2018 HW Exotics 5-Pack (FKT62) with five vehicles transcribed from Mattel's official announcement.
+- Added regression checks for the exact contents and official source attribution.
 
 - Expanded the source-backed HW Exotics multipack catalogue with 2017, 2019 and 2021 five-packs, adding 15 officially documented vehicle entries from Mattel announcements.
 - Added automated checks for exact five-car contents and official Mattel provenance for all three new packs.
