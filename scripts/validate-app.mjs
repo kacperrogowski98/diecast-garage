@@ -17,6 +17,7 @@ assert.ok(map.imports?.three?.startsWith('https://'),'Three.js module CDN missin
 const viewer=fs.readFileSync('viewer3d.js','utf8');
 assert.ok(viewer.includes('export function openViewer('),'Missing 3D viewer entry');
 assert.ok(viewer.includes('GLTFLoader'),'Missing local GLB support');
+assert.ok(viewer.includes('id="dg3dDownload"') && viewer.includes('readSavedMesh(releaseId)'),'Missing GLB export for manual cross-device transfer');
 assert.ok(viewer.includes('model.garageCars'),'Missing collector showroom');
 assert.ok(html.includes('openPack3D') && html.includes('Podgląd zestawu 3D'),'Missing multipack 3D UI');
 assert.ok(viewer.includes('model.packPreview'),'Missing 3D pack display mode');
