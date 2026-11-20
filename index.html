@@ -546,7 +546,8 @@ async function dgCloudPush(){
 async function dgCloudPull(){
  try{
   dgRequireUser();
-  if(!confirm('Pobrać kolekcję z chmury i zastąpić dane na tym urządzeniu? Dla bezpieczeństwa najpierw pobierz backup obecnej kolekcji.'))return;
+  if(!confirm('Pobrać kolekcję z chmury i zastąpić dane na tym urządzeniu? Najpierw automatycznie pobierzemy lokalny backup JSON.'))return;
+  exportData();
   dgCloudStatus='Pobieram kolekcję i zdjęcia…';dgRenderCloudPanel();
   const {data,error}=await dgSupabaseClient.from('diecast_garage_data').select('payload,updated_at').eq('user_id',dgCloudUser.id).maybeSingle();
   if(error)throw error;
