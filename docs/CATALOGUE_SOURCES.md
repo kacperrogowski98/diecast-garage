@@ -263,3 +263,8 @@ The browser app can import the upstream scan index and lazily load year/assortme
 ## 2016 reissue and colour-variant five-packs
 
 - Wheel Wonderland 2016: https://www.wheelwonderland.com/fr/5-packs/2016/ — five additional complete reissue/colour variants (25 entries): Hot Trucks, HW Exotics, HW Flames, Muscle Mania and Volkswagen. Partial assortments and the non-pack “Included cars” grouping were not treated as full packs.
+
+
+## 2016 five-pack reissues
+
+- Wheel Wonderland 2016: https://www.wheelwonderland.com/fr/5-packs/2016/ — five separately documented reissue/colour-variant pack records / 25 entries, kept distinct from the base assortments using a variant type.
