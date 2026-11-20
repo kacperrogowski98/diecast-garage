@@ -21,4 +21,17 @@ const backup=ctx.normalizeBackup({app:'Diecast Garage',state:{items:[],packWishl
 assert.equal(backup.packWishlist.length,2,'Backup restore must keep unique multipack wishlist');
 storage=JSON.stringify({items:[]});
 assert.equal(ctx.load().packWishlist.length,0,'Old backups must remain compatible');
+const progressStart=html.indexOf('function dgOwnedCastingSet(){');
+const progressEnd=html.indexOf('let packSearch=',progressStart);
+assert.ok(progressStart>0&&progressEnd>progressStart,'Pack completion logic missing');
+const progressCtx=vm.createContext({
+ state:{items:[{status:'owned',releaseId:'f40'},{status:'wishlist',releaseId:'p1'}]},
+ dgReleaseById:id=>({f40:{casting_id:'ferrari-f40'},p1:{casting_id:'mclaren-p1'}}[id]),
+ packContents:()=>[{casting_id:'ferrari-f40'},{casting_id:'mclaren-p1'},{model_name_as_source:'Unlinked'}]
+});
+vm.runInContext(html.slice(progressStart,progressEnd),progressCtx);
+const progress=progressCtx.dgPackCollectionProgress('example',progressCtx.dgOwnedCastingSet());
+assert.equal(progress.owned,1);
+assert.equal(progress.linked,2);
+assert.equal(progress.total,3);
 console.log('PASS: pack wishlist persists, normalizes backup and supports older states');
