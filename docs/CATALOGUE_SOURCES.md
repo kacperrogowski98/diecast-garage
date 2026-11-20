@@ -106,3 +106,10 @@ The browser app can import the upstream scan index and lazily load year/assortme
 ## 2016 five-packs
 
 - Wheel Wonderland 2016: https://www.wheelwonderland.com/fr/5-packs/2016/ — 16 complete numbered package compositions / 80 entries added; the curated HW Exotics pack was not duplicated and the incomplete Batman v Superman composition was excluded.
+
+
+## Ferrari 5-Packs (2002, 2003, 2005)
+
+- 2002: https://www.wheelwonderland.com/fr/series/ferrari-5-pack-2002/ — five numbered models and colours.
+- 2003: https://www.wheelwonderland.com/fr/series/ferrari-5-pack-2003/ — five numbered models and colours; the base five-model composition was used, not duplicate colour-variant rows.
+- 2005: https://www.wheelwonderland.com/fr/series/ferrari-5-pack-2005/ — five numbered models and colours.
