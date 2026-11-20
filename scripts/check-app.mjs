@@ -212,12 +212,18 @@ assert.ok(variants2017.every(p => variantContents2017.filter(c => c.pack_id === 
 assert.ok(packs2017.every(p => contents2017.filter(c => c.pack_id === p.pack_id).length === 5 && p.source_url === 'https://www.wheelwonderland.com/fr/5-packs/2017/'), 'Every additional 2017 pack has five contents and source provenance');
 
 
-const packs2016 = seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-2016-'));
-const contents2016 = seedData2022.pack_contents.filter(p => p.pack_id.startsWith('hw-5pack-2016-'));
+const packs2016 = seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-2016-') && p.pack_type !== '5-pack variant');
+const contents2016 = seedData2022.pack_contents.filter(p => packs2016.some(pack => pack.pack_id === p.pack_id));
 assert.equal(packs2016.length, 16, '2016 adds 16 complete numbered packs beyond the curated Exotics pack');
 assert.equal(contents2016.length, 80, '2016 additional five-pack catalogue includes 80 vehicle entries');
 assert.ok(packs2016.every(p => contents2016.filter(c => c.pack_id === p.pack_id).length === 5 && p.source_url === 'https://www.wheelwonderland.com/fr/5-packs/2016/'), 'Every additional 2016 pack has five contents and source provenance');
 
+
+const reissue2016 = seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-2016-reissue-'));
+const reissue2016Contents = seedData2022.pack_contents.filter(c => reissue2016.some(p => p.pack_id === c.pack_id));
+assert.equal(reissue2016.length, 5, '2016 reissue/colour variants are retained separately from numbered base assortments');
+assert.equal(reissue2016Contents.length, 25, 'Five 2016 reissue assortments contain 25 vehicle entries');
+assert.ok(reissue2016.every(p => p.pack_type === '5-pack variant' && reissue2016Contents.filter(c => c.pack_id === p.pack_id).length === 5), 'Every 2016 reissue has five vehicles and explicit variant status');
 
 for (const [packId,sourceUrl] of [
   ['ferrari-5pack-2002','https://www.wheelwonderland.com/fr/series/ferrari-5-pack-2002/'],
@@ -452,7 +458,7 @@ assert.equal(alternate2008.length, 5, '2008 alternate-colour pack variants are r
 assert.equal(alternate2008Contents.length, 25, 'Five alternate 2008 assortments contain 25 entries');
 assert.ok(alternate2008.every(p => p.pack_type === '5-pack variant' && alternate2008Contents.filter(c => c.pack_id === p.pack_id).length === 5), 'Every 2008 alternate assortment has five entries and is labelled as a variant');
 
-assert.equal(seedData.packs.length, 579, 'All seeded multipack pack records must remain accounted for');
+assert.equal(seedData.packs.length, 584, 'All seeded multipack pack records must remain accounted for');
 const reissue2017 = seedData2022.packs.filter(p => p.pack_id.startsWith('hw-5pack-2017-reissue-'));
 const reissue2017Contents = seedData2022.pack_contents.filter(c => reissue2017.some(p => p.pack_id === c.pack_id));
 assert.equal(reissue2017.length, 10, '2017 reissue/colour variants are retained separately from numbered base assortments');
