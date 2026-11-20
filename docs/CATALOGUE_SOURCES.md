@@ -298,3 +298,8 @@ The browser app can import the upstream scan index and lazily load year/assortme
 ## 2009 reissue and colour-variant five-packs
 
 - Wheel Wonderland 2009: https://www.wheelwonderland.com/fr/5-packs/2009/ — 10 complete reissue/colour variants (50 entries): Creature Cars, Easter Raceway, Graffiti Rides, HW City Works, HW Hot Rods, Scary Cars, Track Aces, Trick Tracks, Volkswagen and World Racers. Existing Ferrari assortments were retained without duplication.
+
+
+## 2007 reissue multipacks
+
+- Wheel Wonderland 2007: https://www.wheelwonderland.com/fr/5-packs/2007/ — four complete five-pack reissues plus the alternate eight-car Easter Eggs-Treme and seven-car Fright Cars assortments. These are typed by their actual car counts rather than all being labelled as five-packs.
