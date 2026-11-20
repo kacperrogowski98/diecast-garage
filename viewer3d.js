@@ -122,7 +122,7 @@ export function closeViewer() {
   cancelAnimationFrame(session.frame);
   session.resizeObserver.disconnect();
   session.controls.dispose();
-  disposeGroup(session.model);
+  disposeGroup(session.scene);
   session.renderer.dispose();
   session.renderer.forceContextLoss();
   session.element?.remove();
@@ -297,7 +297,7 @@ export function openViewer(model, root) {
     camera.updateProjectionMatrix();
   });
   resizeObserver.observe(stage);
-  const state = {closed:false, frame:0, renderer, controls, resizeObserver, model:modelGroup, element:stage};
+  const state = {closed:false, frame:0, renderer, controls, resizeObserver, scene, model:modelGroup, element:stage};
   session = state;
   function frame() {
     if (state.closed || !stage.isConnected) return;
