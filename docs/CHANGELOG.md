@@ -1,3 +1,9 @@
+## v1.61 — 20 November 2026
+
+- Added five additional 2016 five-pack reissue/colour variants (25 entries): Hot Trucks, HW Exotics, HW Flames, Muscle Mania and Volkswagen.
+- Kept alternate colours and tampo variants separate from base assortments and marked them for packaging-photo verification.
+- Preserved Wheel Wonderland source provenance.
+
 ## v1.60 — 20 November 2026
 
 - Added 10 additional 2017 five-pack reissue/colour variants (50 vehicle entries): Batman, Dino Riders, HW City Works, HW Exotics, HW Flames, HW Snow Stormers, Muscle Mania, Street Beasts, Track Builder and Track Stars.
