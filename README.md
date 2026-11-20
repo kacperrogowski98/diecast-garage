@@ -114,4 +114,4 @@ The repository is public, so source code is visible. User collection rows are no
 
 - A Wiki v6 import is considered complete only after all streamed batches and the final collection-state save succeed.
 - Multipack matching reconciles casting families shared across Ferrari seed and Wiki/diecastDb sources, without treating a same-name match as proof of an exact release. Matching by toy code, year and body color remains conservative.
-- Regression tests cover duplicate source casting IDs and failed import completion markers.
+- Regression tests cover duplicate source casting IDs, cross-source 5-pack completion and failed import completion markers.
