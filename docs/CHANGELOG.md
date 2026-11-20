@@ -1,3 +1,10 @@
+## v1.29 — 20 November 2026
+
+- Added 2025 and 2026 five-pack checklists: 35 additional package codes and 175 vehicle entries, including two separately coded Stunt Tracks packs in each year.
+- Added full 2025 HW Motor Show and 2026 Ferrari/HW Motor Show context; the pre-existing curated 2026 Ferrari pack is retained without duplication.
+- Added available body-colour details from the source checklist and preserved source attribution; records remain flagged for packaging-photo verification.
+- Added regression checks for annual package counts, five vehicles per pack, total row count and source provenance.
+
 ## v1.28 — 20 November 2026
 
 - Expanded the five-pack catalogue with 2023 and 2024 checklists: 35 additional package codes and 175 vehicle entries.
