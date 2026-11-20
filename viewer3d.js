@@ -176,7 +176,7 @@ export function openViewer(model, root) {
       <div class="dg3d-controls">
         <button class="btn" id="dg3dReset">↻ Reset widoku</button>
         <label class="btn dg3d-upload" style="${gallery ? 'display:none' : ''}">↑ Wczytaj i zapisz GLB<input type="file" id="dg3dFile" accept=".glb,model/gltf-binary" hidden></label>
-        ${!gallery&&releaseId ? '<button class="btn" id="dg3dDelete">Usuń zapisany model 3D</button>' : ''}
+        ${!gallery&&releaseId ? '<button class="btn" id="dg3dDownload">↓ Pobierz zapisany GLB</button><button class="btn" id="dg3dDelete">Usuń zapisany model 3D</button>' : ''}
       </div>
       <p class="notice" id="dg3dNotice">${gallery ? (packPreview ? 'Poglądowa wizualizacja samochodów wymienionych w multipacku. Nie potwierdza kolorów ani zgodności z dokładnym wydaniem; modele 3D nie są skanami oryginalnych Hot Wheels.' : 'Trzy strefy: Supercars, Racing, Pozostałe. Modele są uproszczonymi wizualizacjami 3D, nie wiernymi replikami Hot Wheels. Pokazujemy maksymalnie 12 egzemplarzy naraz.') : 'To interaktywna poglądowa sylwetka 3D, a nie wierny model tego konkretnego Hot Wheels. Przeciągnij palcem/myszką, aby obracać, i użyj gestu szczypania lub kółka, aby przybliżać. Własne pliki .glb zapisują się wyłącznie na tym urządzeniu (bez synchronizacji chmurowej).'}</p>
       ${gallery && !packPreview ? '<div class="dg3d-controls"><button class="btn" id="dg3dPrev">← Poprzednie auta</button><span id="dg3dPageLabel" class="meta"></span><button class="btn" id="dg3dNext">Następne auta →</button></div><div id="dg3dCars" class="meta"></div>' : ''}
@@ -343,6 +343,19 @@ export function openViewer(model, root) {
       const file=event.target.files?.[0];if(!file)return;
       if(!/\.glb$/i.test(file.name)||file.size>25*1024*1024){notice.textContent='Wybierz plik .glb do 25 MB.';return}
       loadBlob(file,true);
+    });
+    root.querySelector('#dg3dDownload')?.addEventListener('click',async()=>{
+      try {
+        const saved=await readSavedMesh(releaseId);
+        if(!saved?.file){notice.textContent='Nie masz jeszcze zapisanego pliku GLB dla tego wydania.';return}
+        const url=URL.createObjectURL(saved.file);
+        const link=document.createElement('a');
+        link.href=url;
+        link.download=String(saved.filename||'diecast-model.glb').replace(/[^a-z0-9._-]+/gi,'_');
+        document.body.appendChild(link);link.click();link.remove();
+        setTimeout(()=>URL.revokeObjectURL(url),1000);
+        notice.textContent='Pobrano własny model GLB. Możesz wczytać go na innym urządzeniu.';
+      } catch(error){notice.textContent='Nie udało się pobrać pliku GLB: '+String(error.message||error)}
     });
     const deleteButton=root.querySelector('#dg3dDelete');
     deleteButton?.addEventListener('click',async()=>{
