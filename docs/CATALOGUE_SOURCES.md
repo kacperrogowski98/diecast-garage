@@ -323,3 +323,8 @@ The browser app can import the upstream scan index and lazily load year/assortme
 ## 2003 reissue assortments
 
 - Wheel Wonderland 2003: https://www.wheelwonderland.com/fr/5-packs/2003/ — four complete five-pack reissues plus a six-car Ferrari variant (26 entries). The Tiki Blasters reissue was held back because the source duplicates one model row.
+
+
+## 2002 reissue assortments
+
+- Wheel Wonderland 2002: https://www.wheelwonderland.com/fr/5-packs/2002/ — Ferrari and Heat Fleet five-pack reissues plus a seven-car Happy Birthday variant, preserving all 17 source-listed entries.
