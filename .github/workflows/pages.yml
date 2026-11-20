@@ -28,6 +28,8 @@ jobs:
         run: node scripts/validate-app.mjs
       - name: Validate catalog normalization and classification
         run: node scripts/test-catalog.mjs
+      - name: Test multipack wishlist and backup compatibility
+        run: node scripts/test-pack-wishlist.mjs
       - name: Stress-test streamed Wiki importer on 10k records
         run: node scripts/test-stream-import.mjs
       - name: Verify private GLB cloud adapter and RLS
