@@ -1,3 +1,9 @@
+## v1.33 — 20 November 2026
+
+- Added 16 complete numbered 2016 five-packs (80 vehicle entries), including Captain America: Civil War, HW Formula Space, Muscle Mania, Race Aces, and two separately coded Track Builder packs.
+- Existing 2016 HW Exotics pack was retained without duplication; the incomplete Batman v Superman assortment was excluded.
+- Added source-listed colours and provenance with packaging-photo verification flags.
+
 ## v1.32 — 20 November 2026
 
 - Added 37 fully enumerated 2017–2018 five-packs (185 vehicle entries), including licensed character packs, HW Speed Graphics, Muscle Mania, Track Stars, and two separately numbered 2018 City packs.
