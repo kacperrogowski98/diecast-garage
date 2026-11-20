@@ -1,3 +1,9 @@
+## v1.35 — 20 November 2026
+
+- Filled seven previously empty Ferrari 5-Pack records from 2009–2014, including both 2009 five-car assortments (35 vehicle entries).
+- Added the source-listed model names and colours for Ferrari California, 458 Spider, F40, FXX, Enzo, 599 GTB and other Ferrari castings.
+- Existing pack records were enriched in place; no duplicate pack entries were created.
+
 ## v1.34 — 20 November 2026
 
 - Filled the previously empty 2002, 2003 and 2005 Ferrari 5-Pack records with all 15 model entries and source-listed colours.
