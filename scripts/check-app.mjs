@@ -11,9 +11,9 @@ const syncVerification = fs.readFileSync('supabase/verify_sync_setup.sql', 'utf8
 const serviceWorker = fs.readFileSync('sw.js', 'utf8');
 
 assert.match(html, /<html lang="pl">/i, 'Polish document language is present');
-assert.ok(html.includes('<title>Diecast Garage · v1.20</title>'), 'Current app release title must be v1.20');
-assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.20') && html.includes('Diecast Garage · v1.20 ·'), 'Visible app version labels must match the release title');
-assert.ok(serviceWorker.includes('diecast-garage-shell-v1.20.0'), 'PWA shell cache must be versioned with the current release');
+assert.ok(html.includes('<title>Diecast Garage · v1.21</title>'), 'Current app release title must be v1.21');
+assert.ok(html.includes('PERSONAL COLLECTION MANAGER · v1.21') && html.includes('Diecast Garage · v1.21 ·'), 'Visible app version labels must match the release title');
+assert.ok(serviceWorker.includes('diecast-garage-shell-v1.21.0'), 'PWA shell cache must be versioned with the current release');
 assert.match(html, /id="content"/, 'Main app content mount exists');
 assert.match(html, /id="assortmentFilter"/, 'Catalogue assortment filter exists');
 assert.match(html, /id="sortFilter"/, 'Catalogue sort control exists');
@@ -132,10 +132,16 @@ for (const [packId, year] of [['ferrari-5pack-1994-gift', '1994'], ['ferrari-5pa
   assert.equal(contents.length, 5, `Ferrari ${year} 5-pack must contain exactly five linked records`);
   assert.ok(contents.every(item => item.source_url.includes(`_(${year})`)), `Ferrari ${year} pack contents must point to the matching source year`);
 }
-assert.equal(seedData.pack_contents.length, 20, 'All seeded multipack content rows must remain accounted for');
+assert.equal(seedData.pack_contents.length, 35, 'All seeded multipack content rows must remain accounted for');
 const exotics2020 = seedData.pack_contents.filter(item => item.pack_id === 'hw-exotics-5pack-2020');
 assert.equal(exotics2020.length, 5, '2020 HW Exotics 5-pack must contain five vehicles');
 assert.ok(exotics2020.every(item => item.source_url.includes('community.creations.mattel.com')), '2020 HW Exotics contents must cite the official Mattel source');
+
+for (const [packId, year] of [['hw-exotics-5pack-2017', '2017'], ['hw-exotics-5pack-2019', '2019'], ['hw-exotics-5pack-2021', '2021']]) {
+  const contents = seedData.pack_contents.filter(item => item.pack_id === packId);
+  assert.equal(contents.length, 5, `HW Exotics ${year} 5-pack must contain exactly five vehicles`);
+  assert.ok(contents.every(item => item.source_url.includes('community.creations.mattel.com')), `HW Exotics ${year} contents must cite the official Mattel source`);
+}
 const curatedClasses = {
   'Ferrari F50': 'supercar_hypercar',
   'Ferrari F50 Spider': 'supercar_hypercar',
