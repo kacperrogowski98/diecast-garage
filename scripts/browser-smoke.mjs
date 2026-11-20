@@ -33,6 +33,23 @@ try {
    const names=Array.from(db.objectStoreNames);db.close();return names;
  });
  assert.ok(stores.includes('releases')&&stores.includes('wiki_packs')&&stores.includes('meshes3d'),'IndexedDB migration must keep all three stores');
+ const meshStored=await page.evaluate(async()=>{
+   const request=indexedDB.open('diecast_garage_catalog_v1',3);
+   const db=await new Promise((resolve,reject)=>{request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error)});
+   const transact=(mode,handler)=>new Promise((resolve,reject)=>{
+     const tx=db.transaction('meshes3d',mode);
+     let result=null;handler(tx.objectStore('meshes3d'),value=>{result=value});
+     tx.oncomplete=()=>resolve(result);tx.onerror=()=>reject(tx.error);
+   });
+   const file=new Blob([new Uint8Array([1,2,3,4])],{type:'model/gltf-binary'});
+   await transact('readwrite',(store)=>store.put({release_id:'smoke-test-model',file}));
+   const saved=await transact('readonly',(store,done)=>{const req=store.get('smoke-test-model');req.onsuccess=()=>done(req.result)});
+   await transact('readwrite',(store)=>store.delete('smoke-test-model'));
+   db.close();
+   return saved?.file?.size===4;
+ });
+ assert.ok(meshStored,'3D GLB file must persist as a Blob in IndexedDB');
+
   await page.locator('#showroomBtn').click();
  await page.waitForFunction(()=>Boolean(document.querySelector('#dg3dStage canvas')||document.querySelector('#modalRoot')?.textContent?.includes('Garaż 3D niedostępny')));
  if(await page.locator('#dg3dStage canvas').count()){
