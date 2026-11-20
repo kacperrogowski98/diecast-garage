@@ -213,3 +213,8 @@ The browser app can import the upstream scan index and lazily load year/assortme
 
 - Wheel Wonderland 1996: https://www.wheelwonderland.com/fr/5-packs/1996/ — nine complete numbered five-packs / 45 entries plus the six-car Super Show Cars 6-Pack.
 - The Super Show Cars set is preserved as a 6-pack based on its 1/6–6/6 numbering; incomplete/variant-only rows are not inferred.
+
+
+## 1995 five- and six-packs
+
+- Wheel Wonderland 1995: https://www.wheelwonderland.com/fr/5-packs/1995/ — three additional complete five-packs / 15 entries plus two six-packs / 12 entries. The existing Ferrari 5-Pack was retained without duplication.
