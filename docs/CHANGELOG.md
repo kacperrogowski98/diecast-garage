@@ -1,3 +1,8 @@
+## v1.19 — 20 November 2026
+
+- Added three-source fallback for catalogue index and lazy year-file downloads (GitHub raw, jsDelivr, GitHub Pages) to reduce CDN/network failures on mobile.
+- Added regression checks for the mirror fallback and brand inference across Bugatti, Porsche and Mercedes-Benz naming variants.
+
 ## v1.18 — 20 November 2026
 
 - Improved vehicle classification precedence: explicit competition variants (GT3/GT4/GTR/GT1, Le Mans, Formula, rally and named race variants) are assigned to Racing before broad supercar model-name matches.
