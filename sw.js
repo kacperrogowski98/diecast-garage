@@ -1,4 +1,4 @@
-const CACHE_NAME = 'diecast-garage-shell-v1.84';
+const CACHE_NAME = 'diecast-garage-shell-v1.85';
 const base = self.registration.scope;
 const APP_SHELL = ['./', './index.html', './seed.js', './viewer3d.js', './manifest.webmanifest', './icon.svg', './icon-192.png']
   .map(path => new URL(path, base).toString());
@@ -22,6 +22,11 @@ self.addEventListener('fetch', event => {
   const request = event.request;
   const url = new URL(request.url);
   if (request.method !== 'GET' || url.origin !== self.location.origin) return;
+  // Large catalogues already persist in IndexedDB; never pin obsolete imports in PWA cache.
+  if (url.pathname.includes('/catalog/')) {
+    event.respondWith(fetch(request));
+    return;
+  }
 
   // Network-first for page navigation, so installed PWA users see new releases.
   // Cached HTML remains available when the phone is offline.
