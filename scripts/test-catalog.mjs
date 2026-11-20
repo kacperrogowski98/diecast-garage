@@ -33,7 +33,7 @@ assert.equal(historical.brand,'Ferrari');
 assert.equal(historical.release_year,1995);
 assert.equal(historical.vehicle_class,'supercar_hypercar');
 assert.equal(historical.source,'hotwheels-data');
-const file={name:'HotApi.json',text:async()=>['{"Casting":"Ferrari F40","Year":1995}','{"Casting":"Porsche 911 GT3 RS","Year":2021}'].join('\\n')};
+const file={name:'HotApi.json',text:async()=>['{"Casting":"Ferrari F40","Year":1995}','{"Casting":"Porsche 911 GT3 RS","Year":2021}'].join('\n')};
 const jsonl=await ctx.dgReadCatalogFile(file);
 assert.equal(jsonl.length,2);
 assert.equal(jsonl[0].canonical_name,'Ferrari F40');
