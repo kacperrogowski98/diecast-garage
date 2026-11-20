@@ -65,7 +65,7 @@ jobs:
             fi
             rm -f catalog/scan-index.json
           done
-          test -s catalog/scan-index.json || { echo "::error::No valid catalog index available"; exit 1; }
+          test -s catalog/scan-index.json || echo "::warning::Mainline scan index unavailable; app can still load external providers at runtime"
       - name: Prepare minimal production site
         shell: bash
         run: |
