@@ -1,3 +1,9 @@
+## v1.43 — 20 November 2026
+
+- Added eleven complete numbered 2005 five-packs (55 entries): Autogrfx, Black Tops, Easter Eggs-treme, Gorilla Attack, Heat Fleet II, Muscle Mania, Robo Revenge, Roll Patrol, Shiners, Wastelanders and Wild Cats.
+- Added Dual Cool as a six-car assortment; retained the existing Ferrari 5-Pack without duplication.
+- Excluded non-numbered duplicate colour variants and preserved source colours and provenance.
+
 ## v1.42 — 20 November 2026
 
 - Added 13 complete numbered 2006 five-packs (65 entries), including 2006 First Editions, Aerial Attack, Big Blocks, Corvette, Off Road Warriors, Sci-Fi Hiway and Wish List.
