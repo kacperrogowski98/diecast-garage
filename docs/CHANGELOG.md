@@ -1,3 +1,9 @@
+## v1.39 — 20 November 2026
+
+- Added 41 complete numbered 2010–2011 five-packs (205 vehicle entries), including 2010 Mopar Mania, Hot Tunerz, Road Course Race and 2011 American Performance, Indy 500, HW Hot Rods and World Racers.
+- Existing Ferrari and HW Exotics packs were retained without duplication; only numbered five-car compositions were imported.
+- Added source-listed colours and provenance with packaging-photo verification flags.
+
 ## v1.38 — 20 November 2026
 
 - Added 22 complete numbered 2013 five-packs (110 vehicle entries), including three separately numbered HW Test Facility assortments and World Race.
