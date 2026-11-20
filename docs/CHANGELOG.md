@@ -1,3 +1,10 @@
+## v1.78 — 20 November 2026
+
+- Multipack catalogue now supports searching by pack name, catalogue code, year and included vehicle names.
+- Added multipack year filter and pagination (36 pack cards per page) so hundreds of sets do not render at once on iPhone.
+- Sorts packs by newest year by default, preserves search/year state when revisiting the tab and keeps the custom-pack editor.
+- Expanded automated checks and browser smoke coverage for searching and paging through multipacks.
+
 ## v1.77 — 20 November 2026
 
 - First-time collectors now land in the full online catalogue rather than an empty garage; collectors with owned models continue to land in their garage.
