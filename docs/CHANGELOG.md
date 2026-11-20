@@ -1,4 +1,7 @@
-## v1.23 — 20 November 2026
+## v1.24 — 20 November 2026
+
+- Added 2007 Exotics and 2011 HW Exotics five-packs, 10 source-linked vehicle entries from the community catalogue.
+- Entries are explicitly marked for packaging-photo verification; fantasy castings remain present rather than being silently removed.
 
 - Expanded HW Exotics 5-Pack history with 2014 (BFB36), 2015 (CDT27) and 2016 (DJD29), adding 15 vehicle entries from specialist collector references.
 - Clearly marked community-sourced records for packaging-photo verification; tests confirm five entries and preserve source links per pack.
