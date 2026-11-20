@@ -10,6 +10,16 @@ const required=['id="rarityFilter"','id="classFilter"','id="brandFilter"','id="y
 for(const token of required)assert.ok(html.includes(token),'Missing UI/API: '+token);
 assert.ok(fs.existsSync('viewer3d.js'),'Missing interactive 3D viewer');
 assert.ok(html.includes('type="importmap"'),'Missing Three.js import map');
+const mapText=html.match(/<script type="importmap">([\s\S]*?)<\/script>/)?.[1];
+assert.ok(mapText,'No import map JSON found');
+const map=JSON.parse(mapText);
+assert.ok(map.imports?.three?.startsWith('https://'),'Three.js module CDN missing');
+const viewer=fs.readFileSync('viewer3d.js','utf8');
+assert.ok(viewer.includes('export function openViewer('),'Missing 3D viewer entry');
+assert.ok(viewer.includes('GLTFLoader'),'Missing local GLB support');
+const viewerSyntax=viewer.replace(/^import .*;$/gm,'').replace(/^export /gm,'');
+new vm.Script(viewerSyntax,{filename:'viewer3d.js'});
+
 const sw=fs.readFileSync('sw.js','utf8');
 new vm.Script(sw,{filename:'sw.js'});
 const release=html.match(/<title>Diecast Garage · (v[0-9.]+)<\/title>/)?.[1];
