@@ -1,0 +1,199 @@
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+let session = null;
+function bodyColor(name) {
+  const s = String(name || '').toLowerCase();
+  const options = [
+    [/rosso|red|czerw|burgundy|maroon/, '#d52a36'], [/blue|azur|navy|niebies/, '#286fc8'],
+    [/green|verde|zielon/, '#2a9869'], [/yellow|giallo|żół|zol/, '#e5b82e'],
+    [/orange|pomara/, '#e07828'], [/purple|violet|fiolet/, '#854dbe'],
+    [/pink|róż|roz/, '#e16b97'], [/white|bianco|bia/, '#e6e8e9'],
+    [/black|nero|czarn/, '#252a32'], [/silver|chrome|srebr/, '#abb3bb'],
+    [/grey|gray|grigio|szar/, '#717984'], [/gold|oro|złot|zlot/, '#bc9848'],
+  ];
+  return options.find(([regex]) => regex.test(s))?.[1] || '#c52c32';
+}
+function addPart(group, shape, color, x, y, z, extras = {}) {
+  const material = color instanceof THREE.Material ? color : new THREE.MeshStandardMaterial({
+    color, roughness: 0.32, metalness: 0.48, ...extras,
+  });
+  const mesh = new THREE.Mesh(shape, material);
+  mesh.position.set(x, y, z);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  group.add(mesh);
+  return mesh;
+}
+function createCar(color, name) {
+  const car = new THREE.Group();
+  const paint = new THREE.MeshStandardMaterial({color, metalness: 0.68, roughness: 0.23});
+  const glass = new THREE.MeshPhysicalMaterial({
+    color: '#253849', metalness: 0.22, roughness: 0.1, transparent: true, opacity: 0.82,
+  });
+  const dark = new THREE.MeshStandardMaterial({color: '#10131a', roughness: 0.72});
+  const chrome = new THREE.MeshStandardMaterial({color: '#cbd1dc', metalness: 0.83, roughness: 0.22});
+  const lights = new THREE.MeshStandardMaterial({color: '#ffefca', emissive: '#fff0bc', emissiveIntensity: 0.42});
+  const rearLights = new THREE.MeshStandardMaterial({color: '#cc182b', emissive: '#7c0010', emissiveIntensity: 0.3});
+  const low = /formula|f1|race|gt3|gt4|track/i.test(name || '');
+  const tall = /suv|defender|truck|jeep|g.?class|bronco/i.test(name || '');
+  const y = tall ? 0.7 : low ? 0.42 : 0.5;
+
+  addPart(car, new THREE.BoxGeometry(4.1, 0.48, 1.9), paint, 0, y, 0);
+  addPart(car, new THREE.BoxGeometry(3.7, 0.13, 1.84), paint, 0, y + 0.27, 0);
+  const cockpit = addPart(car, new THREE.BoxGeometry(tall ? 2.5 : 2.2, tall ? 0.86 : 0.58, 1.47), glass, -0.2, y + (tall ? 0.74 : 0.56), 0);
+  cockpit.castShadow = false;
+  addPart(car, new THREE.BoxGeometry(0.09, 0.08, 1.65), dark, 1.91, y - 0.08, 0);
+  addPart(car, new THREE.BoxGeometry(0.09, 0.08, 1.65), dark, -1.91, y - 0.08, 0);
+  for (const side of [-1, 1]) {
+    for (const axle of [-1.32, 1.32]) {
+      const tire = addPart(car, new THREE.CylinderGeometry(0.43, 0.43, 0.27, 24), dark, axle, 0.43, side * 0.96);
+      tire.rotation.x = Math.PI / 2;
+      const rim = addPart(car, new THREE.CylinderGeometry(0.24, 0.24, 0.284, 16), chrome, axle, 0.43, side * 0.96);
+      rim.rotation.x = Math.PI / 2;
+    }
+  }
+  for (const side of [-0.63, 0.63]) {
+    addPart(car, new THREE.BoxGeometry(0.045, 0.14, 0.36), lights, 2.055, y + 0.09, side);
+    addPart(car, new THREE.BoxGeometry(0.045, 0.13, 0.38), rearLights, -2.055, y + 0.09, side);
+  }
+  if (low) {
+    addPart(car, new THREE.BoxGeometry(0.17, 0.06, 2.1), paint, -1.64, y + 0.55, 0);
+    for (const side of [-0.65, 0.65]) addPart(car, new THREE.BoxGeometry(0.12, 0.44, 0.1), dark, -1.58, y + 0.32, side);
+  }
+  return car;
+}
+
+function disposeGroup(group) {
+  group.traverse(obj => {
+    if (!obj.isMesh) return;
+    obj.geometry?.dispose();
+    (Array.isArray(obj.material) ? obj.material : [obj.material]).forEach(m => {
+      if (!m) return;
+      for (const key of ['map', 'normalMap', 'metalnessMap', 'roughnessMap', 'emissiveMap']) m[key]?.dispose();
+      m.dispose();
+    });
+  });
+}
+function escapeText(str) {
+  return String(str ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+export function closeViewer() {
+  if (!session) return;
+  session.closed = true;
+  cancelAnimationFrame(session.frame);
+  session.resizeObserver.disconnect();
+  session.controls.dispose();
+  disposeGroup(session.model);
+  session.renderer.dispose();
+  session.renderer.forceContextLoss();
+  session.element?.remove();
+  session = null;
+}
+export function openViewer(model, root) {
+  closeViewer();
+  const name = model.canonical_name || model.model_name_as_source || 'Samochód';
+  root.innerHTML = `<div class="modalback" id="dg3dBackdrop">
+    <div class="modal dg3d-modal" role="dialog" aria-modal="true" aria-label="Podgląd 3D">
+      <div class="modalhead"><h3>Garaż 3D · ${escapeText(name)}</h3><button class="btn" id="dg3dClose" aria-label="Zamknij">✕</button></div>
+      <div id="dg3dStage" class="dg3d-stage" role="img" aria-label="Obracany podgląd trójwymiarowy samochodu"></div>
+      <div class="dg3d-controls">
+        <button class="btn" id="dg3dReset">↻ Reset widoku</button>
+        <label class="btn dg3d-upload">↑ Wczytaj własny model GLB<input type="file" id="dg3dFile" accept=".glb,model/gltf-binary" hidden></label>
+      </div>
+      <p class="notice" id="dg3dNotice">To interaktywna **poglądowa sylwetka 3D**, a nie wierny model tego konkretnego Hot Wheels. Przeciągnij palcem/myszką, aby obracać, i użyj gestu szczypania lub kółka, aby przybliżać. Możesz wczytać własny model .glb.</p>
+    </div></div>`;
+  const stage = root.querySelector('#dg3dStage');
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color('#10141b');
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+  camera.position.set(6.4, 4.5, 6.6);
+  const renderer = new THREE.WebGLRenderer({antialias: true, alpha: false});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  stage.appendChild(renderer.domElement);
+  scene.add(new THREE.HemisphereLight('#d8e6ff', '#384450', 2.6));
+  const sun = new THREE.DirectionalLight('#fff4e7', 3.2);
+  sun.position.set(5, 9, 4);
+  sun.castShadow = true;
+  sun.shadow.mapSize.set(1024,1024);
+  scene.add(sun);
+  const ground = new THREE.Mesh(
+    new THREE.CircleGeometry(7, 64),
+    new THREE.MeshStandardMaterial({color: '#262b36', roughness: 0.9, metalness: 0.08})
+  );
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.y = -0.02;
+  ground.receiveShadow = true;
+  scene.add(ground);
+  const grid = new THREE.GridHelper(11, 20, '#3f4856', '#2b303c');
+  grid.position.y = -0.013;
+  scene.add(grid);
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.enablePan = false;
+  controls.minDistance = 3.2;
+  controls.maxDistance = 16;
+  controls.maxPolarAngle = Math.PI / 2.05;
+  controls.target.set(0,0.65,0);
+  controls.update();
+  const modelGroup = new THREE.Group();
+  let active = createCar(bodyColor(model.body_color || model.color_variant), name);
+  modelGroup.add(active);
+  scene.add(modelGroup);
+  const resizeObserver = new ResizeObserver(() => {
+    if (!stage.isConnected) return;
+    const width = Math.max(200, stage.clientWidth);
+    renderer.setSize(width, Math.max(260, Math.round(width * 0.64)), false);
+    camera.aspect = width / renderer.domElement.clientHeight;
+    camera.updateProjectionMatrix();
+  });
+  resizeObserver.observe(stage);
+  const state = {closed:false, frame:0, renderer, controls, resizeObserver, model:modelGroup, element:stage};
+  session = state;
+  function frame() {
+    if (state.closed || !stage.isConnected) return;
+    state.frame = requestAnimationFrame(frame);
+    controls.update();
+    renderer.render(scene,camera);
+  }
+  frame();
+  const close = () => { closeViewer(); root.innerHTML = ''; };
+  root.querySelector('#dg3dClose').addEventListener('click', close);
+  root.querySelector('#dg3dBackdrop').addEventListener('click', e => {if(e.target.id==='dg3dBackdrop')close()});
+  root.querySelector('#dg3dReset').addEventListener('click', () => {
+    camera.position.set(6.4,4.5,6.6); controls.target.set(0,0.65,0);controls.update();
+  });
+  root.querySelector('#dg3dFile').addEventListener('change', e => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const notice = root.querySelector('#dg3dNotice');
+    if (!/\.glb$/i.test(file.name) || file.size > 30 * 1024 * 1024) {
+      notice.textContent = 'Wybierz plik .glb nie większy niż 30 MB.'; return;
+    }
+    notice.textContent = 'Wczytywanie lokalnego modelu GLB…';
+    const url = URL.createObjectURL(file);
+    const loader = new GLTFLoader();
+    loader.load(url, gltf => {
+      URL.revokeObjectURL(url);
+      if (state.closed) {disposeGroup(gltf.scene); return}
+      modelGroup.remove(active);disposeGroup(active);
+      active = gltf.scene;
+      const bounds = new THREE.Box3().setFromObject(active);
+      const size = bounds.getSize(new THREE.Vector3());
+      if (Math.max(size.x,size.y,size.z) === 0) {notice.textContent='Model GLB nie ma widocznej geometrii.';return}
+      active.scale.multiplyScalar(4 / Math.max(size.x,size.y,size.z));
+      const center = new THREE.Box3().setFromObject(active).getCenter(new THREE.Vector3());
+      active.position.sub(center);
+      active.position.y += 0.55;
+      modelGroup.add(active);
+      notice.textContent = 'Wyświetlany jest Twój plik GLB. Model jest używany tylko podczas bieżącego podglądu; nie jest wysyłany na serwer.';
+    }, undefined, error => {
+      URL.revokeObjectURL(url);
+      notice.textContent = 'Nie udało się wczytać modelu GLB: ' + String(error?.message || 'nieznany błąd');
+    });
+  });
+}
