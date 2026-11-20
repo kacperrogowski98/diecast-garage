@@ -1,3 +1,9 @@
+## v1.58 — 20 November 2026
+
+- Added nine early Hot Wheels five-packs from 1985–1987, covering 45 vehicles.
+- 1985: Super Sportscars; 1986: four Gift Pak assortments; 1987: Classics, Racers, Super Sportscars and Ultra Hots.
+- Added exact numbered compositions, source links and verification flags.
+
 ## v1.57 — 20 November 2026
 
 - Added 18 verified historical 1988–1990 pack records, covering 91 vehicles.
