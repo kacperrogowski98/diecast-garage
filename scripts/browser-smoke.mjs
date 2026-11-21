@@ -153,4 +153,14 @@ try {
 
   assert.ok(!errors.length,'Page JavaScript errors: '+errors.join(' | '));
  console.log('PASS browser smoke: mobile viewport, create/save, garage persistence, catalogue filters, 3D showroom fallback');
+} catch(error) {
+ console.error('BROWSER SMOKE FAILURE:',error?.stack||error);
+ try{
+   const fs=await import('node:fs/promises');
+   await fs.mkdir('test-results',{recursive:true});
+   await page.screenshot({path:'test-results/mobile-smoke-failure.png',fullPage:true,timeout:10000});
+   await fs.writeFile('test-results/mobile-smoke-error.txt',String(error?.stack||error)+'\nPage errors: '+errors.join(' | '));
+   console.error('Saved failure screenshot and error report to test-results/');
+ }catch(captureError){console.error('Failed to save diagnostic screenshot:',captureError)}
+ throw error;
 } finally {await browser.close();}
