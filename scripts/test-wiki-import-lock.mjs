@@ -25,6 +25,10 @@ const first=ctx.fetchWiki(false);
 assert.equal(button.disabled,true,'First import must lock UI');
 const second=await ctx.fetchWiki(false);
 assert.equal(second,false,'Concurrent import must be refused');
+// The first request awaits the stats metadata before it starts the archive fetch.
+// Allow that promise to settle before checking the archive request count.
+await Promise.resolve();
+await Promise.resolve();
 assert.equal(calls,1,'A concurrent import must not issue a second network request');
 assert.ok(messages.some(s=>s.includes('już trwa')));
 resolveFetch();
