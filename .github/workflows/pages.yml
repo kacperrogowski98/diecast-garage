@@ -35,6 +35,8 @@ jobs:
         run: node scripts/test-pack-wishlist.mjs
       - name: Stress-test streamed Wiki importer on 10k records
         run: node scripts/test-stream-import.mjs
+      - name: Prevent overlapping full Wiki imports
+        run: node scripts/test-wiki-import-lock.mjs
       - name: Verify private GLB cloud adapter and RLS
         run: node scripts/test-cloud-3d.mjs
       - name: Verify full Wiki v6 archive and 5-pack contents
