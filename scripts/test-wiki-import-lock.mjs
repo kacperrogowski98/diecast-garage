@@ -30,7 +30,7 @@ assert.ok(messages.some(s=>s.includes('już trwa')));
 resolveFetch();
 await first;
 assert.equal(button.disabled,false,'UI must unlock after a failed import');
-assert.equal(ctx.dgWikiFetchInProgress,false,'Import lock must clear after errors');
+assert.equal(vm.runInContext('dgWikiFetchInProgress',ctx),false,'Import lock must clear after errors');
 await ctx.fetchWiki(true);
 assert.equal(calls,2,'New import must be allowed after prior attempt finishes');
 console.log('PASS: Wiki importer prevents concurrent downloads, unlocks after error and permits retry');
