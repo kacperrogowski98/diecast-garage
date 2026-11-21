@@ -6,6 +6,7 @@ const html=fs.readFileSync('index.html','utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].filter(m=>!m[0].startsWith('<script type="importmap"')).map(m=>m[1]).filter(Boolean);
 assert.ok(scripts.length>=2,'Missing application scripts');
 assert.ok(!html.includes("||'Ferrari'"),'Unknown brand must not be silently classified as Ferrari');
+assert.ok(!html.includes("||'Nieznana marka'"),'Use the same Unassigned sentinel for missing brands throughout the app');
 for(const [i,code] of scripts.entries())new vm.Script(code,{filename:'inline-'+i+'.js'});
 const required=['id="rarityFilter"','id="photoFilter"','id="classFilter"','id="brandFilter"','id="yearFilter"','id="assortmentFilter"','id="content"','id="modalRoot"','id="catalogStatus"','dgFetchOnlineCatalog','id="showroomBtn"','openShowroom3D','open3D','dgCloudPush','dgCloudPull','exportData','importData','dgRarity'];
 for(const token of required)assert.ok(html.includes(token),'Missing UI/API: '+token);
