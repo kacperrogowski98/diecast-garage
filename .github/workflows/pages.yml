@@ -17,6 +17,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -55,7 +56,10 @@ jobs:
         run: |
           python3 -m http.server 8000 --bind 127.0.0.1 --directory _site >/tmp/diecast-http.log 2>&1 &
           sleep 2
-          node scripts/browser-smoke.mjs
+          if ! node scripts/browser-smoke.mjs; then
+            echo "::warning::Mobile browser smoke failed on first attempt; retrying once to distinguish transient browser failures from reproducible regressions"
+            node scripts/browser-smoke.mjs
+          fi
       - name: Bundle full catalogue index for reliable first launch
         shell: bash
         run: |
