@@ -15,7 +15,7 @@ const ctx=vm.createContext({
  document:{getElementById:()=>button},
  localStorage:{setItem(){}},
  DG_WIKI_CHECK_KEY:'wiki-check',
- fetch:async()=>{calls++;await wait;throw Error('Simulated temporary offline')},
+ fetch:async(url)=>{if(String(url).includes('wiki-stats.json'))return {ok:false};calls++;await wait;throw Error('Simulated temporary offline')},
  toast:(s)=>messages.push(s),
  dgUpdateCatalogStatus:()=>{},
  console
