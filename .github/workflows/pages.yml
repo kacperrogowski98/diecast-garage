@@ -60,6 +60,14 @@ jobs:
             echo "::warning::Mobile browser smoke failed on first attempt; retrying once to distinguish transient browser failures from reproducible regressions"
             node scripts/browser-smoke.mjs
           fi
+      - name: Upload mobile browser failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-smoke-diagnostics
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Bundle full catalogue index for reliable first launch
         shell: bash
         run: |
