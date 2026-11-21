@@ -139,7 +139,10 @@ async function dgFetchWikiPacksOnly(automatic=true){
   return true;
  }catch(error){console.warn('Wiki multipack archive unavailable:',error);if(!automatic)toast('Nie udało się pobrać multipacków: '+error.message);return false}
 }
+let dgWikiFetchInProgress=false;
 async function dgFetchWikiV6Catalog(automatic=false){
+ if(dgWikiFetchInProgress){if(!automatic)toast('Import Wiki v6 już trwa — nie uruchamiam drugiego pobierania.');return false}
+ dgWikiFetchInProgress=true;
  const btn=document.getElementById('wikiCatalogBtn');if(btn){btn.disabled=true;btn.textContent='Wczytywanie Wiki v6…'}try{localStorage.setItem(DG_WIKI_CHECK_KEY,String(Date.now()))}catch(_){}
  try{
   let expectedRecords=0;try{const stats=await fetch('./catalog/wiki-stats.json',{cache:'no-cache'});if(stats.ok){const json=await stats.json();if(Number.isInteger(json.releases)&&json.releases>10000)expectedRecords=json.releases}}catch(_){}
@@ -151,7 +154,7 @@ async function dgFetchWikiV6Catalog(automatic=false){
   await dgImportWikiReleaseStream(uncompressed,expectedRecords);
   await dgFetchWikiPacksOnly(automatic);
  }catch(e){console.warn('Wiki v6 import:',e);dgUpdateCatalogStatus('Import Wiki v6 przerwany: '+String(e.message||e)+'. Wcześniej zapisane auta i kolekcja pozostają dostępne; spróbujemy ponownie.');if(!automatic)toast('Wiki v6: '+e.message)}
- finally{if(btn){btn.disabled=false;btn.textContent='↓ Pełne Wiki v6'}}
+ finally{dgWikiFetchInProgress=false;if(btn){btn.disabled=false;btn.textContent='↓ Pełne Wiki v6'}}
 }
 function dgInitCatalogImport(){let btn=document.getElementById('catalogImportBtn'),folderBtn=document.getElementById('catalogFolderBtn'),onlineBtn=document.getElementById('onlineCatalogBtn'),extendedBtn=document.getElementById('extendedCatalogBtn'),wikiBtn=document.getElementById('wikiCatalogBtn'),input=document.getElementById('catalogImportFile'),folder=document.getElementById('catalogFolderInput');btn?.addEventListener('click',()=>input.click());folderBtn?.addEventListener('click',()=>folder.click());onlineBtn?.addEventListener('click',dgFetchOnlineCatalog);extendedBtn?.addEventListener('click',dgFetchExtendedCatalog);wikiBtn?.addEventListener('click',()=>dgFetchWikiV6Catalog(false));for(let el of [input,folder])el?.addEventListener('change',async e=>{await dgImportCatalogFiles(e.target.files);e.target.value=''})}
 function status(id){return state.items.find(x=>x.id===id)}
