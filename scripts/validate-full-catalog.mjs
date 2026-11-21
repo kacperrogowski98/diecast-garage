@@ -7,8 +7,7 @@ const releasePath='catalog/wiki-v6.jsonl.gz';
 const packPath='catalog/wiki-packs.jsonl.gz';
 const statsPath='catalog/wiki-stats.json';
 if(!fs.existsSync(releasePath)||!fs.existsSync(packPath)||!fs.existsSync(statsPath)){
-  console.warn('SKIP: full Wiki v6 archive not committed yet');
-  process.exit(0);
+  throw new Error('Required full Wiki v6 release archive, multipack archive or statistics manifest is missing — refusing incomplete release');
 }
 const stats=JSON.parse(fs.readFileSync(statsPath,'utf8'));
 async function validateCompressed(path,kind){
