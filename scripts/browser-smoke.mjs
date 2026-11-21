@@ -151,6 +151,11 @@ try {
  assert.ok((await page.locator('#packList').innerText()).includes('Test Collector 5-Pack'));
  console.log('PASS: custom 5-pack entry with collector-supplied front photograph');
 
+  assert.ok((await page.locator('#dgConnectionStatus').innerText()).includes('Online'),'Connection badge should initialize online');
+  await page.context().setOffline(true);
+  await page.waitForFunction(()=>document.querySelector('#dgConnectionStatus')?.textContent?.includes('Offline'));
+  await page.context().setOffline(false);
+  await page.waitForFunction(()=>document.querySelector('#dgConnectionStatus')?.textContent?.includes('Online'));
   assert.ok(!errors.length,'Page JavaScript errors: '+errors.join(' | '));
  console.log('PASS browser smoke: mobile viewport, create/save, garage persistence, catalogue filters, 3D showroom fallback');
 } catch(error) {
