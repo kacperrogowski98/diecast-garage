@@ -169,7 +169,7 @@ try {
   await page.reload({waitUntil:'domcontentloaded'});
   await page.locator('[data-view="wishlist"]').click();
   assert.ok((await page.locator('#content').innerText()).includes('Priorytet: 5/5'),'Wishlist priority must survive reload');
-  assert.equal(JSON.parse(localStorage.getItem('diecast_garage_mvp_02')).items.find(i=>i.modelSnapshot?.canonical_name==='Wishlist Test McLaren P1')?.targetPrice,'39.99');
+  assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('diecast_garage_mvp_02')).items.find(i=>i.modelSnapshot?.canonical_name==='Wishlist Test McLaren P1')?.targetPrice),'39.99');
   console.log('PASS: wishlist priority and target price persisted and rendered');
   // Recovery must restore a previous collection without requiring a cloud account.
   await page.evaluate(()=>dgWriteRecoverySnapshot());
