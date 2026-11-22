@@ -524,7 +524,7 @@ async function dgCheckStorage(){
   el.textContent='Pamięć aplikacji: '+mbytes(used)+(quota?' z szacunkowych '+mbytes(quota):'')+'. '+(persisted===true?'Przeglądarka potwierdza trwałą pamięć.':persisted===false?'Dane mogą zostać usunięte przez przeglądarkę przy czyszczeniu pamięci.':'Stan trwałej pamięci nieznany.')+' Backup JSON przechowuj poza aplikacją.';
  }catch(error){el.textContent='Nie można sprawdzić pamięci: '+String(error.message||error)}
 }
-function openCloudPanel(){const cfg=dgReadConfig();document.getElementById('modalRoot').innerHTML=`<div class="modalback" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modalhead"><h3>Konto i synchronizacja</h3><button class="btn" onclick="closeModal()">✕</button></div><p class="notice">Połącz aplikację z własnym projektem Supabase. Używaj wyłącznie klucza anon/public (publishable), nigdy service_role. Konfiguracja jest zapisywana lokalnie w tej przeglądarce.</p><div class="formgrid"><div class="formfield full"><label>Supabase Project URL</label><input class="field" id="dgProjectUrl" placeholder="https://xxxx.supabase.co" value="${esc(cfg.url||'')}"></div><div class="formfield full"><label>Supabase anon / publishable key</label><input class="field" id="dgAnonKey" autocomplete="off" placeholder="sb_publishable_... lub anon JWT" value="${esc(cfg.key||'')}"></div></div><div class="cloud-actions"><button class="btn primary" onclick="dgSaveConfig()">Zapisz i połącz</button></div><div class="cloud-actions"><button class="btn" onclick="dgCheckStorage()">Sprawdź pamięć urządzenia</button><button class="btn" onclick="exportData()">Pobierz backup JSON</button></div><p id="dgStorageStatus" class="notice">Dane lokalne i pliki 3D nie są automatycznie chronione przed wyczyszczeniem pamięci przeglądarki.</p><div class="cloud-status" id="dgCloudStatus">${esc(dgCloudStatus)}</div><div id="dgAuthArea">${dgAuthMarkup()}</div><div class="cloud-actions"><button class="btn" data-cloud-auth onclick="dgCloudPush()" ${dgCloudUser?'':'disabled'}>Wyślij tę kolekcję do chmury</button><button class="btn" data-cloud-auth onclick="dgCloudPull()" ${dgCloudUser?'':'disabled'}>Pobierz kolekcję z chmury</button></div><p class="notice">Własne modele GLB (3D) mają osobne miejsce w prywatnej chmurze. Wymagana jest migracja bucketu diecast-models. Zbiorcze pobieranie zachowa pliki już istniejące na tym urządzeniu.</p><div class="cloud-actions"><button class="btn" data-cloud-auth onclick="dgBulkCloud3D('push')" ${dgCloudUser?'':'disabled'}>☁ Wyślij modele 3D</button><button class="btn" data-cloud-auth onclick="dgBulkCloud3D('pull')" ${dgCloudUser?'':'disabled'}>☁ Pobierz brakujące modele 3D</button></div><p class="notice"><a href="https://github.com/kacperrogowski98/diecast-garage/blob/main/docs/SUPABASE_SETUP.md" target="_blank" rel="noopener">Otwórz instrukcję konfiguracji Supabase</a>. Pierwsze użycie: utwórz konto, potwierdź e-mail (jeśli wymagane), zaloguj się, a następnie wybierz wysłanie lokalnej kolekcji do chmury. Na drugim urządzeniu skonfiguruj ten sam projekt Supabase, zaloguj się na to samo konto i wybierz pobranie kolekcji. Zdjęcia są przechowywane w prywatnym bucketcie Supabase Storage. Synchronizacja jest ręczna, aby uniknąć przypadkowego nadpisania danych. Dla atomowej synchronizacji tabel garażu i wishlisty zastosuj w Supabase SQL Editor migrację <a href="https://raw.githubusercontent.com/kacperrogowski98/diecast-garage/main/supabase/migrations/20261118_atomic_collection_sync.sql" target="_blank" rel="noopener">otwórz plik SQL</a>. Bez niej aplikacja zachowa starszy tryb kopii JSON.</p></div></div>`;if(!dgSupabaseClient)dgInitClient();dgRenderCloudPanel()}
+function openCloudPanel(){const cfg=dgReadConfig();document.getElementById('modalRoot').innerHTML=`<div class="modalback" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modalhead"><h3>Konto i synchronizacja</h3><button class="btn" onclick="closeModal()">✕</button></div><p class="notice">Połącz aplikację z własnym projektem Supabase. Używaj wyłącznie klucza anon/public (publishable), nigdy service_role. Konfiguracja jest zapisywana lokalnie w tej przeglądarce.</p><div class="formgrid"><div class="formfield full"><label>Supabase Project URL</label><input class="field" id="dgProjectUrl" placeholder="https://xxxx.supabase.co" value="${esc(cfg.url||'')}"></div><div class="formfield full"><label>Supabase anon / publishable key</label><input class="field" id="dgAnonKey" autocomplete="off" placeholder="sb_publishable_... lub anon JWT" value="${esc(cfg.key||'')}"></div></div><div class="cloud-actions"><button class="btn primary" onclick="dgSaveConfig()">Zapisz i połącz</button></div><div class="cloud-actions"><button class="btn" onclick="dgCheckStorage()">Sprawdź pamięć urządzenia</button><button class="btn" onclick="exportData()">Pobierz backup JSON</button><button class="btn" onclick="dgRestoreRecoverySnapshot()">Przywróć kopię sprzed synchronizacji</button></div><p id="dgStorageStatus" class="notice">Dane lokalne i pliki 3D nie są automatycznie chronione przed wyczyszczeniem pamięci przeglądarki.</p><div class="cloud-status" id="dgCloudStatus">${esc(dgCloudStatus)}</div><div id="dgAuthArea">${dgAuthMarkup()}</div><div class="cloud-actions"><button class="btn" data-cloud-auth onclick="dgCloudPush()" ${dgCloudUser?'':'disabled'}>Wyślij tę kolekcję do chmury</button><button class="btn" data-cloud-auth onclick="dgCloudPull()" ${dgCloudUser?'':'disabled'}>Pobierz kolekcję z chmury</button></div><p class="notice">Własne modele GLB (3D) mają osobne miejsce w prywatnej chmurze. Wymagana jest migracja bucketu diecast-models. Zbiorcze pobieranie zachowa pliki już istniejące na tym urządzeniu.</p><div class="cloud-actions"><button class="btn" data-cloud-auth onclick="dgBulkCloud3D('push')" ${dgCloudUser?'':'disabled'}>☁ Wyślij modele 3D</button><button class="btn" data-cloud-auth onclick="dgBulkCloud3D('pull')" ${dgCloudUser?'':'disabled'}>☁ Pobierz brakujące modele 3D</button></div><p class="notice"><a href="https://github.com/kacperrogowski98/diecast-garage/blob/main/docs/SUPABASE_SETUP.md" target="_blank" rel="noopener">Otwórz instrukcję konfiguracji Supabase</a>. Pierwsze użycie: utwórz konto, potwierdź e-mail (jeśli wymagane), zaloguj się, a następnie wybierz wysłanie lokalnej kolekcji do chmury. Na drugim urządzeniu skonfiguruj ten sam projekt Supabase, zaloguj się na to samo konto i wybierz pobranie kolekcji. Zdjęcia są przechowywane w prywatnym bucketcie Supabase Storage. Synchronizacja jest ręczna, aby uniknąć przypadkowego nadpisania danych. Dla atomowej synchronizacji tabel garażu i wishlisty zastosuj w Supabase SQL Editor migrację <a href="https://raw.githubusercontent.com/kacperrogowski98/diecast-garage/main/supabase/migrations/20261118_atomic_collection_sync.sql" target="_blank" rel="noopener">otwórz plik SQL</a>. Bez niej aplikacja zachowa starszy tryb kopii JSON.</p></div></div>`;if(!dgSupabaseClient)dgInitClient();dgRenderCloudPanel()}
 function dgAuthMarkup(){return dgCloudUser?`<div class="cloud-status">Konto aktywne: <b>${esc(dgCloudUser.email||'')}</b></div><button class="btn" onclick="dgSignOut()">Wyloguj</button>`:`<div class="formgrid"><div class="formfield full"><label>E-mail</label><input class="field" id="dgEmail" type="email" autocomplete="email" placeholder="adres@email.com"></div><div class="formfield full"><label>Hasło (minimum 6 znaków)</label><input class="field" id="dgPassword" type="password" autocomplete="current-password" placeholder="Hasło"></div></div><div class="cloud-actions"><button class="btn primary" onclick="dgSignIn()">Zaloguj</button><button class="btn" onclick="dgSignUp()">Utwórz konto</button></div>`}
 function dgRenderCloudPanel(){const status=document.getElementById('dgCloudStatus');if(status)status.textContent=dgCloudStatus;const area=document.getElementById('dgAuthArea');if(area)area.innerHTML=dgAuthMarkup();for(const button of document.querySelectorAll('#modalRoot [data-cloud-auth]'))button.disabled=!dgCloudUser}
 function dgCredentials(){const email=document.getElementById('dgEmail')?.value.trim()||'';const password=document.getElementById('dgPassword')?.value||'';if(!email||!password)throw new Error('Wpisz e-mail i hasło');if(password.length<6)throw new Error('Hasło musi mieć co najmniej 6 znaków');if(!dgSupabaseClient)throw new Error('Najpierw zapisz konfigurację Supabase');return {email,password}}
@@ -580,6 +580,51 @@ async function dgCloudPush(){
   toast('Synchronizacja: '+e.message);dgCloudStatus='Błąd synchronizacji: '+e.message;dgRenderCloudPanel();
  }
 }
+const DG_RECOVERY_DB='diecast_garage_recovery_v1';
+function dgOpenRecoveryDB(){
+ return new Promise((resolve,reject)=>{
+  const req=indexedDB.open(DG_RECOVERY_DB,1);
+  req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains('snapshots'))req.result.createObjectStore('snapshots',{keyPath:'id'})};
+  req.onsuccess=()=>resolve(req.result);
+  req.onerror=()=>reject(req.error||new Error('Nie można otworzyć lokalnej kopii awaryjnej'));
+ });
+}
+async function dgWriteRecoverySnapshot(){
+ const db=await dgOpenRecoveryDB();
+ try{
+  const backup={id:'before-cloud-pull',createdAt:new Date().toISOString(),state:structuredClone(state)};
+  await new Promise((resolve,reject)=>{
+   const tx=db.transaction('snapshots','readwrite');
+   tx.objectStore('snapshots').put(backup);
+   tx.oncomplete=resolve;
+   tx.onerror=()=>reject(tx.error||new Error('Błąd zapisu kopii awaryjnej'));
+   tx.onabort=()=>reject(tx.error||new Error('Zapis kopii awaryjnej został przerwany'));
+  });
+ }finally{db.close()}
+}
+async function dgRestoreRecoverySnapshot(){
+ try{
+  const db=await dgOpenRecoveryDB();
+  let backup;
+  try{
+   backup=await new Promise((resolve,reject)=>{
+    const tx=db.transaction('snapshots','readonly');
+    const req=tx.objectStore('snapshots').get('before-cloud-pull');
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error);
+   });
+  }finally{db.close()}
+  if(!backup){toast('Brak lokalnej kopii sprzed pobrania z chmury');return}
+  if(!confirm('Przywrócić kolekcję sprzed pobrania z chmury ('+new Date(backup.createdAt).toLocaleString('pl-PL')+')? Obecny stan zostanie zastąpiony. Najpierw pobierz backup JSON.'))return;
+  exportData();
+  const recovered=normalizeBackup({app:'Diecast Garage',state:backup.state});
+  localStorage.setItem(KEY,JSON.stringify(recovered));
+  state=recovered;
+  dgCachedModels=null;
+  render();
+  toast('Przywrócono lokalną kopię awaryjną');
+ }catch(error){toast('Przywracanie: '+String(error.message||error))}
+}
 async function dgCloudPull(){
  try{
   dgRequireUser();
@@ -603,8 +648,12 @@ async function dgCloudPull(){
     restored.items=await dgRestoreCloudValue(normalizedItems,restoreCache);normalizedMode=true;
    }
   }else if(!dgIsMissingNormalizedColumn(normalizedError))throw normalizedError;
-  state=normalizeBackup({app:'Diecast Garage',state:restored});
-  dgCachedModels=null;localStorage.setItem(KEY,JSON.stringify(state));dgSetSyncMeta(data.updated_at);render();
+  const nextState=normalizeBackup({app:'Diecast Garage',state:restored});
+  // Preserve a durable local recovery point before a cloud pull replaces the collection.
+  // If browser storage is full or unavailable, abort rather than lose local changes.
+  await dgWriteRecoverySnapshot();
+  localStorage.setItem(KEY,JSON.stringify(nextState));
+  state=nextState;dgCachedModels=null;dgSetSyncMeta(data.updated_at);render();
   dgCloudStatus='Pobrano '+state.items.filter(i=>i.status==='owned').length+' modeli w garażu i '+state.items.filter(i=>i.status==='wishlist').length+' na wishliście ('+new Date(data.updated_at).toLocaleString('pl-PL')+'). '+(normalizedMode?'Źródło: znormalizowane rekordy.':'Źródło: kopia zgodności JSON — zastosuj migrację, aby włączyć nowe tabele.');
   toast('Kolekcja i zdjęcia pobrane');dgRenderCloudPanel();
  }catch(e){
