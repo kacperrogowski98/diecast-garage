@@ -147,3 +147,10 @@ The repository is public, so source code is visible. User collection rows are no
 
 - Brands screen displays unique casting-family ownership progress instead of double-counting multiple copies or the same casting appearing under independent source-specific IDs.
 - A mobile browser smoke assertion checks that brand ownership progress is visible.
+
+## Collection recovery safeguard (22 November 2026)
+
+- Before a cloud collection **download** replaces local data, Diecast Garage now writes a separate recovery snapshot to the browser's IndexedDB database `diecast_garage_recovery_v1`. The download is aborted if this recovery write fails.
+- In **Konto / synchronizacja**, choose **Przywróć kopię sprzed synchronizacji** to restore the most recent pre-download snapshot after confirming the change. A JSON export of the current collection is initiated before restoring.
+- This safeguards against accidental cloud overwrites but is **not** an off-device backup. Clearing Safari/browser website data can delete both the collection and its recovery snapshot. Keep a separate JSON backup or configure Supabase.
+- Mobile browser tests now exercise pre-sync recovery and verify wishlist price/priority persistence from inside the browser context.
