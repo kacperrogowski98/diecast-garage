@@ -4,8 +4,8 @@ import assert from 'node:assert/strict';
 import { ReadableStream } from 'node:stream/web';
 
 const html=fs.readFileSync('index.html','utf8');
-const a=html.indexOf('async function dgImportWikiReleaseStream(stream){');
-const b=html.indexOf('async function dgFetchWikiV6Catalog(',a);
+const a=html.indexOf('async function dgImportWikiReleaseStream(stream,expectedRecords=0){');
+const b=html.indexOf('async function dgFetchWikiPacksOnly(',a);
 assert.ok(a>0&&b>a,'Streaming Wiki importer missing');
 const source=html.slice(a,b);
 const encoder=new TextEncoder();
