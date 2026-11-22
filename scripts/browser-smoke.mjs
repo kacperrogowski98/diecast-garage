@@ -183,7 +183,7 @@ try {
   page.once('dialog',dialog=>dialog.accept());
   await page.evaluate(()=>dgRestoreRecoverySnapshot());
   await page.waitForFunction(expected=>Number(document.querySelector('#ownedCount')?.textContent)===expected,previousCount);
-  assert.equal(JSON.parse(localStorage.getItem('diecast_garage_mvp_02')).items.some(i=>i.modelSnapshot?.canonical_name==='Recovery Test Porsche Carrera GT'),false,'Recovery must undo local changes made after the snapshot');
+  assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('diecast_garage_mvp_02')).items.some(i=>i.modelSnapshot?.canonical_name==='Recovery Test Porsche Carrera GT')),false,'Recovery must undo local changes made after the snapshot');
   console.log('PASS: durable IndexedDB recovery restores earlier garage state');
 
   assert.ok(!errors.length,'Page JavaScript errors: '+errors.join(' | '));
