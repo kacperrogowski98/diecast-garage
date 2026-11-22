@@ -10,6 +10,9 @@ assert.ok(!html.includes("||'Nieznana marka'"),'Use the same Unassigned sentinel
 assert.ok(html.includes('id="dgConnectionStatus"')&&html.includes("addEventListener('offline',dgUpdateConnectionStatus)"),'Mobile connection indicator missing');
 assert.ok(html.includes("if(/^https?:$/.test(location.protocol)&&navigator.onLine)"),'Offline startup must not download large catalogues');
 assert.ok(html.includes('id="fPriority"')&&html.includes('id="fTargetPrice"'),'Wishlist controls missing');
+assert.ok(html.includes('async function dgWriteRecoverySnapshot()')&&html.includes('async function dgRestoreRecoverySnapshot()'),'Local cloud recovery functions missing');
+const pullCode=html.slice(html.indexOf('async function dgCloudPull()'),html.indexOf('dgInitClient();dgInitCatalogImport();'));
+assert.ok(pullCode.indexOf('await dgWriteRecoverySnapshot();')>=0 && pullCode.indexOf('await dgWriteRecoverySnapshot();')<pullCode.indexOf('localStorage.setItem(KEY,JSON.stringify(nextState));'),'A cloud pull must persist local recovery BEFORE replacing data');
 assert.ok(html.includes("groups.sort((a,b)=>Math.max(0,...b.variants.map(v=>wantedPriority"),'Wishlist priority sorting missing');
 for(const [i,code] of scripts.entries())new vm.Script(code,{filename:'inline-'+i+'.js'});
 const required=['id="rarityFilter"','id="photoFilter"','id="classFilter"','id="brandFilter"','id="yearFilter"','id="assortmentFilter"','id="content"','id="modalRoot"','id="catalogStatus"','dgFetchOnlineCatalog','id="showroomBtn"','openShowroom3D','open3D','dgCloudPush','dgCloudPull','exportData','importData','dgRarity'];
