@@ -171,6 +171,21 @@ try {
   assert.ok((await page.locator('#content').innerText()).includes('Priorytet: 5/5'),'Wishlist priority must survive reload');
   assert.equal(JSON.parse(localStorage.getItem('diecast_garage_mvp_02')).items.find(i=>i.modelSnapshot?.canonical_name==='Wishlist Test McLaren P1')?.targetPrice,'39.99');
   console.log('PASS: wishlist priority and target price persisted and rendered');
+  // Recovery must restore a previous collection without requiring a cloud account.
+  await page.evaluate(()=>dgWriteRecoverySnapshot());
+  const previousCount=Number(await page.locator('#ownedCount').innerText());
+  await page.locator('#addBtn').click();
+  await page.locator('#fName').fill('Recovery Test Porsche Carrera GT');
+  await page.locator('#fBrand').fill('Porsche');
+  await page.locator('#fStatus').selectOption('owned');
+  await page.locator('#modalRoot .modalfoot .btn.primary').click();
+  assert.equal(Number(await page.locator('#ownedCount').innerText()),previousCount+1);
+  page.once('dialog',dialog=>dialog.accept());
+  await page.evaluate(()=>dgRestoreRecoverySnapshot());
+  await page.waitForFunction(expected=>Number(document.querySelector('#ownedCount')?.textContent)===expected,previousCount);
+  assert.equal(JSON.parse(localStorage.getItem('diecast_garage_mvp_02')).items.some(i=>i.modelSnapshot?.canonical_name==='Recovery Test Porsche Carrera GT'),false,'Recovery must undo local changes made after the snapshot');
+  console.log('PASS: durable IndexedDB recovery restores earlier garage state');
+
   assert.ok(!errors.length,'Page JavaScript errors: '+errors.join(' | '));
  console.log('PASS browser smoke: mobile viewport, create/save, garage persistence, catalogue filters, 3D showroom fallback');
 } catch(error) {
