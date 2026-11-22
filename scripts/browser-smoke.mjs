@@ -156,6 +156,21 @@ try {
   await page.waitForFunction(()=>document.querySelector('#dgConnectionStatus')?.textContent?.includes('Offline'));
   await page.context().setOffline(false);
   await page.waitForFunction(()=>document.querySelector('#dgConnectionStatus')?.textContent?.includes('Online'));
+  await page.locator('#addBtn').click();
+  await page.locator('#fName').fill('Wishlist Test McLaren P1');
+  await page.locator('#fBrand').fill('McLaren');
+  await page.locator('#fStatus').selectOption('wishlist');
+  await page.locator('#fPriority').selectOption('5');
+  await page.locator('#fTargetPrice').fill('39.99');
+  await page.locator('#modalRoot .modalfoot .btn.primary').click();
+  await page.locator('[data-view="wishlist"]').click();
+  assert.ok((await page.locator('#content').innerText()).includes('Priorytet: 5/5'),'Wishlist must display selected priority');
+  assert.ok((await page.locator('#content').innerText()).includes('39.99 zł'),'Wishlist must display target price');
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('[data-view="wishlist"]').click();
+  assert.ok((await page.locator('#content').innerText()).includes('Priorytet: 5/5'),'Wishlist priority must survive reload');
+  assert.equal(JSON.parse(localStorage.getItem('diecast_garage_mvp_02')).items.find(i=>i.modelSnapshot?.canonical_name==='Wishlist Test McLaren P1')?.targetPrice,'39.99');
+  console.log('PASS: wishlist priority and target price persisted and rendered');
   assert.ok(!errors.length,'Page JavaScript errors: '+errors.join(' | '));
  console.log('PASS browser smoke: mobile viewport, create/save, garage persistence, catalogue filters, 3D showroom fallback');
 } catch(error) {
