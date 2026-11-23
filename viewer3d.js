@@ -3,105 +3,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 let session = null;
-function bodyColor(name) {
-  const s = String(name || '').toLowerCase();
-  const options = [
-    [/rosso|red|czerw|burgundy|maroon/, '#d52a36'], [/blue|azur|navy|niebies/, '#286fc8'],
-    [/green|verde|zielon/, '#2a9869'], [/yellow|giallo|żół|zol/, '#e5b82e'],
-    [/orange|pomara/, '#e07828'], [/purple|violet|fiolet/, '#854dbe'],
-    [/pink|róż|roz/, '#e16b97'], [/white|bianco|bia/, '#e6e8e9'],
-    [/black|nero|czarn/, '#252a32'], [/silver|chrome|srebr/, '#abb3bb'],
-    [/grey|gray|grigio|szar/, '#717984'], [/gold|oro|złot|zlot/, '#bc9848'],
-  ];
-  return options.find(([regex]) => regex.test(s))?.[1] || '#c52c32';
-}
-function addPart(group, shape, color, x, y, z, extras = {}) {
-  const material = color instanceof THREE.Material ? color : new THREE.MeshStandardMaterial({
-    color, roughness: 0.32, metalness: 0.48, ...extras,
-  });
-  const mesh = new THREE.Mesh(shape, material);
-  mesh.position.set(x, y, z);
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
-  group.add(mesh);
-  return mesh;
-}
-function createCar(color, name) {
-  const car = new THREE.Group();
-  const paint = new THREE.MeshStandardMaterial({color, metalness: 0.68, roughness: 0.23});
-  const glass = new THREE.MeshPhysicalMaterial({
-    color: '#253849', metalness: 0.22, roughness: 0.1, transparent: true, opacity: 0.82,
-  });
-  const dark = new THREE.MeshStandardMaterial({color: '#10131a', roughness: 0.72});
-  const chrome = new THREE.MeshStandardMaterial({color: '#cbd1dc', metalness: 0.83, roughness: 0.22});
-  const lights = new THREE.MeshStandardMaterial({color: '#ffefca', emissive: '#fff0bc', emissiveIntensity: 0.42});
-  const rearLights = new THREE.MeshStandardMaterial({color: '#cc182b', emissive: '#7c0010', emissiveIntensity: 0.3});
-  const low = /formula|f1|race|gt3|gt4|track/i.test(name || '');
-  const tall = /suv|defender|truck|jeep|g.?class|bronco/i.test(name || '');
-  const y = tall ? 0.7 : low ? 0.42 : 0.5;
-
-  const hyper = /f40|f50|enzo|laferrari|chiron|veyron|bolide|jesko|koenigsegg|regera|zonda|huayra|aventador|huracan|revuelto|veneno|senna|720s|765lt|p1|918 spyder|utopia|nevera|speedtail|valkyrie|mc20/i.test(name || '');
-  // Three body profiles give distinct, honest-to-source *illustrative* silhouettes.
-  const outline = new THREE.Shape();
-  if (tall) {
-    outline.moveTo(-2.05, y-0.22);
-    outline.lineTo(-2.05, y+0.22);
-    outline.lineTo(1.70, y+0.25);
-    outline.lineTo(2.06, y+0.06);
-    outline.lineTo(2.06, y-0.22);
-  } else if (hyper || low) {
-    outline.moveTo(-2.05, y-0.2);
-    outline.lineTo(-2.05, y+0.05);
-    outline.lineTo(-1.47, y+0.28);
-    outline.lineTo(0.48, y+0.31);
-    outline.lineTo(1.66, y+0.14);
-    outline.lineTo(2.05, y-0.04);
-    outline.lineTo(2.05, y-0.2);
-  } else {
-    outline.moveTo(-2.05, y-0.22);
-    outline.lineTo(-2.05, y+0.13);
-    outline.lineTo(-1.60, y+0.28);
-    outline.lineTo(1.36, y+0.28);
-    outline.lineTo(2.05, y+0.12);
-    outline.lineTo(2.05, y-0.22);
-  }
-  outline.closePath();
-  const chassis = new THREE.ExtrudeGeometry(outline, {
-    depth:1.76, bevelEnabled:true, bevelThickness:0.06, bevelSize:0.055, bevelSegments:2, curveSegments:4,
-  });
-  addPart(car, chassis, paint, 0, 0, -0.88);
-  const roof = new THREE.Shape();
-  const roofHeight=tall?0.92:hyper?0.47:0.64;
-  const roofLeft=tall?-1.46:-0.98, roofRight=tall?1.13:0.83;
-  roof.moveTo(roofLeft-0.37,y+0.28);
-  roof.lineTo(roofLeft,y+0.28+roofHeight);
-  roof.lineTo(roofRight-0.2,y+0.28+roofHeight);
-  roof.lineTo(roofRight+0.38,y+0.28);
-  roof.closePath();
-  const cabin=new THREE.ExtrudeGeometry(roof,{depth:1.39,bevelEnabled:true,bevelThickness:0.035,bevelSize:0.03,bevelSegments:2});
-  const cockpit=addPart(car,cabin,glass,0,0,-0.695);
-  cockpit.castShadow=false;
-  addPart(car, new THREE.BoxGeometry(0.09, 0.08, 1.65), dark, 1.91, y - 0.08, 0);
-  addPart(car, new THREE.BoxGeometry(0.09, 0.08, 1.65), dark, -1.91, y - 0.08, 0);
-  for (const side of [-1, 1]) {
-    for (const axle of [-1.32, 1.32]) {
-      const tire = addPart(car, new THREE.CylinderGeometry(0.43, 0.43, 0.27, 24), dark, axle, 0.43, side * 0.96);
-      tire.rotation.x = Math.PI / 2;
-      const rim = addPart(car, new THREE.CylinderGeometry(0.24, 0.24, 0.284, 16), chrome, axle, 0.43, side * 0.96);
-      rim.rotation.x = Math.PI / 2;
-    }
-  }
-  for (const side of [-0.63, 0.63]) {
-    addPart(car, new THREE.BoxGeometry(0.045, 0.14, 0.36), lights, 2.055, y + 0.09, side);
-    addPart(car, new THREE.BoxGeometry(0.045, 0.13, 0.38), rearLights, -2.055, y + 0.09, side);
-  }
-  if (low) {
-    addPart(car, new THREE.BoxGeometry(0.17, 0.06, 2.1), paint, -1.64, y + 0.55, 0);
-    for (const side of [-0.65, 0.65]) addPart(car, new THREE.BoxGeometry(0.12, 0.44, 0.1), dark, -1.58, y + 0.32, side);
-  }
-  return car;
-}
-
+// Only imported GLB assets are displayed as models. Never synthesize a generic
+// vehicle as a stand-in for a specific casting or Hot Wheels release.
 function disposeGroup(group) {
   group.traverse(obj => {
     if (!obj.isMesh) return;
@@ -169,6 +72,21 @@ export function openViewer(model, root, cloud = null) {
   const packPreview = Boolean(gallery && model.packPreview);
   const releaseId = gallery ? '' : String(model.release_id||model.custom_id||'');
   const name = gallery ? (model.packName || 'Twoja kolekcja') : (model.canonical_name || model.model_name_as_source || 'Samochód');
+  if(gallery){
+    // Real individual assets are tracked by release_id. A multipack list is NOT
+    // a set of verified vehicle meshes, so show an honest visual inventory.
+    const entries=gallery.slice(0,60).map(item=>{
+      const title=escapeText(item.canonical_name||item.model_name_as_source||'Model');
+      const image=String(item.image_url||'');
+      const safeImage=/^https:\/\//i.test(image)?image.replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])):'';
+      return '<div class="dg3d-list-item">'+(safeImage?'<img loading="lazy" src="'+safeImage+'" alt="" onerror="this.remove()">':'')+'<span>'+title+'</span></div>';
+    }).join('');
+    root.innerHTML='<div class="modalback" id="dg3dBackdrop"><div class="modal dg3d-modal" role="dialog" aria-modal="true"><div class="modalhead"><h3>'+escapeText(name)+'</h3><button class="btn" id="dg3dClose" aria-label="Zamknij">✕</button></div><div class="dg3d-empty"><strong>Modele 3D nie są jeszcze dostępne dla całej kolekcji</strong><p>Nie pokazujemy już sztucznych samochodów. Podgląd właściwego modelu 3D jest dostępny po przypisaniu pliku GLB do konkretnego wydania.</p></div><div class="dg3d-list">'+entries+'</div><p class="notice">Wyświetlono '+Math.min(60,gallery.length)+' z '+gallery.length+' pozycji. To lista kolekcji, nie podgląd 3D.</p></div></div>';
+    const close=()=>{root.innerHTML=''};
+    root.querySelector('#dg3dClose').addEventListener('click',close);
+    root.querySelector('#dg3dBackdrop').addEventListener('click',e=>{if(e.target.id==='dg3dBackdrop')close()});
+    return;
+  }
   root.innerHTML = `<div class="modalback" id="dg3dBackdrop">
     <div class="modal dg3d-modal" role="dialog" aria-modal="true" aria-label="Podgląd 3D">
       <div class="modalhead"><h3>Garaż 3D · ${escapeText(name)}</h3><button class="btn" id="dg3dClose" aria-label="Zamknij">✕</button></div>
@@ -179,7 +97,7 @@ export function openViewer(model, root, cloud = null) {
         ${!gallery&&releaseId ? '<button class="btn" id="dg3dDownload">↓ Pobierz zapisany GLB</button><button class="btn" id="dg3dDelete">Usuń zapisany model 3D</button>' : ''}
         ${!gallery&&releaseId&&cloud ? '<button class="btn" id="dg3dCloudUpload">☁ Wyślij GLB</button><button class="btn" id="dg3dCloudDownload">☁ Pobierz GLB</button>' : ''}
       </div>
-      <p class="notice" id="dg3dNotice">${gallery ? (packPreview ? 'Poglądowa wizualizacja samochodów wymienionych w multipacku. Nie potwierdza kolorów ani zgodności z dokładnym wydaniem; modele 3D nie są skanami oryginalnych Hot Wheels.' : 'Trzy strefy: Supercars, Racing, Pozostałe. Modele są uproszczonymi wizualizacjami 3D, nie wiernymi replikami Hot Wheels. Pokazujemy maksymalnie 12 egzemplarzy naraz.') : 'To interaktywna poglądowa sylwetka 3D, a nie wierny model tego konkretnego Hot Wheels. Przeciągnij palcem/myszką, aby obracać, i użyj gestu szczypania lub kółka, aby przybliżać. Własne pliki .glb zapisują się wyłącznie na tym urządzeniu (bez synchronizacji chmurowej).'}</p>
+      <p class="notice" id="dg3dNotice">${gallery ? (packPreview ? 'Poglądowa wizualizacja samochodów wymienionych w multipacku. Nie potwierdza kolorów ani zgodności z dokładnym wydaniem; modele 3D nie są skanami oryginalnych Hot Wheels.' : 'Trzy strefy: Supercars, Racing, Pozostałe. Modele są uproszczonymi wizualizacjami 3D, nie wiernymi replikami Hot Wheels. Pokazujemy maksymalnie 12 egzemplarzy naraz.') : 'Model 3D tego wydania nie jest jeszcze dostępny. Wczytaj prawdziwy plik GLB, żeby zobaczyć go w 3D. Nie wyświetlamy już uproszczonych samochodów zastępczych.'}</p>
       ${gallery && !packPreview ? '<div class="dg3d-controls"><button class="btn" id="dg3dPrev">← Poprzednie auta</button><span id="dg3dPageLabel" class="meta"></span><button class="btn" id="dg3dNext">Następne auta →</button></div><div id="dg3dCars" class="meta"></div>' : ''}
     </div></div>`;
   const stage = root.querySelector('#dg3dStage');
@@ -220,76 +138,8 @@ export function openViewer(model, root, cloud = null) {
   controls.target.set(0,gallery ? 0 : 0.65,0);
   controls.update();
   const modelGroup = new THREE.Group();
-  let active = gallery ? null : createCar(bodyColor(model.body_color || model.color_variant), name);
-  if (active) modelGroup.add(active);
+  let active = null; // Never use a generic procedural car as a replacement.
   scene.add(modelGroup);
-  if (gallery && !packPreview) {
-    let galleryPage = 0;
-    const zones = [
-      {name:'SUPERCARS', filter:m=>m.vehicle_class==='supercar_hypercar', color:'#d43542'},
-      {name:'RACING', filter:m=>m.vehicle_class==='racing', color:'#3878c7'},
-      {name:'POZOSTAŁE', filter:m=>!['supercar_hypercar','racing'].includes(m.vehicle_class),color:'#479b7b'},
-    ];
-    function label(text,color) {
-      const canvas = document.createElement('canvas');canvas.width=512;canvas.height=100;
-      const context=canvas.getContext('2d');
-      context.fillStyle=color;context.fillRect(0,0,512,100);
-      context.fillStyle='#ffffff';context.font='bold 38px sans-serif';context.textAlign='center';
-      context.fillText(text,256,62);
-      const texture=new THREE.CanvasTexture(canvas);
-      return new THREE.Mesh(new THREE.PlaneGeometry(3.8,0.78),new THREE.MeshBasicMaterial({map:texture,transparent:true,side:THREE.DoubleSide}));
-    }
-    function showPage(page) {
-      for (const child of [...modelGroup.children]) {modelGroup.remove(child);disposeGroup(child)}
-      const buckets=zones.map(zone=>gallery.filter(zone.filter));
-      const pages=Math.max(1,...buckets.map(items=>Math.ceil(items.length/4)));
-      galleryPage=Math.min(Math.max(0,page),pages-1);
-      const names=[];
-      for (let z=0;z<3;z++) {
-        const zone=zones[z],zoneX=(z-1)*8;
-        const platform=addPart(modelGroup,new THREE.BoxGeometry(6.9,0.15,10.8),zone.color,zoneX,0.04,0,{metalness:0.25,roughness:0.6});
-        platform.receiveShadow=true;
-        const title=label(zone.name,zone.color);title.position.set(zoneX,1.0,-5.4);modelGroup.add(title);
-        const cars=buckets[z].slice(galleryPage*4,(galleryPage+1)*4);
-        cars.forEach((item,i)=>{
-          const car=createCar(bodyColor(item.body_color||item.color_variant),item.canonical_name||item.model_name_as_source);
-          const scale=0.56;car.scale.setScalar(scale);car.position.set(zoneX,0.22,(i-1.5)*2.7);
-          modelGroup.add(car);
-          names.push(item.canonical_name||item.model_name_as_source||'Model');
-        });
-      }
-      root.querySelector('#dg3dPageLabel').textContent=(galleryPage+1)+' / '+pages+' · '+gallery.length+' egz.';
-      root.querySelector('#dg3dCars').textContent='Widoczne modele: '+(names.join(' • ')||'Brak samochodów. Dodaj model do garażu.');
-      root.querySelector('#dg3dPrev').disabled=galleryPage===0;
-      root.querySelector('#dg3dNext').disabled=galleryPage>=pages-1;
-    }
-    root.querySelector('#dg3dPrev').addEventListener('click',()=>showPage(galleryPage-1));
-    root.querySelector('#dg3dNext').addEventListener('click',()=>showPage(galleryPage+1));
-    showPage(0);
-  }
-  if (packPreview) {
-    const cars = gallery.slice(0, 12);
-    const columns = Math.min(3, Math.max(1, Math.ceil(Math.sqrt(cars.length || 1))));
-    const rows = Math.ceil(cars.length / columns);
-    const lane = new THREE.Mesh(
-      new THREE.BoxGeometry(Math.max(7, columns * 5.7), 0.12, Math.max(6, rows * 3.6)),
-      new THREE.MeshStandardMaterial({ color:'#292f3c', metalness:0.22, roughness:0.68 })
-    );
-    lane.position.y = 0.02;
-    lane.receiveShadow = true;
-    modelGroup.add(lane);
-    cars.forEach((item, i) => {
-      const car = createCar(bodyColor(item.body_color || item.color_variant), item.canonical_name || item.model_name_as_source);
-      car.scale.setScalar(0.69);
-      car.position.set((i % columns - (columns - 1)/2)*5.55, 0.14, (Math.floor(i/columns)-(rows-1)/2)*3.55);
-      modelGroup.add(car);
-    });
-    const note = document.createElement('div');
-    note.className = 'meta';
-    note.style.marginTop = '8px';
-    note.textContent = 'Na ekspozycji: ' + cars.map(car => car.canonical_name || car.model_name_as_source || 'Nieznany model').join(' · ') + (gallery.length > 12 ? ' · + ' + (gallery.length - 12) + ' kolejnych pozycji' : '');
-    stage.insertAdjacentElement('afterend', note);
-  }
   const resizeObserver = new ResizeObserver(() => {
     if (!stage.isConnected) return;
     const width = Math.max(200, stage.clientWidth);
@@ -331,7 +181,7 @@ export function openViewer(model, root, cloud = null) {
         mesh.scale.multiplyScalar(4/Math.max(size.x,size.y,size.z));
         const center=new THREE.Box3().setFromObject(mesh).getCenter(new THREE.Vector3());
         mesh.position.sub(center);mesh.position.y+=0.55;
-        modelGroup.remove(active);disposeGroup(active);
+        if(active){modelGroup.remove(active);disposeGroup(active)}
         active=mesh;modelGroup.add(active);
         notice.textContent='Wyświetlany jest własny model GLB (zapis lokalny na tym urządzeniu).';
         if(saveToDevice&&releaseId) {
@@ -388,7 +238,7 @@ export function openViewer(model, root, cloud = null) {
     }
     const deleteButton=root.querySelector('#dg3dDelete');
     deleteButton?.addEventListener('click',async()=>{
-      try{await deleteSavedMesh(releaseId);if(!state.closed){uploadSequence++;modelGroup.remove(active);disposeGroup(active);active=createCar(bodyColor(model.body_color||model.color_variant),name);modelGroup.add(active);notice.textContent='Usunięto zapisany model GLB. Przywrócono poglądową sylwetkę.'}}
+      try{await deleteSavedMesh(releaseId);if(!state.closed){uploadSequence++;if(active){modelGroup.remove(active);disposeGroup(active);active=null}notice.textContent='Usunięto zapisany GLB. Model 3D jest niedostępny do czasu wczytania nowego pliku.'}}
       catch(error){if(!state.closed)notice.textContent='Nie udało się usunąć modelu: '+String(error.message||error)}
     });
     if(releaseId)readSavedMesh(releaseId).then(record=>{
