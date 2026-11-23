@@ -62,6 +62,19 @@ try {
  assert.ok(photoIdentity.sigsEqual,'Fandom revision addresses must count as the same image');
  assert.ok(photoIdentity.queryDistinct,'Distinct query-based image services must not be deduplicated together');
  assert.ok(photoIdentity.usesCollectorPhoto,'Owned model cards should prefer collector-uploaded images');
+ const variantLabels=await page.evaluate(()=>{
+  const model={release_id:'wiki-v6-variant-a',canonical_name:'Ferrari F40',brand:'Ferrari',image_url:'https://img.example.com/f40-red.jpg'};
+  const other={release_id:'wiki-v6-variant-b',canonical_name:'Ferrari F40',brand:'Ferrari',image_url:'https://img.example.com/f40-yellow.jpg'};
+  dgHeroUsedImages=new Set();
+  const markup=card({key:'f40-variants',variants:[model,other]});
+  const el=document.createElement('div');el.innerHTML=markup;
+  const img=el.querySelector('img[data-dg-candidates]');
+  return {owners:JSON.parse(img.dataset.dgOwnedSignatures),candidates:JSON.parse(img.dataset.dgCandidates)};
+ });
+ assert.ok(variantLabels.owners.includes('https://img.example.com/f40-red.jpg'),'Selected release image must be identified as its own');
+ assert.ok(!variantLabels.owners.includes('https://img.example.com/f40-yellow.jpg'),'Other color variants must not masquerade as the selected release');
+ assert.ok(variantLabels.candidates.includes('https://img.example.com/f40-yellow.jpg'),'Variant may still serve as disclosed fallback');
+
 
  console.log('PASS: real photo URL import, Fandom fallback and per-variant image prioritization');
  const imageVisualRules=await page.evaluate(()=>{
