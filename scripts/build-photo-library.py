@@ -15,12 +15,12 @@ import re
 import urllib.request
 import urllib.error
 from pathlib import Path
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps, ImageDraw
 
 SRC=Path("catalog/wiki-v6.jsonl.gz")
 OUT=Path("_site/car-photos")
 MANIFEST=Path("_site/catalog/local-car-photos.json")
-MAX_PHOTOS=110
+MAX_PHOTOS=900
 MAX_BYTES=7*1024*1024
 BRANDS=("ferrari","lamborghini","mclaren","porsche","bugatti","pagani",
         "koenigsegg","aston martin","rimac","maserati","lotus","mercedes-amg")
@@ -58,11 +58,16 @@ def process(entry):
                 continue
             img=ImageOps.exif_transpose(img)
             img.thumbnail((740,550),Image.Resampling.LANCZOS)
-            # Avoid repainting white vehicles: only transparent originals can
-            # be placed seamlessly on dark. Leave any opaque originals intact.
-            if img.mode in ("RGBA","LA"):
-                img=img.convert("RGBA")
-            else: img=img.convert("RGB")
+            # Remove only bright, edge-connected studio backdrops. Dark action
+            # photography and nonuniform backgrounds remain untouched.
+            img=img.convert("RGBA")
+            rgb_corners=[img.getpixel(pt)[:3] for pt in ((0,0),(img.width-1,0),(0,img.height-1),(img.width-1,img.height-1))]
+            def studio(px):
+                return min(px)>233 and max(px)-min(px)<26
+            if sum(studio(px) for px in rgb_corners)>=3:
+                for seed in ((0,0),(img.width-1,0),(0,img.height-1),(img.width-1,img.height-1)):
+                    if studio(img.getpixel(seed)[:3]):
+                        ImageDraw.floodfill(img,seed,(255,255,255,0),thresh=34)
             OUT.mkdir(parents=True,exist_ok=True)
             path=OUT/(key+".webp")
             img.save(path,"WEBP",quality=84,method=5)
@@ -89,15 +94,23 @@ def main():
             rows.append((priority,year,name.lower(),key,candidates))
     rows.sort(key=lambda row:(-row[0],-row[1],row[2]))
     seen=set();selected=[]
-    # Try a capped number of images to protect GitHub Actions time & bandwidth.
-    for _,year,name,key,urls in rows:
-        if key in seen:continue
-        seen.add(key)
-        selected.append((key,urls))
+    # Split coverage between supercars, early alphabetical browsing and recent
+    # releases, rather than caching just the latest 100 of one brand.
+    selections=[
+      (rows,350),
+      (sorted(rows,key=lambda r:(r[2],-r[1])),300),
+      (sorted(rows,key=lambda r:(-r[1],r[2])),250),
+    ]
+    for group,limit in selections:
+        added=0
+        for _,year,name,key,urls in group:
+            if key in seen:continue
+            seen.add(key);selected.append((key,urls));added+=1
+            if added>=limit or len(selected)>=MAX_PHOTOS:break
         if len(selected)>=MAX_PHOTOS:break
     output={}
     OUT.mkdir(parents=True,exist_ok=True);MANIFEST.parent.mkdir(parents=True,exist_ok=True)
-    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=12) as pool:
         for key,local in pool.map(process,selected):
             if local:output[key]=local
     MANIFEST.write_text(json.dumps(output,ensure_ascii=False,separators=(",",":")),encoding="utf-8")
