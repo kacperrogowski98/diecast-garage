@@ -112,6 +112,11 @@ export function openViewer(model, root, cloud = null) {
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   stage.appendChild(renderer.domElement);
+  const missingMesh=document.createElement('div');
+  missingMesh.id='dg3dMissing';
+  missingMesh.className='dg3d-empty dg3d-canvas-empty';
+  missingMesh.innerHTML='<strong>Brak prawdziwego modelu 3D</strong><p>Wczytaj plik .glb przypisany do tego wydania. Nie wyświetlamy modeli zastępczych.</p>';
+  stage.appendChild(missingMesh);
   scene.add(new THREE.HemisphereLight('#d8e6ff', '#384450', 2.6));
   const sun = new THREE.DirectionalLight('#fff4e7', 3.2);
   sun.position.set(5, 9, 4);
@@ -183,6 +188,7 @@ export function openViewer(model, root, cloud = null) {
         mesh.position.sub(center);mesh.position.y+=0.55;
         if(active){modelGroup.remove(active);disposeGroup(active)}
         active=mesh;modelGroup.add(active);
+        missingMesh.hidden=true;
         notice.textContent='Wyświetlany jest własny model GLB (zapis lokalny na tym urządzeniu).';
         if(saveToDevice&&releaseId) {
           try{await storeMesh(releaseId,file);if(!state.closed)notice.textContent='Zapisano własny model 3D do tego wydania na tym urządzeniu.'}
@@ -238,7 +244,7 @@ export function openViewer(model, root, cloud = null) {
     }
     const deleteButton=root.querySelector('#dg3dDelete');
     deleteButton?.addEventListener('click',async()=>{
-      try{await deleteSavedMesh(releaseId);if(!state.closed){uploadSequence++;if(active){modelGroup.remove(active);disposeGroup(active);active=null}notice.textContent='Usunięto zapisany GLB. Model 3D jest niedostępny do czasu wczytania nowego pliku.'}}
+      try{await deleteSavedMesh(releaseId);if(!state.closed){uploadSequence++;if(active){modelGroup.remove(active);disposeGroup(active);active=null}missingMesh.hidden=false;notice.textContent='Usunięto zapisany GLB. Model 3D jest niedostępny do czasu wczytania nowego pliku.'}}
       catch(error){if(!state.closed)notice.textContent='Nie udało się usunąć modelu: '+String(error.message||error)}
     });
     if(releaseId)readSavedMesh(releaseId).then(record=>{
