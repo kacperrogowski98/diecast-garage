@@ -44,6 +44,14 @@ try {
  assert.ok(photoIdentity.usesCollectorPhoto,'Owned model cards should prefer collector-uploaded images');
 
  console.log('PASS: real photo URL import, Fandom fallback and per-variant image prioritization');
+ const imageVisualRules=await page.evaluate(()=>{
+   const sheet=Array.from(document.styleSheets).filter(s=>{try{return Array.from(s.cssRules).some(r=>r.cssText?.includes('dg-image-uncut'))}catch{return false}}).flatMap(s=>{try{return Array.from(s.cssRules).map(r=>r.cssText)}catch{return []}}).join('\n');
+   return {noMultiply:!sheet.includes('mix-blend-mode: multiply'),hasPhotoHero:sheet.includes('img.dg-image-ready')};
+ });
+ assert.ok(imageVisualRules.noMultiply,'Source photographs must not be darkened by multiply blending');
+ assert.ok(imageVisualRules.hasPhotoHero,'Source photos need a fully visible showroom state');
+ console.log('PASS: showroom does not darken source photographs');
+
 
  const visual=await page.evaluate(async()=>{
   const c=document.createElement('canvas');c.width=120;c.height=80;
