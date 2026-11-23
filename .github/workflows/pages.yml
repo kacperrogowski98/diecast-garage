@@ -99,6 +99,11 @@ jobs:
           mkdir -p _site/catalog
           cp index.html seed.js sw.js manifest.webmanifest icon.svg icon-192.png _site/
           cp -a catalog/. _site/catalog/
+      - name: Generate locally cached, verified car photographs
+        run: |
+          python3 -m pip install --quiet Pillow
+          python3 scripts/build-photo-library.py
+          test -s _site/catalog/local-car-photos.json
       - name: Upload static site
         uses: actions/upload-pages-artifact@v3
         with:
