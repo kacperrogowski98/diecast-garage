@@ -8,6 +8,7 @@ The cache is best-effort; missing/blocked source files are not synthesized.
 from __future__ import annotations
 import concurrent.futures
 import gzip
+import hashlib
 import io
 import json
 import os
@@ -20,7 +21,7 @@ from PIL import Image, ImageOps, ImageDraw
 SRC=Path("catalog/wiki-v6.jsonl.gz")
 OUT=Path("_site/car-photos")
 MANIFEST=Path("_site/catalog/local-car-photos.json")
-MAX_PHOTOS=900
+MAX_PHOTOS=1500
 MAX_BYTES=7*1024*1024
 BRANDS=("ferrari","lamborghini","mclaren","porsche","bugatti","pagani",
         "koenigsegg","aston martin","rimac","maserati","lotus","mercedes-amg")
@@ -99,10 +100,22 @@ def main():
     seen=set();selected=[]
     # Split coverage between supercars, early alphabetical browsing and recent
     # releases, rather than caching just the latest 100 of one brand.
+    # Supercar-first, but distribute across manufacturers rather than allowing
+    # one prolific brand/year to dominate the first hundreds of images.
+    by_brand=[]
+    for brand in BRANDS:
+        bucket=[row for row in rows if brand in row[2]]
+        by_brand.append(bucket)
+    balanced=[]
+    for i in range(max((len(bucket) for bucket in by_brand),default=0)):
+        for bucket in by_brand:
+            if i<len(bucket):balanced.append(bucket[i])
+            if len(balanced)>=950:break
+        if len(balanced)>=950:break
     selections=[
-      (rows,350),
-      (sorted(rows,key=lambda r:(r[2],-r[1])),300),
-      (sorted(rows,key=lambda r:(-r[1],r[2])),250),
+      (balanced,950),
+      (sorted(rows,key=lambda r:(r[2],-r[1])),250),
+      (sorted(rows,key=lambda r:(-r[1],r[2])),300),
     ]
     for group,limit in selections:
         added=0
@@ -112,11 +125,30 @@ def main():
             if added>=limit or len(selected)>=MAX_PHOTOS:break
         if len(selected)>=MAX_PHOTOS:break
     output={}
+    duplicates=0
+    seen_fingerprints={}
     OUT.mkdir(parents=True,exist_ok=True);MANIFEST.parent.mkdir(parents=True,exist_ok=True)
+    # Content-based deduplication: distinct source URLs often serve the exact
+    # same picture. Never pass a duplicate photo off as a second unique release.
     with concurrent.futures.ThreadPoolExecutor(max_workers=12) as pool:
         for key,local in pool.map(process,selected):
-            if local:output[key]=local
+            if not local:continue
+            path=OUT/(key+'.webp')
+            try:
+                with Image.open(path) as original:
+                    rgb=original.convert('RGB')
+                    rgb.thumbnail((200,160),Image.Resampling.LANCZOS)
+                    pixel_hash=hashlib.sha256(str(rgb.size).encode()+rgb.tobytes()).hexdigest()
+                if pixel_hash in seen_fingerprints:
+                    duplicates+=1
+                    path.unlink(missing_ok=True)
+                    continue
+                seen_fingerprints[pixel_hash]=key
+                output[key]=local
+            except OSError:
+                path.unlink(missing_ok=True)
+                continue
     MANIFEST.write_text(json.dumps(output,ensure_ascii=False,separators=(",",":")),encoding="utf-8")
-    print(f"PHOTO CACHE: {len(output)} / {len(selected)} selected release images verified and stored locally")
+    print(f"PHOTO CACHE: {len(output)} / {len(selected)} selected release images verified and stored locally; {duplicates} exact duplicate pictures excluded")
     if len(output)<15: print("WARNING: Source CDN blocked most or all image downloads; remote-image fallback remains enabled")
 if __name__=="__main__":main()
