@@ -281,6 +281,19 @@ function dgCarPlaceholder(){
 // One hero image per distinctive photograph, with same-casting alternatives.
 // Do not manufacture image URLs or copy images between unrelated car models.
 let dgHeroUsedImages=new Set();
+let dgLocalPhotoManifest={};
+async function dgLoadLocalPhotoManifest(){
+ try{
+  const response=await fetch('./catalog/local-car-photos.json',{cache:'no-cache'});
+  if(!response.ok)return;
+  const manifest=await response.json();
+  if(!manifest||typeof manifest!=='object'||Array.isArray(manifest))return;
+  dgLocalPhotoManifest=manifest;
+  console.info('Verified local car photographs:',Object.keys(manifest).length);
+  render();
+ }catch(error){console.debug('Local photo manifest not present:',error)}
+}
+
 function dgPhotoSignature(url){
  try{
   const parsed=new URL(url);
@@ -306,9 +319,13 @@ function dgSourcePhotoCandidates(raw){
  return [url];
 }
 function dgImageCandidates(model,variants=[]){
+ const local=item=>{const id=item?.release_id||item?.custom_id;return id&&dgLocalPhotoManifest[id]?[dgSafeHttpUrl(dgLocalPhotoManifest[id])]:[]};
  const from=item=>[item?.image_url,...(Array.isArray(item?.images)?item.images:[])].flatMap(dgSourcePhotoCandidates);
- const own=from(model),others=variants.filter(v=>v!==model).flatMap(from);
- return [...new Set([...own,...others])].filter(u=>!dgHeroUsedImages.has(dgPhotoSignature(u))).slice(0,12);
+ const related=variants.filter(v=>v!==model);
+ // Verified, bundled photos are preferred over fragile community CDN links.
+ // An alternative variant is explicitly labelled, never misrepresented as exact.
+ const candidates=[...local(model),...related.flatMap(local),...from(model),...related.flatMap(from)];
+ return [...new Set(candidates)].filter(u=>!dgHeroUsedImages.has(dgPhotoSignature(u))).slice(0,15);
 }
 function dgCarImageNext(img){
  if(!img.isConnected)return;
@@ -869,7 +886,7 @@ async function dgCloudPull(){
  }
 }
 
-dgInitClient();dgInitCatalogImport();dgLoadWikiStats();document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===view));dgRefreshFilters();render();dgCatalogReady=dgLoadCatalog();dgCatalogReady.then(async()=>{dgRefreshFilters();render();if(/^https?:$/.test(location.protocol)&&navigator.onLine){const needsMain=!importedCatalog.length||dgCatalogNeedsRefresh();if(needsMain)await dgFetchOnlineCatalog();const wikiLoaded=importedCatalog.some(x=>x.source==='hotwheels-wiki-v6');const lastWikiCheck=Number(localStorage.getItem(DG_WIKI_CHECK_KEY)||0);let completedWiki=null;try{completedWiki=JSON.parse(localStorage.getItem(DG_WIKI_COMPLETE_KEY)||'null')}catch(_){}const wikiIncomplete=!completedWiki||!Number.isInteger(completedWiki.valid)||completedWiki.valid<10000;const imageReindexRequired=wikiLoaded&&localStorage.getItem(DG_IMAGE_IMPORT_KEY)!=='complete';const wikiInterval=wikiLoaded&&!wikiIncomplete?30*24*60*60*1000:wikiLoaded?2*60*60*1000:24*60*60*1000;if(imageReindexRequired||!lastWikiCheck||Date.now()-lastWikiCheck>=wikiInterval)await dgFetchWikiV6Catalog(true);else if(!wikiPacks.length&&Date.now()-Number(localStorage.getItem(DG_PACK_CHECK_KEY)||0)>24*60*60*1000)await dgFetchWikiPacksOnly(true);if(!importedCatalog.some(x=>x.source==='hotwheels-data'))await dgFetchExtendedCatalog();}});
+dgInitClient();dgInitCatalogImport();dgLoadWikiStats();document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===view));dgRefreshFilters();render();dgCatalogReady=dgLoadCatalog();dgCatalogReady.then(async()=>{dgRefreshFilters();render();dgLoadLocalPhotoManifest();if(/^https?:$/.test(location.protocol)&&navigator.onLine){const needsMain=!importedCatalog.length||dgCatalogNeedsRefresh();if(needsMain)await dgFetchOnlineCatalog();const wikiLoaded=importedCatalog.some(x=>x.source==='hotwheels-wiki-v6');const lastWikiCheck=Number(localStorage.getItem(DG_WIKI_CHECK_KEY)||0);let completedWiki=null;try{completedWiki=JSON.parse(localStorage.getItem(DG_WIKI_COMPLETE_KEY)||'null')}catch(_){}const wikiIncomplete=!completedWiki||!Number.isInteger(completedWiki.valid)||completedWiki.valid<10000;const imageReindexRequired=wikiLoaded&&localStorage.getItem(DG_IMAGE_IMPORT_KEY)!=='complete';const wikiInterval=wikiLoaded&&!wikiIncomplete?30*24*60*60*1000:wikiLoaded?2*60*60*1000:24*60*60*1000;if(imageReindexRequired||!lastWikiCheck||Date.now()-lastWikiCheck>=wikiInterval)await dgFetchWikiV6Catalog(true);else if(!wikiPacks.length&&Date.now()-Number(localStorage.getItem(DG_PACK_CHECK_KEY)||0)>24*60*60*1000)await dgFetchWikiPacksOnly(true);if(!importedCatalog.some(x=>x.source==='hotwheels-data'))await dgFetchExtendedCatalog();}});
 </script>
 <script>
 // Connection indicator describes browser connectivity, not server or cloud-sync status.
