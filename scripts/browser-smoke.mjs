@@ -24,6 +24,25 @@ try {
  assert.equal(photoPipeline.candidates[0],'https://static.wikia.nocookie.net/hotwheels/images/a/aa/aston.jpg','Fandom photo should try its canonical original file first');
  assert.equal(photoPipeline.candidates.length,2,'Original Fandom image should retain revision URL as a secondary option');
  assert.ok(photoPipeline.next[0].includes('aston-alt'),'Another edition must prefer its own photo over shared casting fallback');
+ const photoIdentity=await page.evaluate(()=>{
+  const url1='https://static.wikia.nocookie.net/hotwheels/images/a/aa/f1.jpg/revision/latest?cb=123';
+  const url2='https://static.wikia.nocookie.net/hotwheels/images/a/aa/f1.jpg';
+  const sigsEqual=dgPhotoSignature(url1)===dgPhotoSignature(url2);
+  const queryDistinct=dgPhotoSignature('https://img.example.com/image?id=1')!==dgPhotoSignature('https://img.example.com/image?id=2');
+  const old=view;
+  view='garage';
+  const local='data:image/png;base64,AAAA';
+  const item={collectionId:'photo-check',releaseId:'photo-check',id:'photo-check',status:'owned',photo:local};
+  state.items.push(item);
+  let markup='';
+  try{markup=card({key:'photo-check',variants:[{release_id:'photo-check',canonical_name:'Porsche 918 Spyder',brand:'Porsche',release_year:2015}]})}
+  finally{state.items.pop();view=old;}
+  return {sigsEqual,queryDistinct,usesCollectorPhoto:markup.includes(local)};
+ });
+ assert.ok(photoIdentity.sigsEqual,'Fandom revision addresses must count as the same image');
+ assert.ok(photoIdentity.queryDistinct,'Distinct query-based image services must not be deduplicated together');
+ assert.ok(photoIdentity.usesCollectorPhoto,'Owned model cards should prefer collector-uploaded images');
+
  console.log('PASS: real photo URL import, Fandom fallback and per-variant image prioritization');
 
  const visual=await page.evaluate(async()=>{
