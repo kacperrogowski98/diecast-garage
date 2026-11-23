@@ -278,10 +278,24 @@ function dgCarPlaceholder(){
 // One hero image per distinctive photograph, with same-casting alternatives.
 // Do not manufacture image URLs or copy images between unrelated car models.
 let dgHeroUsedImages=new Set();
+function dgSourcePhotoCandidates(raw){
+ const url=dgSafeHttpUrl(raw);if(!url)return [];
+ // Fandom's versioned image route sometimes fails when embedded on third-party
+ // pages. Try the same source file without the revision transform.
+ // This never changes to another model or invents an image.
+ try{
+  const parsed=new URL(url);
+  if(parsed.hostname==='static.wikia.nocookie.net'){
+   const path=parsed.pathname.replace(/\/revision\/latest(?:\/.*)?$/i,'');
+   if(path!==parsed.pathname){const base=parsed.origin+path;return [base,url]}
+  }
+ }catch(_){}
+ return [url];
+}
 function dgImageCandidates(model,variants=[]){
- const from=item=>[item?.image_url,...(Array.isArray(item?.images)?item.images:[])].map(dgSafeHttpUrl).filter(Boolean);
+ const from=item=>[item?.image_url,...(Array.isArray(item?.images)?item.images:[])].flatMap(dgSourcePhotoCandidates);
  const own=from(model),others=variants.filter(v=>v!==model).flatMap(from);
- return [...new Set([...own,...others])].filter(u=>!dgHeroUsedImages.has(u)).slice(0,9);
+ return [...new Set([...own,...others])].filter(u=>!dgHeroUsedImages.has(u)).slice(0,12);
 }
 function dgCarImageNext(img){
  if(!img.isConnected)return;
