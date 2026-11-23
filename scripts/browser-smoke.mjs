@@ -106,16 +106,13 @@ try {
  assert.ok(meshStored,'3D GLB file must persist as a Blob in IndexedDB');
 
   await page.locator('#showroomBtn').click();
- await page.waitForFunction(()=>Boolean(document.querySelector('#dg3dStage canvas')||document.querySelector('#modalRoot')?.textContent?.includes('Garaż 3D niedostępny')));
- if(await page.locator('#dg3dStage canvas').count()){
-   assert.equal(await page.locator('#dg3dNext').count(),1);
-   assert.equal(await page.locator('#dg3dPrev').count(),1);
-   assert.ok((await page.locator('#dg3dPageLabel').innerText()).includes('1 / 1'));
+ await page.waitForFunction(()=>Boolean(document.querySelector('#dg3dClose')||document.querySelector('#modalRoot')?.textContent?.includes('Garaż 3D niedostępny')));
+ if(await page.locator('#dg3dClose').count()){
+   assert.ok((await page.locator('#modalRoot').innerText()).includes('Nie pokazujemy już sztucznych samochodów'),'Garage must disclose absent real meshes');
+   assert.equal(await page.locator('#dg3dStage canvas').count(),0,'Garage must never render fake 3D car meshes');
    await page.locator('#dg3dClose').click();
-   assert.equal(await page.locator('#dg3dStage').count(),0);
-   console.log('PASS: 3D showroom rendered with owned models and closed cleanly');
+   console.log('PASS: collection inventory has no fake 3D models');
  }else{
-   console.warn('WARNING: WebGL unavailable in headless CI; verified 3D fallback screen');
    await page.locator('#modalRoot button:has-text("Zamknij")').click();
  }
  await page.locator('#search').fill('');
@@ -143,13 +140,13 @@ try {
  const packRows=await page.locator('#modalRoot .modal').innerText();
  if(!packRows.includes('Brak udokumentowanej zawartości')){
    await pack3d.click();
-   await page.waitForFunction(()=>Boolean(document.querySelector('#dg3dStage canvas')||document.querySelector('#modalRoot')?.textContent?.includes('Podgląd zestawu niedostępny')));
-   if(await page.locator('#dg3dStage canvas').count()){
-     assert.ok((await page.locator('#dg3dNotice').innerText()).includes('Poglądowa wizualizacja'));
+   await page.waitForFunction(()=>Boolean(document.querySelector('#dg3dClose')||document.querySelector('#modalRoot')?.textContent?.includes('Podgląd zestawu niedostępny')));
+   if(await page.locator('#dg3dClose').count()){
+     assert.equal(await page.locator('#dg3dStage canvas').count(),0,'Multipack must never display generic Minecraft-style 3D');
+     assert.ok((await page.locator('#modalRoot').innerText()).includes('Nie pokazujemy już sztucznych samochodów'));
      await page.locator('#dg3dClose').click();
-     console.log('PASS: multipack 3D visualization renders and closes');
+     console.log('PASS: multipack shows honest vehicle inventory instead of fake 3D');
    }else{
-     console.warn('WARNING: WebGL unavailable for multipack preview in CI');
      await page.locator('#modalRoot button:has-text("Zamknij")').click();
    }
  }
