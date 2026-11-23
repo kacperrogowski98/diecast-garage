@@ -28,6 +28,21 @@ try {
  assert.equal(visual.portraitReplaced,true,'Tall blister-card photo must not be shown as a loose car');
  assert.ok(visual.label.includes('szczegółach'),'Tall source photo should be indicated as available in details');
  console.log('PASS: dark showroom image cutout and packaging-source safeguards');
+ // Even a rejected image URL must never display a giant browser broken-image icon.
+ const broken=await page.evaluate(async()=>{
+   const host=document.createElement('div');host.className='carart';
+   host.innerHTML=dgCarPlaceholder()+'<span class="dg-photo-label">Zdjęcie źródłowe</span>';
+   const img=document.createElement('img');img.alt='Broken test';img.setAttribute('crossorigin','anonymous');
+   img.dataset.dgOriginal='http://127.0.0.1:8000/not-a-real-car-image-404.png';
+   img.onerror=()=>dgCarImageFallback(img);img.onload=()=>dgPolishCarImage(img);
+   host.append(img);document.body.append(host);img.src=img.dataset.dgOriginal;
+   await new Promise(resolve=>setTimeout(resolve,500));
+   const valid=host.querySelectorAll('img').length===0&&host.querySelectorAll('.dg-image-placeholder').length===1&&host.querySelector('.dg-photo-label')?.textContent==='Brak zdjęcia';
+   host.remove();return valid;
+ });
+ assert.ok(broken,'Failed car photos must use exactly one silhouette and never display broken image glyph');
+ console.log('PASS: failed image URLs fallback to showroom silhouette without browser error icons');
+
  await page.locator('#addBtn').click();
  await page.locator('#fName').fill('Diecast Smoke Test Ferrari F40');
  await page.locator('#fBrand').fill('Ferrari');
