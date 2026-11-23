@@ -360,7 +360,7 @@ function dgPolishCarImage(img){
  // Wiki thumbnails sometimes consist almost entirely of packaging artwork in
  // a landscape canvas. Flag strongly packaging-related filenames for the gallery.
  const srcCandidate=JSON.parse(img.dataset.dgCandidates||'[]')[Number(img.dataset.dgIndex)||0]||'';
- if(/(?:blister|carded|cardback|packaging|package_front|package-back|on_card)/i.test(decodeURIComponent(srcCandidate))){dgCarImageNext(img);return}
+ if(/(?:blister|carded|cardback|packaging|package_front|package-back|on_card)/i.test(srcCandidate)){dgCarImageNext(img);return}
  try{
   const w=Math.min(480,img.naturalWidth),h=Math.max(1,Math.round(img.naturalHeight*w/img.naturalWidth));
   if(w>=65&&h>=45&&w*h<=340000){
