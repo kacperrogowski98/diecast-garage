@@ -46,6 +46,9 @@ def sources(raw):
 
 def process(entry):
     key, urls=entry
+    cached=OUT/(key+'.webp')
+    if cached.is_file() and cached.stat().st_size>800:
+        return key,'./car-photos/'+key+'.webp'
     for url in urls:
         try:
             req=urllib.request.Request(url,headers={"User-Agent":"DiecastGarage-CommunityImageCache/1.0 (non-commercial personal project)","Accept":"image/avif,image/webp,image/png,image/jpeg,*/*"})
