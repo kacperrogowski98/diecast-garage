@@ -8,6 +8,9 @@ page.on('pageerror',e=>errors.push(e.message));
 await page.route(/(raw\.githubusercontent\.com|cdn\.jsdelivr\.net|danyjoy\.github\.io)/,r=>r.abort());
 try {
  await page.goto('http://127.0.0.1:8000/',{waitUntil:'domcontentloaded'});
+ assert.equal(await page.locator('#sortFilter').inputValue(),'photos','Catalog should show photograph-bearing models first by default');
+ assert.equal(await page.locator('#photoFilter option[value="local"]').count(),1,'User should be able to browse only releases with bundled images');
+
  const photoPipeline=await page.evaluate(()=>{
    const raw={id:'DB10-CHECK',title:'Aston Martin DB10',release_year:2025,image_url:'https://example.com/aston-db10.jpg'};
    const normalized=dgNormalizeRecord(raw,'hotwheels-wiki-v6',0);
