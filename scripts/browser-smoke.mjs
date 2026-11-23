@@ -20,13 +20,14 @@ try {
   portraitCanvas.getContext('2d').fillRect(10,10,50,120);
   const portrait=new Image();
   await new Promise((resolve,reject)=>{portrait.onload=resolve;portrait.onerror=reject;portrait.src=portraitCanvas.toDataURL('image/png')});
-  const stage=document.createElement('div');stage.className='carart';stage.innerHTML='<span class="dg-photo-label">Zdjęcie źródłowe</span>';stage.append(portrait);
+  const stage=document.createElement('div');stage.className='carart';stage.innerHTML='<span class="dg-photo-label">Zdjęcie źródłowe</span>';stage.append(portrait);document.body.append(stage);
+  portrait.dataset.dgCandidates='[]';
   dgPolishCarImage(portrait);
-  return {cutout,portraitReplaced:Boolean(stage.querySelector('.dg-image-placeholder')),label:stage.querySelector('.dg-photo-label')?.textContent||''};
+  const result={cutout,portraitReplaced:Boolean(stage.querySelector('.dg-image-placeholder')),label:stage.querySelector('.dg-photo-label')?.textContent||''};stage.remove();return result;
  });
  assert.equal(visual.cutout,true,'Studio image should remove connected white photo background');
  assert.equal(visual.portraitReplaced,true,'Tall blister-card photo must not be shown as a loose car');
- assert.ok(visual.label.includes('szczegółach'),'Tall source photo should be indicated as available in details');
+ assert.ok(visual.label.includes('Brak poprawnego zdjęcia'),'Tall source photo must be replaced after all valid car-photo candidates fail');
  console.log('PASS: dark showroom image cutout and packaging-source safeguards');
  // Even a rejected image URL must never display a giant browser broken-image icon.
  const broken=await page.evaluate(async()=>{
@@ -37,7 +38,7 @@ try {
    img.onerror=()=>dgCarImageFallback(img);img.onload=()=>dgPolishCarImage(img);
    host.append(img);document.body.append(host);img.src=img.dataset.dgOriginal;
    await new Promise(resolve=>setTimeout(resolve,500));
-   const valid=host.querySelectorAll('img').length===0&&host.querySelectorAll('.dg-image-placeholder').length===1&&host.querySelector('.dg-photo-label')?.textContent==='Brak zdjęcia';
+   const valid=host.querySelectorAll('img').length===0&&host.querySelectorAll('.dg-image-placeholder').length===1&&host.querySelector('.dg-photo-label')?.textContent==='Brak poprawnego zdjęcia';
    host.remove();return valid;
  });
  assert.ok(broken,'Failed car photos must use exactly one silhouette and never display broken image glyph');
