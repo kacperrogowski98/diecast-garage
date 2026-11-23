@@ -66,6 +66,15 @@ body{background:radial-gradient(circle at 50% -15%,#1a2a3c 0,transparent 42%),va
 .carart img.dg-image-ready{opacity:1}
 .carart:has(img:not(.dg-image-ready))::before{content:"";position:absolute;inset:14%;border:1px solid #ffffff12;border-radius:12px}
 .carart:has(img:not(.dg-image-ready))::after{opacity:.25}
+
+/* Real-asset-only 3D state: transparent about missing geometry. */
+.dg3d-empty{padding:25px;border:1px dashed #52657d;border-radius:15px;background:radial-gradient(ellipse at 50% 0,#26394c,#0c1521 75%);text-align:center;color:#dce6f0;line-height:1.55}
+.dg3d-empty strong{display:block;font-size:18px;margin-bottom:9px}
+.dg3d-empty p{max-width:560px;color:#b3c4d5;margin:0 auto}
+.dg3d-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;max-height:48vh;overflow:auto;margin-top:15px}
+.dg3d-list-item{display:flex;align-items:center;gap:9px;min-width:0;padding:10px;background:#1c2938;border:1px solid #35475c;border-radius:11px;overflow-wrap:anywhere}
+.dg3d-list-item img{width:55px;height:43px;object-fit:contain;background:#101720;border-radius:6px}
+@media(max-width:650px){.dg3d-list{grid-template-columns:1fr}.dg3d-empty{padding:20px}}
 </style></head><body><main class="shell">
 <header class="top"><div class="brand"><div class="mark">D</div><div><h1>DIECAST GARAGE</h1><small>PERSONAL COLLECTION MANAGER · v1.103</small></div></div><div class="actions"><button class="btn primary" id="showroomBtn" onclick="openShowroom3D()">◎ Mój garaż 3D</button><button class="btn ghost" id="cloudBtn" onclick="openCloudPanel()">☁ Konto / synchronizacja</button><button class="btn ghost" id="exportBtn">↧ Backup</button><button class="btn" id="importBtn">↥ Backup</button><button class="btn" id="onlineCatalogBtn" title="Pobierz indeks 17 tys. rekordów z publicznego katalogu">↓ Katalog online</button><button class="btn" id="wikiCatalogBtn" title="Pobierz pełny katalog Wiki v6, gdy jest dostępny na serwerze">↓ Pełne Wiki v6</button><button class="btn" id="extendedCatalogBtn" title="Pobierz dodatkową historyczną bazę z Hot Wheels Wiki (1974–2023); rekordy mogą pokrywać się z głównym katalogiem">＋ Archiwum 1974–2023</button><button class="btn" id="catalogImportBtn" title="Importuj pliki katalogowe JSON">▤ Import JSON</button><button class="btn" id="catalogFolderBtn" title="Importuj cały folder data/ z diecastDb">▤ Folder data/</button><button class="btn primary" id="addBtn">＋ Dodaj model</button><input type="file" id="importFile" accept="application/json" hidden><input type="file" id="catalogImportFile" accept=".json,.jsonl,.ndjson,application/json,application/x-ndjson" multiple hidden><input type="file" id="catalogFolderInput" accept=".json,.jsonl,.ndjson,application/json,application/x-ndjson" multiple webkitdirectory directory hidden></div></header>
 <section class="hero"><div class="eyebrow">YOUR PRIVATE COLLECTION</div><div id="dgConnectionStatus" role="status" aria-live="polite" style="float:right;font-size:12px;color:var(--muted)">Sprawdzam połączenie…</div><h2>Welcome to your Garage.</h2><p>Twoja prywatna kolekcja modeli. Zarządzaj garażem, przeglądaj katalog i zapisuj modele, na które polujesz.</p></section>
