@@ -57,6 +57,12 @@ body{background:radial-gradient(circle at 50% -15%,#1a2a3c 0,transparent 42%),va
 @media(max-width:650px){.shell{padding:14px 12px calc(85px + env(safe-area-inset-bottom))}.hero{padding:22px}.hero h2{font-size:29px}.grid{gap:11px}.carart{min-height:0;aspect-ratio:1.18}.carart img{padding:6px}.carbody{padding:11px}.carbody h4{font-size:13px;min-height:36px}.carbody>.meta{font-size:10px}.cardactions{gap:5px}.cardactions button{font-size:10px;padding:8px 5px;min-height:36px}.swatch{width:21px;height:21px}.tabs{scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.stats{gap:9px;margin-bottom:22px}.stat{padding:13px}.stat b{font-size:23px}}
 @media(prefers-reduced-motion:reduce){.btn,.tab,.field,.car{transition:none}.car:hover{transform:none}}
 
+
+/* Hide broken-image glyphs until a real photograph is fully decoded. */
+.carart img:not(.dg-image-ready){opacity:0}
+.carart img.dg-image-ready{opacity:1}
+.carart:has(img:not(.dg-image-ready))::before{content:"";position:absolute;inset:14%;border:1px solid #ffffff12;border-radius:12px}
+.carart:has(img:not(.dg-image-ready))::after{opacity:.25}
 </style></head><body><main class="shell">
 <header class="top"><div class="brand"><div class="mark">D</div><div><h1>DIECAST GARAGE</h1><small>PERSONAL COLLECTION MANAGER · v1.102</small></div></div><div class="actions"><button class="btn primary" id="showroomBtn" onclick="openShowroom3D()">◎ Mój garaż 3D</button><button class="btn ghost" id="cloudBtn" onclick="openCloudPanel()">☁ Konto / synchronizacja</button><button class="btn ghost" id="exportBtn">↧ Backup</button><button class="btn" id="importBtn">↥ Backup</button><button class="btn" id="onlineCatalogBtn" title="Pobierz indeks 17 tys. rekordów z publicznego katalogu">↓ Katalog online</button><button class="btn" id="wikiCatalogBtn" title="Pobierz pełny katalog Wiki v6, gdy jest dostępny na serwerze">↓ Pełne Wiki v6</button><button class="btn" id="extendedCatalogBtn" title="Pobierz dodatkową historyczną bazę z Hot Wheels Wiki (1974–2023); rekordy mogą pokrywać się z głównym katalogiem">＋ Archiwum 1974–2023</button><button class="btn" id="catalogImportBtn" title="Importuj pliki katalogowe JSON">▤ Import JSON</button><button class="btn" id="catalogFolderBtn" title="Importuj cały folder data/ z diecastDb">▤ Folder data/</button><button class="btn primary" id="addBtn">＋ Dodaj model</button><input type="file" id="importFile" accept="application/json" hidden><input type="file" id="catalogImportFile" accept=".json,.jsonl,.ndjson,application/json,application/x-ndjson" multiple hidden><input type="file" id="catalogFolderInput" accept=".json,.jsonl,.ndjson,application/json,application/x-ndjson" multiple webkitdirectory directory hidden></div></header>
 <section class="hero"><div class="eyebrow">YOUR PRIVATE COLLECTION</div><div id="dgConnectionStatus" role="status" aria-live="polite" style="float:right;font-size:12px;color:var(--muted)">Sprawdzam połączenie…</div><h2>Welcome to your Garage.</h2><p>Twoja prywatna kolekcja modeli. Zarządzaj garażem, przeglądaj katalog i zapisuj modele, na które polujesz.</p></section>
@@ -248,15 +254,28 @@ function dgCarPlaceholder(){
  return '<div class="dg-image-placeholder" aria-label="Brak zweryfikowanego zdjęcia samego auta"><svg viewBox="0 0 260 96" aria-hidden="true" fill="none"><path d="M17 65l18-17 29-6 27-24h87l36 27 22 7 9 13v12H17z" fill="#526780"/><path d="M76 43l22-18h71l26 18z" fill="#0c1623"/><path d="M96 25l-12 18h45V25z" fill="#9aafc3" opacity=".55"/><circle cx="68" cy="77" r="17" fill="#09111c" stroke="#94a5b7" stroke-width="5"/><circle cx="202" cy="77" r="17" fill="#09111c" stroke="#94a5b7" stroke-width="5"/><path d="M20 66h17m184 0h18" stroke="#eabd70" stroke-width="5" stroke-linecap="round"/></svg><span>Zdjęcie auta niedostępne</span></div>';
 }
 function dgCarImageFallback(img){
+ const stage=img.parentElement;
+ if(!stage)return;
+ // Never leave Chrome's giant broken-image glyph in the showroom.
  if(img.dataset.dgTriedPlain!=='1'&&img.hasAttribute('crossorigin')){
   img.dataset.dgTriedPlain='1';img.removeAttribute('crossorigin');
   img.src=img.dataset.dgOriginal||img.src;return;
  }
- const parent=img.parentElement;
- if(parent){img.remove();parent.insertAdjacentHTML('beforeend',dgCarPlaceholder())}
+ img.remove();
+ if(!stage.querySelector('.dg-image-placeholder'))stage.insertAdjacentHTML('afterbegin',dgCarPlaceholder());
+ const label=stage.querySelector('.dg-photo-label');
+ if(label)label.textContent='Brak zdjęcia';
+}
+function dgConfirmCarImage(img){
+ if(!img.isConnected||!img.complete||!img.naturalWidth||!img.naturalHeight){dgCarImageFallback(img);return false}
+ // A large file can be a valid photo even without canvas access. Only reveal it
+ // after a successful load, never while the browser displays an error glyph.
+ img.classList.add('dg-image-ready');
+ return true;
 }
 function dgPolishCarImage(img){
- if(img.dataset.dgProcessed==='1'||!img.naturalWidth||!img.naturalHeight)return;
+ if(img.dataset.dgProcessed==='1')return;
+ if(!img.naturalWidth||!img.naturalHeight){dgCarImageFallback(img);return}
  img.dataset.dgProcessed='1';
  // Portrait product images are commonly blister-card photographs. Keep them
  // available in the source gallery, not mixed with car-only showroom artwork.
@@ -288,7 +307,8 @@ function dgPolishCarImage(img){
   for(let j=0;j<tail;j++)p[queue[j]*4+3]=0;
   ctx.putImageData(frame,0,0);
   img.dataset.dgCutout='1';img.src=canvas.toDataURL('image/png');
- }catch(_){/* CORS-restricted image: preserve the original source photo. */}
+ }catch(_){/* Cross-origin source may be drawn but not inspected; retain the valid photo. */}
+ dgConfirmCarImage(img);
 }
 function card(group){let variants=group.variants;let id=selectedVariant[group.key]&&variants.some(v=>(v.release_id||v.custom_id)===selectedVariant[group.key])?selectedVariant[group.key]:(variants[0].release_id||variants[0].custom_id);let x=variants.find(v=>(v.release_id||v.custom_id)===id)||variants[0];let matchingItems=state.items.filter(i=>(i.releaseId||i.id)===id);let inState=matchingItems[0];let ownedCount=matchingItems.filter(i=>i.status==='owned').length;let name=x.canonical_name||x.model_name_as_source||x.name||group.name;let year=x.release_year||'—';let meta=[year,x.series_or_line||'Własny wpis',x.toy_number?'#'+x.toy_number:null,colorName(x)].filter(Boolean).join(' · ');let verify=x.verification_status||'custom_entry';let photoUrl=dgSafeHttpUrl(x.image_url);let warn=verify!=='verified'&&verify!=='custom_entry';let actions='';if(view==='garage'&&ownedCount)actions=`<button class="btn primary" onclick="addItem('${id}','owned')">＋ Egzemplarz</button><button class="btn" onclick="viewCopies('${id}')">Egzemplarze (${ownedCount})</button>`;else if(inState?.status==='owned')actions=`<button class="btn" onclick="editItem('${inState.collectionId}')">Edytuj</button><button class="btn" onclick="moveItem('${inState.collectionId}','wishlist')">Do wishlist</button>`;else if(inState?.status==='wishlist')actions=`<button class="btn primary" onclick="moveItem('${inState.collectionId}','owned')">Mam go</button><button class="btn" onclick="removeItem('${inState.collectionId}')">Usuń</button>`;else actions=`<button class="btn primary" onclick="addItem('${id}','owned')">＋ Garaż</button><button class="btn" onclick="addItem('${id}','wishlist')">♡</button>`;
 let knownColors=[...new Set(variants.filter(v=>v.body_color||v.color_variant).map(v=>String(v.body_color||v.color_variant).trim()))];let swatches=knownColors.length?`<div class="swatches" aria-label="Dostępne kolory">${knownColors.map(c=>{let matches=variants.filter(v=>String(v.body_color||v.color_variant||'').trim()===c);let chosen=matches[0];let vid=chosen.release_id||chosen.custom_id;let active=matches.some(v=>(v.release_id||v.custom_id)===id);return `<button class="swatch ${active?'active':''}" title="${esc(c+' · '+matches.length+' wydań')}" aria-label="${esc(c)}" style="background:${colorHex(c)}" onclick="selectVariant('${group.key}','${vid}')"></button>`}).join('')}<span class="swatch-label">${knownColors.length} kolorów · ${variants.length} wydań</span></div>`:`<div class="swatches"><span class="swatch-label">${variants.length} wydań · brak potwierdzonych kolorów</span></div>`;
