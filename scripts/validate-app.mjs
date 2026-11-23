@@ -31,8 +31,9 @@ assert.ok(html.includes('dgBulkCloud3D') && html.includes('data-cloud-auth') && 
 assert.ok(viewer.includes('model.garageCars'),'Missing collector showroom');
 assert.ok(html.includes('openPack3D') && html.includes('Podgląd zestawu 3D'),'Missing multipack 3D UI');
 assert.ok(viewer.includes('model.packPreview'),'Missing 3D pack display mode');
-assert.ok(viewer.includes('new THREE.ExtrudeGeometry'),'Missing shaped 3D car bodies');
-assert.ok(viewer.includes("name:'SUPERCARS'") && viewer.includes("name:'RACING'") && viewer.includes("name:'POZOSTAŁE'"),'Missing garage zones');
+assert.ok(!viewer.includes('createCar('),'Never substitute procedurally generated cars for real Hot Wheels models');
+assert.ok(viewer.includes('Model 3D tego wydania nie jest jeszcze dostępny'),'Unassigned 3D assets must have an honest missing state');
+assert.ok(viewer.includes('Modele 3D nie są jeszcze dostępne dla całej kolekcji'),'Garage preview must not pretend to have exact 3D models');
 const viewerSyntax=viewer.replace(/^import .*;$/gm,'').replace(/^export /gm,'');
 new vm.Script(viewerSyntax,{filename:'viewer3d.js'});
 
