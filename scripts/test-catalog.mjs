@@ -20,6 +20,12 @@ const sample=ctx.dgNormalizeRecord({id:'JBB06_1',title:"'15 LAND ROVER DEFENDER 
 assert.equal(sample.release_year,2025);
 assert.equal(sample.brand,'Land Rover');
 assert.equal(sample.assortment,'mainline');
+const withSourceImage=ctx.dgNormalizeRecord({id:'PHOTO-1',title:'Aston Martin DB10',release_year:2025,image_url:'https://example.com/db10.jpg',images:[{url:'https://example.com/db10-side.jpg'}]},'hotwheels-wiki-v6',2);
+assert.equal(withSourceImage.image_url,'https://example.com/db10.jpg','Importer must retain image_url, not silently drop it');
+assert.equal(withSourceImage.images.length,2,'Importer must retain alternative images from structured image objects');
+const noSyntheticImage=ctx.dgNormalizeRecord({id:'MISSING',title:'McLaren F1',release_year:1998,img:true},'diecastdb',3);
+assert.equal(noSyntheticImage.image_url,'','Importer must not create unverified image URLs');
+
 assert.ok(sample.release_id.includes('diecastdb-'));
 const historical=ctx.dgNormalizeRecord({Casting:'Ferrari F40',Year:1995,'Photo / Color':'Red'},'hotwheels-data',1);
 assert.equal(historical.brand,'Ferrari');
