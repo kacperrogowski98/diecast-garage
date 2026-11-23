@@ -8,6 +8,24 @@ page.on('pageerror',e=>errors.push(e.message));
 await page.route(/(raw\.githubusercontent\.com|cdn\.jsdelivr\.net|danyjoy\.github\.io)/,r=>r.abort());
 try {
  await page.goto('http://127.0.0.1:8000/',{waitUntil:'domcontentloaded'});
+ const photoPipeline=await page.evaluate(()=>{
+   const raw={id:'DB10-CHECK',title:'Aston Martin DB10',release_year:2025,image_url:'https://example.com/aston-db10.jpg'};
+   const normalized=dgNormalizeRecord(raw,'hotwheels-wiki-v6',0);
+   const fandom='https://static.wikia.nocookie.net/hotwheels/images/a/aa/aston.jpg/revision/latest?cb=100';
+   const candidates=dgSourcePhotoCandidates(fandom);
+   const shared={release_id:'a',image_url:fandom,images:[]},alternate={release_id:'b',image_url:'https://example.com/aston-alt.jpg'};
+   dgHeroUsedImages=new Set();
+   const first=dgImageCandidates(shared,[shared,alternate]);
+   dgHeroUsedImages.add(first[0]);
+   const next=dgImageCandidates(alternate,[shared,alternate]);
+   return {normalizedPhoto:normalized.image_url,candidates,first,next};
+ });
+ assert.equal(photoPipeline.normalizedPhoto,'https://example.com/aston-db10.jpg','Source image_url must survive Wiki normalization');
+ assert.equal(photoPipeline.candidates[0],'https://static.wikia.nocookie.net/hotwheels/images/a/aa/aston.jpg','Fandom photo should try its canonical original file first');
+ assert.equal(photoPipeline.candidates.length,2,'Original Fandom image should retain revision URL as a secondary option');
+ assert.ok(photoPipeline.next[0].includes('aston-alt'),'Another edition must prefer its own photo over shared casting fallback');
+ console.log('PASS: real photo URL import, Fandom fallback and per-variant image prioritization');
+
  const visual=await page.evaluate(async()=>{
   const c=document.createElement('canvas');c.width=120;c.height=80;
   const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,120,80);
