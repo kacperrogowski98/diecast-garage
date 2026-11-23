@@ -79,6 +79,9 @@ body{background:radial-gradient(circle at 50% -15%,#1a2a3c 0,transparent 42%),va
 .dg3d-stage{position:relative}
 .dg3d-canvas-empty{position:absolute;z-index:2;inset:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#101b2de8;backdrop-filter:blur(5px);pointer-events:none}
 .dg3d-canvas-empty[hidden]{display:none}
+
+/* White photo backgrounds blend into the dark stage when CORS blocks cutouts. */
+.carart img.dg-image-uncut{mix-blend-mode:multiply;filter:brightness(1.25) contrast(1.1) drop-shadow(0 12px 15px #0009)}
 </style></head><body><main class="shell">
 <header class="top"><div class="brand"><div class="mark">D</div><div><h1>DIECAST GARAGE</h1><small>PERSONAL COLLECTION MANAGER · v1.104</small></div></div><div class="actions"><button class="btn primary" id="showroomBtn" onclick="openShowroom3D()">◎ Mój garaż 3D</button><button class="btn ghost" id="cloudBtn" onclick="openCloudPanel()">☁ Konto / synchronizacja</button><button class="btn ghost" id="exportBtn">↧ Backup</button><button class="btn" id="importBtn">↥ Backup</button><button class="btn" id="onlineCatalogBtn" title="Pobierz indeks 17 tys. rekordów z publicznego katalogu">↓ Katalog online</button><button class="btn" id="wikiCatalogBtn" title="Pobierz pełny katalog Wiki v6, gdy jest dostępny na serwerze">↓ Pełne Wiki v6</button><button class="btn" id="extendedCatalogBtn" title="Pobierz dodatkową historyczną bazę z Hot Wheels Wiki (1974–2023); rekordy mogą pokrywać się z głównym katalogiem">＋ Archiwum 1974–2023</button><button class="btn" id="catalogImportBtn" title="Importuj pliki katalogowe JSON">▤ Import JSON</button><button class="btn" id="catalogFolderBtn" title="Importuj cały folder data/ z diecastDb">▤ Folder data/</button><button class="btn primary" id="addBtn">＋ Dodaj model</button><input type="file" id="importFile" accept="application/json" hidden><input type="file" id="catalogImportFile" accept=".json,.jsonl,.ndjson,application/json,application/x-ndjson" multiple hidden><input type="file" id="catalogFolderInput" accept=".json,.jsonl,.ndjson,application/json,application/x-ndjson" multiple webkitdirectory directory hidden></div></header>
 <section class="hero"><div class="eyebrow">YOUR PRIVATE COLLECTION</div><div id="dgConnectionStatus" role="status" aria-live="polite" style="float:right;font-size:12px;color:var(--muted)">Sprawdzam połączenie…</div><h2>Welcome to your Garage.</h2><p>Twoja prywatna kolekcja modeli. Zarządzaj garażem, przeglądaj katalog i zapisuj modele, na które polujesz.</p></section>
@@ -120,7 +123,7 @@ function dgRarity(value){let v=String(value??'').trim().toLowerCase();if(/\b(sup
 function dgYear(value,series){let y=Number(value);if(y>=1968&&y<=2035)return y;let m=String(series||'').match(/(?:19|20)\d{2}/);return m?Number(m[0]):null}
 function dgNormalizeRecord(r,source,index,context={}){if(!r||typeof r!=='object')return null;let title=r.title||r.Casting||r.model_name||r.casting||r.name||'';if(!title)return null;let series=r.series_name||r['Series Name / #']||r.series||r.assortment||context.collection||'';let brand=dgInferBrand(title,r.oem||r.OEM||r.manufacturer||r.brand);let cleanTitle=String(title).trim().replace(/\s+/g,' ');let castingTitle=brand!=='Unassigned'?cleanTitle.replace(/^['’]?\d{2,4}\s+/,''):cleanTitle;let year=dgYear(r.release_year||r.year||r.Year,series)||dgYear(null,context.year);let key=dgSlug(brand+'-'+castingTitle);let src=source==='hotwheels-wiki-v6'?'hotwheels-wiki-v6':source==='hotwheels-data'?'hotwheels-data':source==='diecastdb'?'diecastdb':'import';let originalId=r.id||r._id?.$oid||r.sku||r.toy_number||r['toy_#']||index;let assortmentKey=dgSlug(r.assortment||context.collection||(src==='hotwheels-wiki-v6'?'wiki-v6':'all'));let releaseId=src==='diecastdb'?'diecastdb-'+dgSlug(originalId)+'-'+(year||'na')+'-'+assortmentKey:src==='hotwheels-wiki-v6'&&r.id?'wiki-v6-'+dgSlug(r.id):src+'-'+dgSlug(originalId)+'-'+(year||'na')+'-'+assortmentKey+'-'+index;
 let rarity=r.rarity||r.Rarity||r.treasure_hunt_type||(r.is_super_treasure_hunt===true?'Super Treasure Hunt':r.is_treasure_hunt===true?'Treasure Hunt':/super\s*treasure\s*hunt/i.test(series)?'Super Treasure Hunt':/\btreasure\s*hunts?\b/i.test(series)?'Treasure Hunt':'');let cls=dgClassify(cleanTitle,brand,series);let images=Array.isArray(r.images)?r.images:[];let color=r.body_color||r['Photo / Color']||r.color||r.colour||'';
-let imageUrls=[...new Set([...images,r.photo_url].map(dgSafeHttpUrl).filter(Boolean))];let imageUrl=imageUrls[0]||dgSafeHttpUrl(r.img?`https://findmyhw.com/media/images/${encodeURIComponent(originalId)}/${encodeURIComponent(originalId)}_1.webp`:'' );if(imageUrl&&!imageUrls.includes(imageUrl))imageUrls.unshift(imageUrl);return {release_id:releaseId,casting_id:'ext-'+key,canonical_name:cleanTitle,model_name_as_source:cleanTitle,brand,brand_id:'brand-'+dgSlug(brand),release_year:year,series_or_line:series,toy_number:r.toy_number||r['toy_#']||r.sku||r.mainline_index||r.number||'',source_record_id:String(originalId),sku:r.sku||'',sku_variation:r.sku_variation||'',mainline_index:r.mainline_index||r.number||'',series_index:r.series_index||'',body_color:color,color_variant:color,tampo_details:r.tampo_details||r.tampo||r.Notes||r.notes||'',wheel_type:r.wheel_types||r.wheel_type||r.wheel||r['Wheel Type']||'',base_material:r.base_material||r.base||'',base_color:r.base_color||'',base_codes:r.base_codes||'',country_of_origin:r.country_of_origin||r.country||'',casting_number:r.casting_number||'',rarity,pack_membership:r.pack||'',product_type:r.product_type||'vehicle',vehicle_class:cls,classification_status:cls!=='unclassified'?'heuristic_pending_review':'source_unclassified',verification_status:'source_import_unverified',source:src,source_name:source,source_url:dgSafeHttpUrl(r.source_url||(src==='hotwheels-wiki-v6'?(r.page_url||'https://hotwheels.fandom.com/'):src==='hotwheels-data'?'https://github.com/pvwnthem/Hotwheels-Data/blob/main/HotApi.json':src==='diecastdb'&&year?'https://github.com/danyjoy/diecastDb/blob/main/data/'+year+'/'+(assortmentKey||'mainline')+'.json':'')),image_url:imageUrl,images:imageUrls,assortment:assortmentKey==='all'?'':assortmentKey,_fullRecord:Array.isArray(r.images),record_type:'release'}}
+let imageUrls=[...new Set([r.image_url,r.photo_url,r.image,r.thumbnail,r.thumb_url,r.picture,...images.map(v=>typeof v==='string'?v:v?.url||v?.src||v?.image_url)].map(dgSafeHttpUrl).filter(Boolean))];let imageUrl=imageUrls[0]||'';return {release_id:releaseId,casting_id:'ext-'+key,canonical_name:cleanTitle,model_name_as_source:cleanTitle,brand,brand_id:'brand-'+dgSlug(brand),release_year:year,series_or_line:series,toy_number:r.toy_number||r['toy_#']||r.sku||r.mainline_index||r.number||'',source_record_id:String(originalId),sku:r.sku||'',sku_variation:r.sku_variation||'',mainline_index:r.mainline_index||r.number||'',series_index:r.series_index||'',body_color:color,color_variant:color,tampo_details:r.tampo_details||r.tampo||r.Notes||r.notes||'',wheel_type:r.wheel_types||r.wheel_type||r.wheel||r['Wheel Type']||'',base_material:r.base_material||r.base||'',base_color:r.base_color||'',base_codes:r.base_codes||'',country_of_origin:r.country_of_origin||r.country||'',casting_number:r.casting_number||'',rarity,pack_membership:r.pack||'',product_type:r.product_type||'vehicle',vehicle_class:cls,classification_status:cls!=='unclassified'?'heuristic_pending_review':'source_unclassified',verification_status:'source_import_unverified',source:src,source_name:source,source_url:dgSafeHttpUrl(r.source_url||(src==='hotwheels-wiki-v6'?(r.page_url||'https://hotwheels.fandom.com/'):src==='hotwheels-data'?'https://github.com/pvwnthem/Hotwheels-Data/blob/main/HotApi.json':src==='diecastdb'&&year?'https://github.com/danyjoy/diecastDb/blob/main/data/'+year+'/'+(assortmentKey||'mainline')+'.json':'')),image_url:imageUrl,images:imageUrls,assortment:assortmentKey==='all'?'':assortmentKey,_fullRecord:Array.isArray(r.images),record_type:'release'}}
 function dgExtractRows(parsed,filename){let rows=[],source=/hotwheels_db_v6|wiki_v6/i.test(filename)?'hotwheels-wiki-v6':'import',context={};if(Array.isArray(parsed)){rows=parsed;source='hotwheels-data'}else if(parsed&&Array.isArray(parsed.cars)&&Array.isArray(parsed.fields)){source='diecastdb-scan-index';let fields=parsed.fields;rows=parsed.cars.map(a=>Object.fromEntries(fields.map((f,i)=>[f,a[i]])));}else if(parsed&&Array.isArray(parsed.cars)){source='diecastdb';context={year:parsed.release_year,collection:parsed.collection};rows=parsed.cars;}else if(parsed&&Array.isArray(parsed.data)){rows=parsed.data;source='hotwheels-data'}else if(parsed&&parsed.Casting){rows=[parsed];source='hotwheels-data'}else if(parsed&&parsed.id&&parsed.title){rows=[parsed];source='diecastdb'}else if(parsed&&parsed.assortments){return {rows:[],source:'manifest',context:{}}}return {rows,source,context}}
 async function dgReadCatalogFile(file){let txt=await file.text(),parsed;try{parsed=JSON.parse(txt)}catch(e){let lines=txt.split(/\r?\n/).filter(x=>x.trim());let out=[];for(let line of lines){try{let x=JSON.parse(line);if(x&&(x.Casting||x.title||x.name||x.model_name))out.push(x)}catch(_){}}parsed=out}
 let extracted=dgExtractRows(parsed,file.name);if(/hotwheels_db_v6|wiki_v6/i.test(file.name))extracted.source='hotwheels-wiki-v6';let rows=extracted.rows;if(!rows.length&&Array.isArray(parsed)){rows=parsed;extracted.source=/hotwheels_db_v6|wiki_v6/i.test(file.name)?'hotwheels-wiki-v6':'hotwheels-data'}let normalized=[];for(let i=0;i<rows.length;i++){let r=rows[i];if(Array.isArray(r)){continue}if(extracted.source==='hotwheels-wiki-v6'&&r.product_type&&!['vehicle','monster_truck'].includes(r.product_type))continue;let x=dgNormalizeRecord(r,extracted.source==='diecastdb-scan-index'?'diecastdb':extracted.source,i,extracted.context);if(x)normalized.push(x)}return normalized}
@@ -260,7 +263,7 @@ let groups=grouped(items);groups.sort((a,b)=>{let av=a.variants[0]||{},bv=b.vari
  const wantedPriority=id=>Math.max(0,...state.items.filter(item=>item.status==='wishlist'&&(item.releaseId||item.id)===id).map(item=>Number(item.priority)||0));
  groups.sort((a,b)=>Math.max(0,...b.variants.map(v=>wantedPriority(v.release_id||v.custom_id)))-Math.max(0,...a.variants.map(v=>wantedPriority(v.release_id||v.custom_id))));
 }
-const packWishlistMatches=view==='wishlist'?(state.packWishlist||[]).length:0;document.getElementById('resultCount').textContent=groups.length+' modeli · '+items.length+' wydań'+(view==='wishlist'?' · '+packWishlistMatches+' zestawów na wishliście':'');const pages=Math.max(1,Math.ceil(groups.length/PAGE_SIZE));page=Math.min(Math.max(0,page),pages-1);const visible=groups.slice(page*PAGE_SIZE,(page+1)*PAGE_SIZE);const empty='<div class="empty" style="grid-column:1/-1">'+(view==='garage'?'Twój garaż jest pusty. Dodaj pierwszy model z katalogu.':view==='wishlist'?'Wishlist jest pusta. Dodaj modele, na które polujesz.':'Nie znaleziono modeli dla wybranych filtrów.')+'</div>';const pager=groups.length>PAGE_SIZE?`<div class="pagination"><button class="btn" onclick="changePage(-1)" ${page===0?'disabled':''}>← Poprzednia</button><span>Strona ${page+1} z ${pages} · ${groups.length.toLocaleString('pl-PL')} modeli</span><button class="btn" onclick="changePage(1)" ${page>=pages-1?'disabled':''}>Następna →</button></div>`:'';const wantedPacks=dgPackWishlistMarkup();content.innerHTML=wantedPacks+(visible.map(g=>card(g)).join('')||(!wantedPacks?empty:''))+pager;
+const packWishlistMatches=view==='wishlist'?(state.packWishlist||[]).length:0;document.getElementById('resultCount').textContent=groups.length+' modeli · '+items.length+' wydań'+(view==='wishlist'?' · '+packWishlistMatches+' zestawów na wishliście':'');const pages=Math.max(1,Math.ceil(groups.length/PAGE_SIZE));page=Math.min(Math.max(0,page),pages-1);const visible=groups.slice(page*PAGE_SIZE,(page+1)*PAGE_SIZE);const empty='<div class="empty" style="grid-column:1/-1">'+(view==='garage'?'Twój garaż jest pusty. Dodaj pierwszy model z katalogu.':view==='wishlist'?'Wishlist jest pusta. Dodaj modele, na które polujesz.':'Nie znaleziono modeli dla wybranych filtrów.')+'</div>';const pager=groups.length>PAGE_SIZE?`<div class="pagination"><button class="btn" onclick="changePage(-1)" ${page===0?'disabled':''}>← Poprzednia</button><span>Strona ${page+1} z ${pages} · ${groups.length.toLocaleString('pl-PL')} modeli</span><button class="btn" onclick="changePage(1)" ${page>=pages-1?'disabled':''}>Następna →</button></div>`:'';const wantedPacks=dgPackWishlistMarkup();dgHeroUsedImages=new Set();content.innerHTML=wantedPacks+(visible.map(g=>card(g)).join('')||(!wantedPacks?empty:''))+pager;
 }
 function changePage(delta){page=Math.max(0,page+delta);render();document.getElementById('content').scrollIntoView({behavior:'smooth',block:'start'})}
 // Catalogue photography is heterogeneous: retain source photos, but isolate bright
@@ -269,66 +272,92 @@ function changePage(delta){page=Math.max(0,page+delta);render();document.getElem
 function dgCarPlaceholder(){
  return '<div class="dg-image-placeholder" aria-label="Brak zweryfikowanego zdjęcia samego auta"><svg viewBox="0 0 260 96" aria-hidden="true" fill="none"><path d="M17 65l18-17 29-6 27-24h87l36 27 22 7 9 13v12H17z" fill="#526780"/><path d="M76 43l22-18h71l26 18z" fill="#0c1623"/><path d="M96 25l-12 18h45V25z" fill="#9aafc3" opacity=".55"/><circle cx="68" cy="77" r="17" fill="#09111c" stroke="#94a5b7" stroke-width="5"/><circle cx="202" cy="77" r="17" fill="#09111c" stroke="#94a5b7" stroke-width="5"/><path d="M20 66h17m184 0h18" stroke="#eabd70" stroke-width="5" stroke-linecap="round"/></svg><span>Zdjęcie auta niedostępne</span></div>';
 }
+// One hero image per distinctive photograph, with same-casting alternatives.
+// Do not manufacture image URLs or copy images between unrelated car models.
+let dgHeroUsedImages=new Set();
+function dgImageCandidates(model,variants=[]){
+ const from=item=>[item?.image_url,...(Array.isArray(item?.images)?item.images:[])].map(dgSafeHttpUrl).filter(Boolean);
+ const own=from(model),others=variants.filter(v=>v!==model).flatMap(from);
+ return [...new Set([...own,...others])].filter(u=>!dgHeroUsedImages.has(u)).slice(0,9);
+}
+function dgCarImageNext(img){
+ if(!img.isConnected)return;
+ const images=JSON.parse(img.dataset.dgCandidates||'[]');
+ const next=(Number(img.dataset.dgIndex)||0)+1;
+ if(next>=images.length){
+  const stage=img.parentElement;
+  if(stage){img.remove();if(!stage.querySelector('.dg-image-placeholder'))stage.insertAdjacentHTML('afterbegin',dgCarPlaceholder());const label=stage.querySelector('.dg-photo-label');if(label)label.textContent='Brak poprawnego zdjęcia'}
+  return;
+ }
+ img.dataset.dgIndex=String(next);img.dataset.dgProcessed='';img.dataset.dgCutout='';
+ img.dataset.dgTriedPlain='';img.classList.remove('dg-image-ready','dg-image-uncut');
+ img.setAttribute('crossorigin','anonymous');
+ img.src=images[next];
+}
 function dgCarImageFallback(img){
- const stage=img.parentElement;
- if(!stage)return;
- // Never leave Chrome's giant broken-image glyph in the showroom.
+ if(!img.isConnected)return;
+ // Some hosts serve JPEGs but prohibit CORS. Try displaying the original URL
+ // without canvas privileges before skipping this candidate.
  if(img.dataset.dgTriedPlain!=='1'&&img.hasAttribute('crossorigin')){
   img.dataset.dgTriedPlain='1';img.removeAttribute('crossorigin');
-  img.src=img.dataset.dgOriginal||img.src;return;
+  img.src=img.dataset.dgCandidates?JSON.parse(img.dataset.dgCandidates)[Number(img.dataset.dgIndex)||0]:img.src;
+  return;
  }
- img.remove();
- if(!stage.querySelector('.dg-image-placeholder'))stage.insertAdjacentHTML('afterbegin',dgCarPlaceholder());
- const label=stage.querySelector('.dg-photo-label');
- if(label)label.textContent='Brak zdjęcia';
+ dgCarImageNext(img);
 }
 function dgConfirmCarImage(img){
- if(!img.isConnected||!img.complete||!img.naturalWidth||!img.naturalHeight){dgCarImageFallback(img);return false}
- // A large file can be a valid photo even without canvas access. Only reveal it
- // after a successful load, never while the browser displays an error glyph.
+ if(!img.isConnected||!img.naturalWidth||!img.naturalHeight)return false;
  img.classList.add('dg-image-ready');
+ const stage=img.parentElement;
+ if(stage){
+  const url=JSON.parse(img.dataset.dgCandidates||'[]')[Number(img.dataset.dgIndex)||0];
+  if(url){dgHeroUsedImages.add(url)}
+  const label=stage.querySelector('.dg-photo-label');
+  if(label)label.textContent=Number(img.dataset.dgIndex)>0?'Zdjęcie innego wydania':'Zdjęcie modelu';
+ }
  return true;
 }
 function dgPolishCarImage(img){
- if(img.dataset.dgProcessed==='1')return;
  if(!img.naturalWidth||!img.naturalHeight){dgCarImageFallback(img);return}
+ // The second load is the successfully processed transparent PNG. Previously
+ // this returned early and left the image permanently invisible.
+ if(img.dataset.dgCutout==='1'){dgConfirmCarImage(img);return}
+ if(img.dataset.dgProcessed==='1'){dgConfirmCarImage(img);return}
  img.dataset.dgProcessed='1';
- // Portrait product images are commonly blister-card photographs. Keep them
- // available in the source gallery, not mixed with car-only showroom artwork.
- if(img.naturalHeight>img.naturalWidth*1.35){
-  const stage=img.parentElement;
-  if(stage){
-   img.remove();stage.insertAdjacentHTML('afterbegin',dgCarPlaceholder());
-   const label=stage.querySelector('.dg-photo-label');
-   if(label)label.textContent='Foto produktu w szczegółach';
-  }
-  return;
- }
+ // Portrait blister/package photos stay in the source gallery; try an alternative.
+ if(img.naturalHeight>img.naturalWidth*1.35){dgCarImageNext(img);return}
  try{
   const w=Math.min(480,img.naturalWidth),h=Math.max(1,Math.round(img.naturalHeight*w/img.naturalWidth));
-  if(w<65||h<45||w*h>340000)return;
-  const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
-  const ctx=canvas.getContext('2d',{willReadFrequently:true});if(!ctx)return;
-  ctx.drawImage(img,0,0,w,h);
-  const frame=ctx.getImageData(0,0,w,h),p=frame.data;
-  const bright=i=>p[i]>222&&p[i+1]>222&&p[i+2]>222&&Math.max(p[i],p[i+1],p[i+2])-Math.min(p[i],p[i+1],p[i+2])<23;
-  const corners=[0,(w-1)*4,((h-1)*w)*4,(w*h-1)*4];
-  if(corners.filter(bright).length<3)return;
-  const visited=new Uint8Array(w*h),queue=new Uint32Array(w*h);let head=0,tail=0;
-  const add=k=>{if(k<0||k>=w*h||visited[k]||!bright(k*4))return;visited[k]=1;queue[tail++]=k};
-  for(let x=0;x<w;x++){add(x);add((h-1)*w+x)}
-  for(let y=0;y<h;y++){add(y*w);add(y*w+w-1)}
-  while(head<tail){const k=queue[head++],x=k%w; if(x>0)add(k-1);if(x<w-1)add(k+1);if(k>=w)add(k-w);if(k<(h-1)*w)add(k+w)}
-  if(tail<w*h*.10||tail>w*h*.88)return;
-  for(let j=0;j<tail;j++)p[queue[j]*4+3]=0;
-  ctx.putImageData(frame,0,0);
-  img.dataset.dgCutout='1';img.src=canvas.toDataURL('image/png');
- }catch(_){/* Cross-origin source may be drawn but not inspected; retain the valid photo. */}
+  if(w>=65&&h>=45&&w*h<=340000){
+   const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
+   const ctx=canvas.getContext('2d',{willReadFrequently:true});
+   if(ctx){
+    ctx.drawImage(img,0,0,w,h);
+    const frame=ctx.getImageData(0,0,w,h),p=frame.data;
+    const bright=i=>p[i]>222&&p[i+1]>222&&p[i+2]>222&&Math.max(p[i],p[i+1],p[i+2])-Math.min(p[i],p[i+1],p[i+2])<23;
+    const corners=[0,(w-1)*4,((h-1)*w)*4,(w*h-1)*4];
+    if(corners.filter(bright).length>=3){
+     const seen=new Uint8Array(w*h),queue=new Uint32Array(w*h);let head=0,tail=0;
+     const add=k=>{if(k<0||k>=w*h||seen[k]||!bright(k*4))return;seen[k]=1;queue[tail++]=k};
+     for(let x=0;x<w;x++){add(x);add((h-1)*w+x)}
+     for(let y=0;y<h;y++){add(y*w);add(y*w+w-1)}
+     while(head<tail){const k=queue[head++],x=k%w;if(x>0)add(k-1);if(x<w-1)add(k+1);if(k>=w)add(k-w);if(k<(h-1)*w)add(k+w)}
+     if(tail>w*h*.10&&tail<w*h*.88){
+      for(let j=0;j<tail;j++)p[queue[j]*4+3]=0;
+      ctx.putImageData(frame,0,0);
+      img.dataset.dgCutout='1';
+      img.src=canvas.toDataURL('image/png');
+      return; // Wait for the new image's onload before making it visible.
+     }
+    }
+   }
+  }
+ }catch(_){img.classList.add('dg-image-uncut')}
  dgConfirmCarImage(img);
 }
-function card(group){let variants=group.variants;let id=selectedVariant[group.key]&&variants.some(v=>(v.release_id||v.custom_id)===selectedVariant[group.key])?selectedVariant[group.key]:(variants[0].release_id||variants[0].custom_id);let x=variants.find(v=>(v.release_id||v.custom_id)===id)||variants[0];let matchingItems=state.items.filter(i=>(i.releaseId||i.id)===id);let inState=matchingItems[0];let ownedCount=matchingItems.filter(i=>i.status==='owned').length;let name=x.canonical_name||x.model_name_as_source||x.name||group.name;let year=x.release_year||'—';let meta=[year,x.series_or_line||'Własny wpis',x.toy_number?'#'+x.toy_number:null,colorName(x)].filter(Boolean).join(' · ');let verify=x.verification_status||'custom_entry';let photoUrl=dgSafeHttpUrl(x.image_url);let warn=verify!=='verified'&&verify!=='custom_entry';let actions='';if(view==='garage'&&ownedCount)actions=`<button class="btn primary" onclick="addItem('${id}','owned')">＋ Egzemplarz</button><button class="btn" onclick="viewCopies('${id}')">Egzemplarze (${ownedCount})</button>`;else if(inState?.status==='owned')actions=`<button class="btn" onclick="editItem('${inState.collectionId}')">Edytuj</button><button class="btn" onclick="moveItem('${inState.collectionId}','wishlist')">Do wishlist</button>`;else if(inState?.status==='wishlist')actions=`<button class="btn primary" onclick="moveItem('${inState.collectionId}','owned')">Mam go</button><button class="btn" onclick="removeItem('${inState.collectionId}')">Usuń</button>`;else actions=`<button class="btn primary" onclick="addItem('${id}','owned')">＋ Garaż</button><button class="btn" onclick="addItem('${id}','wishlist')">♡</button>`;
+function card(group){let variants=group.variants;let id=selectedVariant[group.key]&&variants.some(v=>(v.release_id||v.custom_id)===selectedVariant[group.key])?selectedVariant[group.key]:(variants[0].release_id||variants[0].custom_id);let x=variants.find(v=>(v.release_id||v.custom_id)===id)||variants[0];let matchingItems=state.items.filter(i=>(i.releaseId||i.id)===id);let inState=matchingItems[0];let ownedCount=matchingItems.filter(i=>i.status==='owned').length;let name=x.canonical_name||x.model_name_as_source||x.name||group.name;let year=x.release_year||'—';let meta=[year,x.series_or_line||'Własny wpis',x.toy_number?'#'+x.toy_number:null,colorName(x)].filter(Boolean).join(' · ');let verify=x.verification_status||'custom_entry';let photoCandidates=dgImageCandidates(x,variants);let photoUrl=photoCandidates[0]||'';if(photoUrl)dgHeroUsedImages.add(photoUrl);let warn=verify!=='verified'&&verify!=='custom_entry';let actions='';if(view==='garage'&&ownedCount)actions=`<button class="btn primary" onclick="addItem('${id}','owned')">＋ Egzemplarz</button><button class="btn" onclick="viewCopies('${id}')">Egzemplarze (${ownedCount})</button>`;else if(inState?.status==='owned')actions=`<button class="btn" onclick="editItem('${inState.collectionId}')">Edytuj</button><button class="btn" onclick="moveItem('${inState.collectionId}','wishlist')">Do wishlist</button>`;else if(inState?.status==='wishlist')actions=`<button class="btn primary" onclick="moveItem('${inState.collectionId}','owned')">Mam go</button><button class="btn" onclick="removeItem('${inState.collectionId}')">Usuń</button>`;else actions=`<button class="btn primary" onclick="addItem('${id}','owned')">＋ Garaż</button><button class="btn" onclick="addItem('${id}','wishlist')">♡</button>`;
 let knownColors=[...new Set(variants.filter(v=>v.body_color||v.color_variant).map(v=>String(v.body_color||v.color_variant).trim()))];let swatches=knownColors.length?`<div class="swatches" aria-label="Dostępne kolory">${knownColors.map(c=>{let matches=variants.filter(v=>String(v.body_color||v.color_variant||'').trim()===c);let chosen=matches[0];let vid=chosen.release_id||chosen.custom_id;let active=matches.some(v=>(v.release_id||v.custom_id)===id);return `<button class="swatch ${active?'active':''}" title="${esc(c+' · '+matches.length+' wydań')}" aria-label="${esc(c)}" style="background:${colorHex(c)}" onclick="selectVariant('${group.key}','${vid}')"></button>`}).join('')}<span class="swatch-label">${knownColors.length} kolorów · ${variants.length} wydań</span></div>`:`<div class="swatches"><span class="swatch-label">${variants.length} wydań · brak potwierdzonych kolorów</span></div>`;
-return `<article class="car"><div class="carart">${photoUrl?`${dgCarPlaceholder()}<img src="${esc(photoUrl)}" data-dg-original="${esc(photoUrl)}" crossorigin="anonymous" alt="${esc(name)}" loading="lazy" decoding="async" onload="dgPolishCarImage(this)" onerror="dgCarImageFallback(this)">`:`${dgCarPlaceholder()}`}<span class="dg-photo-label">${photoUrl?'Zdjęcie źródłowe':'Podgląd'}</span></div><div class="carbody"><h4>${esc(name)}</h4><div class="meta">${esc(meta)}</div>${swatches}<span class="pill">${esc(labelClass(x.vehicle_class))}</span>${dgRarity(x.rarity)==='sth'?'<span class="pill warn">STH</span>':dgRarity(x.rarity)==='th'?'<span class="pill warn">TH</span>':''}${warn?'<span class="pill warn">Do weryfikacji</span>':''}${ownedCount?`<span class="pill">${ownedCount} egz.</span>`:''}${inState?.condition?`<span class="pill">${esc(inState.condition)}</span>`:''}${view==='wishlist'&&inState?.status==='wishlist'?`<div class="meta">Priorytet: ${Number(inState.priority)||0}/5${inState.targetPrice?` · Cel: ${esc(inState.targetPrice)} zł`:''}</div><button class="btn ghost" onclick="editItem('${inState.collectionId}')">Edytuj cel / priorytet</button>`:''}<div class="cardactions"><button class="btn" onclick="details('${id}')">Szczegóły</button><button class="btn" onclick="open3D('${id}')">3D</button>${actions}</div>${(view==='catalog'||view==='racing')?`<div class="cardactions"><button class="btn ghost" onclick="addVariant('${group.key}')">＋ Dodaj wariant</button></div>`:''}</div></article>`}
+return `<article class="car"><div class="carart">${photoUrl?`${dgCarPlaceholder()}<img src="${esc(photoUrl)}" data-dg-candidates="${esc(JSON.stringify(photoCandidates))}" data-dg-index="0" crossorigin="anonymous" alt="${esc(name)}" loading="lazy" decoding="async" onload="dgPolishCarImage(this)" onerror="dgCarImageFallback(this)">`:`${dgCarPlaceholder()}`}<span class="dg-photo-label">${photoUrl?'Zdjęcie źródłowe':'Podgląd'}</span></div><div class="carbody"><h4>${esc(name)}</h4><div class="meta">${esc(meta)}</div>${swatches}<span class="pill">${esc(labelClass(x.vehicle_class))}</span>${dgRarity(x.rarity)==='sth'?'<span class="pill warn">STH</span>':dgRarity(x.rarity)==='th'?'<span class="pill warn">TH</span>':''}${warn?'<span class="pill warn">Do weryfikacji</span>':''}${ownedCount?`<span class="pill">${ownedCount} egz.</span>`:''}${inState?.condition?`<span class="pill">${esc(inState.condition)}</span>`:''}${view==='wishlist'&&inState?.status==='wishlist'?`<div class="meta">Priorytet: ${Number(inState.priority)||0}/5${inState.targetPrice?` · Cel: ${esc(inState.targetPrice)} zł`:''}</div><button class="btn ghost" onclick="editItem('${inState.collectionId}')">Edytuj cel / priorytet</button>`:''}<div class="cardactions"><button class="btn" onclick="details('${id}')">Szczegóły</button><button class="btn" onclick="open3D('${id}')">3D</button>${actions}</div>${(view==='catalog'||view==='racing')?`<div class="cardactions"><button class="btn ghost" onclick="addVariant('${group.key}')">＋ Dodaj wariant</button></div>`:''}</div></article>`}
 function addCustomPack(){dgPendingPackPhotos={front:null,back:null};document.getElementById('modalRoot').innerHTML=`<div class="modalback" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modalhead"><h3>Dodaj własny multipack</h3><button class="btn" onclick="closeModal()">✕</button></div><div class="formgrid"><div class="formfield full"><label>Nazwa zestawu</label><input class="field" id="customPackName" placeholder="np. HW Exotics 5-Pack" required></div><div class="formfield"><label>Rok wydania</label><input class="field" id="customPackYear" type="number" min="1968" max="2035" placeholder="np. 2025"></div><div class="formfield"><label>Typ zestawu</label><select class="field" id="customPackType"><option>5-Pack</option><option>3-Pack</option><option>9-Pack</option><option>10-Pack</option><option>20-Pack</option><option>Multipack</option><option>Advent Calendar</option><option>Inny</option></select></div><div class="formfield"><label>Numer / kod zestawu</label><input class="field" id="customPackNumber" placeholder="opcjonalnie"></div><div class="formfield full"><label>Zawartość (jeden model w każdej linii)</label><textarea class="field" id="customPackContents" rows="5" placeholder="Ferrari F40\nLamborghini Countach\n..."></textarea></div><div class="formfield"><label>Front opakowania</label><input class="field" type="file" accept="image/*" onchange="dgHandlePackPhoto(this,'front')"><div id="piFrontPreview" class="meta"></div></div><div class="formfield"><label>Tył opakowania</label><input class="field" type="file" accept="image/*" onchange="dgHandlePackPhoto(this,'back')"><div id="piBackPreview" class="meta"></div></div><div class="formfield full"><label>Notatki</label><textarea class="field" id="customPackNotes" placeholder="Kolory, warianty, stan opakowania..."></textarea></div></div><p class="notice">Własny wpis nie jest automatycznie potwierdzony. Możesz uzupełnić zawartość później i zachować źródło w notatkach.</p><div class="modalfoot"><button class="btn" onclick="closeModal()">Anuluj</button><button class="btn primary" onclick="saveCustomPack()">Zapisz zestaw</button></div></div></div>`}
 function saveCustomPack(packId){
 let name=document.getElementById('customPackName').value.trim();if(!name){toast('Podaj nazwę zestawu');return}
