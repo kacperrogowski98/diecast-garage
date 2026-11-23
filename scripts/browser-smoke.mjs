@@ -8,6 +8,26 @@ page.on('pageerror',e=>errors.push(e.message));
 await page.route(/(raw\.githubusercontent\.com|cdn\.jsdelivr\.net|danyjoy\.github\.io)/,r=>r.abort());
 try {
  await page.goto('http://127.0.0.1:8000/',{waitUntil:'domcontentloaded'});
+ const visual=await page.evaluate(async()=>{
+  const c=document.createElement('canvas');c.width=120;c.height=80;
+  const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,120,80);
+  ctx.fillStyle='#f04444';ctx.fillRect(24,27,72,28);
+  const img=new Image();
+  await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=reject;img.src=c.toDataURL('image/png')});
+  dgPolishCarImage(img);
+  const cutout=img.dataset.dgCutout==='1';
+  const portraitCanvas=document.createElement('canvas');portraitCanvas.width=70;portraitCanvas.height=140;
+  portraitCanvas.getContext('2d').fillRect(10,10,50,120);
+  const portrait=new Image();
+  await new Promise((resolve,reject)=>{portrait.onload=resolve;portrait.onerror=reject;portrait.src=portraitCanvas.toDataURL('image/png')});
+  const stage=document.createElement('div');stage.className='carart';stage.innerHTML='<span class="dg-photo-label">Zdjęcie źródłowe</span>';stage.append(portrait);
+  dgPolishCarImage(portrait);
+  return {cutout,portraitReplaced:Boolean(stage.querySelector('.dg-image-placeholder')),label:stage.querySelector('.dg-photo-label')?.textContent||''};
+ });
+ assert.equal(visual.cutout,true,'Studio image should remove connected white photo background');
+ assert.equal(visual.portraitReplaced,true,'Tall blister-card photo must not be shown as a loose car');
+ assert.ok(visual.label.includes('szczegółach'),'Tall source photo should be indicated as available in details');
+ console.log('PASS: dark showroom image cutout and packaging-source safeguards');
  await page.locator('#addBtn').click();
  await page.locator('#fName').fill('Diecast Smoke Test Ferrari F40');
  await page.locator('#fBrand').fill('Ferrari');
