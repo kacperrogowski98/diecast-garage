@@ -59,13 +59,13 @@ body{background:radial-gradient(circle at 50% -15%,#1a2a3c 0,transparent 42%),va
 
 
 /* Hide broken-image glyphs until a real photograph is fully decoded. */
-.carart:has(img.dg-image-ready)>.dg-image-placeholder{display:none}
-.carart:has(img:not(.dg-image-ready))>.dg-image-placeholder{position:absolute;inset:0}
+.carart:has(img[data-dg-candidates].dg-image-ready)>.dg-image-placeholder{display:none}
+.carart:has(img[data-dg-candidates]:not(.dg-image-ready))>.dg-image-placeholder{position:absolute;inset:0}
 
-.carart img:not(.dg-image-ready){opacity:0}
-.carart img.dg-image-ready{opacity:1}
-.carart:has(img:not(.dg-image-ready))::before{content:"";position:absolute;inset:14%;border:1px solid #ffffff12;border-radius:12px}
-.carart:has(img:not(.dg-image-ready))::after{opacity:.25}
+.carart img[data-dg-candidates]:not(.dg-image-ready){opacity:0}
+.carart img[data-dg-candidates].dg-image-ready{opacity:1}
+.carart:has(img[data-dg-candidates]:not(.dg-image-ready))::before{content:"";position:absolute;inset:14%;border:1px solid #ffffff12;border-radius:12px}
+.carart:has(img[data-dg-candidates]:not(.dg-image-ready))::after{opacity:.25}
 
 /* Real-asset-only 3D state: transparent about missing geometry. */
 .dg3d-empty{padding:25px;border:1px dashed #52657d;border-radius:15px;background:radial-gradient(ellipse at 50% 0,#26394c,#0c1521 75%);text-align:center;color:#dce6f0;line-height:1.55}
