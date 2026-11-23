@@ -41,6 +41,8 @@ jobs:
         run: node scripts/test-cloud-3d.mjs
       - name: Verify full Wiki v6 archive and 5-pack contents
         run: node scripts/validate-full-catalog.mjs
+      - name: Audit real catalog photo URL coverage
+        run: node scripts/audit-photo-coverage.mjs
       - name: Install Chromium and local 3D build dependencies
         run: |
           npm install --no-save playwright three@0.170.0 esbuild@0.24.2
