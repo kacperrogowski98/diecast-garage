@@ -24,6 +24,23 @@ try {
  assert.equal(photoPipeline.candidates[0],'https://static.wikia.nocookie.net/hotwheels/images/a/aa/aston.jpg','Fandom photo should try its canonical original file first');
  assert.equal(photoPipeline.candidates.length,2,'Original Fandom image should retain revision URL as a secondary option');
  assert.ok(photoPipeline.next[0].includes('aston-alt'),'Another edition must prefer its own photo over shared casting fallback');
+ const localPhotos=await page.evaluate(()=>{
+  const oldManifest=dgLocalPhotoManifest, oldUsed=dgHeroUsedImages;
+  try{
+   dgLocalPhotoManifest={'wiki-v6-ferrari': './car-photos/wiki-v6-ferrari.webp', 'wiki-v6-lambo':'./car-photos/wiki-v6-lambo.webp'};
+   dgHeroUsedImages=new Set();
+   const a={release_id:'wiki-v6-ferrari',image_url:'https://static.wikia.nocookie.net/hotwheels/images/a/aa/ferrari.jpg'};
+   const b={release_id:'wiki-v6-lambo',image_url:'https://static.wikia.nocookie.net/hotwheels/images/a/aa/lambo.jpg'};
+   const own=dgImageCandidates(a,[a]);
+   const related=dgImageCandidates({release_id:'wiki-v6-missing',image_url:''},[a]);
+   const unrelated=dgImageCandidates({release_id:'wiki-v6-missing',image_url:''},[b]);
+   return {own:own[0],related:related[0],unrelated:unrelated[0]};
+  }finally{dgLocalPhotoManifest=oldManifest;dgHeroUsedImages=oldUsed}
+ });
+ assert.ok(localPhotos.own.endsWith('/car-photos/wiki-v6-ferrari.webp'),'Verified local photo should outrank remote CDN');
+ assert.ok(localPhotos.related.endsWith('/car-photos/wiki-v6-ferrari.webp'),'Only same-casting variants may supply fallback');
+ assert.ok(localPhotos.unrelated.endsWith('/car-photos/wiki-v6-lambo.webp'),'Other casting must not inherit Ferrari image');
+
  const photoIdentity=await page.evaluate(()=>{
   const url1='https://static.wikia.nocookie.net/hotwheels/images/a/aa/f1.jpg/revision/latest?cb=123';
   const url2='https://static.wikia.nocookie.net/hotwheels/images/a/aa/f1.jpg';
