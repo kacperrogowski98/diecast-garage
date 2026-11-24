@@ -111,6 +111,7 @@ jobs:
           test -s _site/catalog/local-car-photos.json
       - name: Standardize real car photos on one dark showroom background
         run: |
+          python3 scripts/test-showroom-photos.py
           python3 scripts/standardize-showroom-photos.py
           test -s _site/catalog/showroom-photos.json
       - name: Upload static site
