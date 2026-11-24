@@ -109,6 +109,10 @@ jobs:
           python3 -m pip install --quiet Pillow
           python3 scripts/build-photo-library.py
           test -s _site/catalog/local-car-photos.json
+      - name: Standardize real car photos on one dark showroom background
+        run: |
+          python3 scripts/standardize-showroom-photos.py
+          test -s _site/catalog/showroom-photos.json
       - name: Upload static site
         uses: actions/upload-pages-artifact@v3
         with:
