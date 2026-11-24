@@ -85,6 +85,9 @@ body{background:radial-gradient(circle at 50% -15%,#1a2a3c 0,transparent 42%),va
 .carart img[data-dg-candidates]{mix-blend-mode:normal;max-width:100%;max-height:100%;filter:drop-shadow(0 12px 15px #0008)}
 .carart:has(img.dg-image-ready){background:radial-gradient(ellipse 70% 62% at 50% 54%,#354559,#131d2a 69%,#0b1018)}
 .carart img.dg-image-ready{object-fit:contain}
+/* The standardized WebP already includes the entire studio stage. */
+.carart img.dg-studio-photo{padding:0;filter:none;object-fit:cover}
+.carart:has(img.dg-studio-photo.dg-image-ready){background:#0c121c}
 </style></head><body><main class="shell">
 <header class="top"><div class="brand"><div class="mark">D</div><div><h1>DIECAST GARAGE</h1><small>PERSONAL COLLECTION MANAGER · v1.109</small></div></div><div class="actions"><button class="btn primary" id="showroomBtn" onclick="openShowroom3D()">◎ Mój garaż 3D</button><button class="btn ghost" id="cloudBtn" onclick="openCloudPanel()">☁ Konto / synchronizacja</button><button class="btn ghost" id="exportBtn">↧ Backup</button><button class="btn" id="importBtn">↥ Backup</button><button class="btn" id="onlineCatalogBtn" title="Pobierz indeks 17 tys. rekordów z publicznego katalogu">↓ Katalog online</button><button class="btn" id="wikiCatalogBtn" title="Pobierz pełny katalog Wiki v6, gdy jest dostępny na serwerze">↓ Pełne Wiki v6</button><button class="btn" id="extendedCatalogBtn" title="Pobierz dodatkową historyczną bazę z Hot Wheels Wiki (1974–2023); rekordy mogą pokrywać się z głównym katalogiem">＋ Archiwum 1974–2023</button><button class="btn" id="catalogImportBtn" title="Importuj pliki katalogowe JSON">▤ Import JSON</button><button class="btn" id="catalogFolderBtn" title="Importuj cały folder data/ z diecastDb">▤ Folder data/</button><button class="btn primary" id="addBtn">＋ Dodaj model</button><input type="file" id="importFile" accept="application/json" hidden><input type="file" id="catalogImportFile" accept=".json,.jsonl,.ndjson,application/json,application/x-ndjson" multiple hidden><input type="file" id="catalogFolderInput" accept=".json,.jsonl,.ndjson,application/json,application/x-ndjson" multiple webkitdirectory directory hidden></div></header>
 <section class="hero"><div class="eyebrow">YOUR PRIVATE COLLECTION</div><div id="dgConnectionStatus" role="status" aria-live="polite" style="float:right;font-size:12px;color:var(--muted)">Sprawdzam połączenie…</div><h2>Welcome to your Garage.</h2><p>Twoja prywatna kolekcja modeli. Zarządzaj garażem, przeglądaj katalog i zapisuj modele, na które polujesz.</p></section>
@@ -267,7 +270,7 @@ const ownedReleaseIds=new Set(state.items.filter(i=>i.status==='owned').map(i=>i
 items=items.filter(x=>{let id=x.release_id||x.custom_id||x.releaseId||x.id;let collectionOk=ownershipFilter==='all'||(ownershipFilter==='owned'&&ownedReleaseIds.has(id))||(ownershipFilter==='missing'&&!ownedReleaseIds.has(id))||(ownershipFilter==='wishlist'&&wishedReleaseIds.has(id));if(!collectionOk)return false;let text=[x.canonical_name,x.model_name_as_source,x.series_or_line,x.toy_number,x.brand,colorName(x)].join(' ').toLowerCase();return (!search||text.includes(search.toLowerCase()))&&(classFilter==='all'||x.vehicle_class===classFilter)&&(rarityFilter==='all'||dgRarity(x.rarity)===rarityFilter)&&(yearFilter==='all'||String(x.release_year)===yearFilter)&&(brandFilter==='all'||(x.brand||'Unassigned')===brandFilter)&&(assortmentFilter==='all'||x.assortment===assortmentFilter)&&(sourceFilter==='all'||x.source===sourceFilter)&&(photoFilter==='all'||(photoFilter==='local'?Boolean(dgLocalPhotoManifest[x.release_id||x.custom_id]):photoFilter==='with'?Boolean(dgSafeHttpUrl(x.image_url)||dgLocalPhotoManifest[x.release_id||x.custom_id]):!dgSafeHttpUrl(x.image_url)&&!dgLocalPhotoManifest[x.release_id||x.custom_id]))});
 let groups=grouped(items);groups.sort((a,b)=>{let av=a.variants[0]||{},bv=b.variants[0]||{};if(sortFilter==='year_desc')return (Number(bv.release_year)||0)-(Number(av.release_year)||0)||a.name.localeCompare(b.name,'pl');if(sortFilter==='year_asc'){let ay=a.variants[a.variants.length-1]||av,by=b.variants[b.variants.length-1]||bv;return (Number(ay.release_year)||9999)-(Number(by.release_year)||9999)||a.name.localeCompare(b.name,'pl')};if(sortFilter==='brand')return String(av.brand||'').localeCompare(String(bv.brand||''),'pl')||a.name.localeCompare(b.name,'pl');
  if(sortFilter==='photos'){
-  const score=g=>g.variants.some(v=>dgLocalPhotoManifest[v.release_id||v.custom_id])?2:g.variants.some(v=>dgSafeHttpUrl(v.image_url))?1:0;
+  const score=g=>g.variants.some(v=>dgShowroomPhotoManifest[v.release_id||v.custom_id])?3:g.variants.some(v=>dgLocalPhotoManifest[v.release_id||v.custom_id])?2:g.variants.some(v=>dgSafeHttpUrl(v.image_url))?1:0;
   const diff=score(b)-score(a);if(diff)return diff;
  }
  return a.name.localeCompare(b.name,'pl')});if(view==='wishlist'){
@@ -286,7 +289,19 @@ function dgCarPlaceholder(){
 // One hero image per distinctive photograph, with same-casting alternatives.
 // Do not manufacture image URLs or copy images between unrelated car models.
 let dgHeroUsedImages=new Set();
+let dgShowroomPhotoManifest={};
 let dgLocalPhotoManifest={};
+async function dgLoadShowroomPhotos(){
+ try{
+  const response=await fetch('./catalog/showroom-photos.json',{cache:'no-cache'});
+  if(!response.ok)return;
+  const manifest=await response.json();
+  if(!manifest||typeof manifest!=='object'||Array.isArray(manifest))return;
+  dgShowroomPhotoManifest=manifest;
+  console.info('Standardized dark showroom photos:',Object.keys(manifest).length);
+  render();
+ }catch(error){console.debug('Showroom manifest unavailable:',error)}
+}
 async function dgLoadLocalPhotoManifest(){
  try{
   const response=await fetch('./catalog/local-car-photos.json',{cache:'no-cache'});
@@ -329,7 +344,8 @@ function dgImageCandidates(model,variants=[]){
  const related=variants.filter(v=>v!==model);
  // Verified, bundled photos are preferred over fragile community CDN links.
  // An alternative variant is explicitly labelled, never misrepresented as exact.
- const candidates=[...local(model),...related.flatMap(local),...from(model),...related.flatMap(from)];
+ const studio=item=>{const id=item?.release_id||item?.custom_id;return id&&dgShowroomPhotoManifest[id]?[dgSafeHttpUrl(dgShowroomPhotoManifest[id])]:[]};
+ const candidates=[...studio(model),...related.flatMap(studio),...local(model),...related.flatMap(local),...from(model),...related.flatMap(from)];
  return [...new Set(candidates)].filter(u=>!dgHeroUsedImages.has(dgPhotoSignature(u))).slice(0,15);
 }
 function dgCarImageNext(img){
@@ -360,6 +376,7 @@ function dgCarImageFallback(img){
 function dgConfirmCarImage(img){
  if(!img.isConnected||!img.naturalWidth||!img.naturalHeight)return false;
  img.classList.add('dg-image-ready');
+ if(img.src.includes('/showroom-photos/'))img.classList.add('dg-studio-photo');
  const stage=img.parentElement;
  if(stage){
   const url=JSON.parse(img.dataset.dgCandidates||'[]')[Number(img.dataset.dgIndex)||0];
@@ -419,6 +436,7 @@ function dgPolishCarImage(img){
 function card(group){let variants=group.variants;let id=selectedVariant[group.key]&&variants.some(v=>(v.release_id||v.custom_id)===selectedVariant[group.key])?selectedVariant[group.key]:(variants[0].release_id||variants[0].custom_id);let x=variants.find(v=>(v.release_id||v.custom_id)===id)||variants[0];let matchingItems=state.items.filter(i=>(i.releaseId||i.id)===id);let inState=matchingItems[0];let ownedCount=matchingItems.filter(i=>i.status==='owned').length;let name=x.canonical_name||x.model_name_as_source||x.name||group.name;let year=x.release_year||'—';let meta=[year,x.series_or_line||'Własny wpis',x.toy_number?'#'+x.toy_number:null,colorName(x)].filter(Boolean).join(' · ');let verify=x.verification_status||'custom_entry';let photoCandidates=dgImageCandidates(x,variants);let savedPhoto=matchingItems.find(i=>i.status==='owned'&&i.photo)?.photo||inState?.photo||'';let personalPhoto=(view==='garage'||view==='wishlist')&&/^data:image\/(?:jpeg|png|webp);base64,/i.test(savedPhoto)?savedPhoto:'';if(personalPhoto)photoCandidates.unshift(personalPhoto);let photoUrl=photoCandidates[0]||'';
 let ownedImageCandidates=[x.image_url,...(Array.isArray(x.images)?x.images:[])].flatMap(dgSourcePhotoCandidates);
 if(dgLocalPhotoManifest[id])ownedImageCandidates.unshift(dgSafeHttpUrl(dgLocalPhotoManifest[id]));
+if(dgShowroomPhotoManifest[id])ownedImageCandidates.unshift(dgSafeHttpUrl(dgShowroomPhotoManifest[id]));
 if(personalPhoto)ownedImageCandidates.unshift(personalPhoto);
 let ownedPhotoSigs=[...new Set(ownedImageCandidates.map(dgPhotoSignature))];
 if(photoUrl&&!personalPhoto)dgHeroUsedImages.add(dgPhotoSignature(photoUrl));let warn=verify!=='verified'&&verify!=='custom_entry';let actions='';if(view==='garage'&&ownedCount)actions=`<button class="btn primary" onclick="addItem('${id}','owned')">＋ Egzemplarz</button><button class="btn" onclick="viewCopies('${id}')">Egzemplarze (${ownedCount})</button>`;else if(inState?.status==='owned')actions=`<button class="btn" onclick="editItem('${inState.collectionId}')">Edytuj</button><button class="btn" onclick="moveItem('${inState.collectionId}','wishlist')">Do wishlist</button>`;else if(inState?.status==='wishlist')actions=`<button class="btn primary" onclick="moveItem('${inState.collectionId}','owned')">Mam go</button><button class="btn" onclick="removeItem('${inState.collectionId}')">Usuń</button>`;else actions=`<button class="btn primary" onclick="addItem('${id}','owned')">＋ Garaż</button><button class="btn" onclick="addItem('${id}','wishlist')">♡</button>`;
@@ -900,7 +918,7 @@ async function dgCloudPull(){
  }
 }
 
-dgInitClient();dgInitCatalogImport();dgLoadWikiStats();document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===view));dgRefreshFilters();render();dgCatalogReady=dgLoadCatalog();dgCatalogReady.then(async()=>{dgRefreshFilters();render();dgLoadLocalPhotoManifest();if(/^https?:$/.test(location.protocol)&&navigator.onLine){const needsMain=!importedCatalog.length||dgCatalogNeedsRefresh();if(needsMain)await dgFetchOnlineCatalog();const wikiLoaded=importedCatalog.some(x=>x.source==='hotwheels-wiki-v6');const lastWikiCheck=Number(localStorage.getItem(DG_WIKI_CHECK_KEY)||0);let completedWiki=null;try{completedWiki=JSON.parse(localStorage.getItem(DG_WIKI_COMPLETE_KEY)||'null')}catch(_){}const wikiIncomplete=!completedWiki||!Number.isInteger(completedWiki.valid)||completedWiki.valid<10000;const imageReindexRequired=wikiLoaded&&localStorage.getItem(DG_IMAGE_IMPORT_KEY)!=='complete';const wikiInterval=wikiLoaded&&!wikiIncomplete?30*24*60*60*1000:wikiLoaded?2*60*60*1000:24*60*60*1000;if(imageReindexRequired||!lastWikiCheck||Date.now()-lastWikiCheck>=wikiInterval)await dgFetchWikiV6Catalog(true);else if(!wikiPacks.length&&Date.now()-Number(localStorage.getItem(DG_PACK_CHECK_KEY)||0)>24*60*60*1000)await dgFetchWikiPacksOnly(true);if(!importedCatalog.some(x=>x.source==='hotwheels-data'))await dgFetchExtendedCatalog();}});
+dgInitClient();dgInitCatalogImport();dgLoadWikiStats();document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===view));dgRefreshFilters();render();dgCatalogReady=dgLoadCatalog();dgCatalogReady.then(async()=>{dgRefreshFilters();render();dgLoadLocalPhotoManifest();dgLoadShowroomPhotos();if(/^https?:$/.test(location.protocol)&&navigator.onLine){const needsMain=!importedCatalog.length||dgCatalogNeedsRefresh();if(needsMain)await dgFetchOnlineCatalog();const wikiLoaded=importedCatalog.some(x=>x.source==='hotwheels-wiki-v6');const lastWikiCheck=Number(localStorage.getItem(DG_WIKI_CHECK_KEY)||0);let completedWiki=null;try{completedWiki=JSON.parse(localStorage.getItem(DG_WIKI_COMPLETE_KEY)||'null')}catch(_){}const wikiIncomplete=!completedWiki||!Number.isInteger(completedWiki.valid)||completedWiki.valid<10000;const imageReindexRequired=wikiLoaded&&localStorage.getItem(DG_IMAGE_IMPORT_KEY)!=='complete';const wikiInterval=wikiLoaded&&!wikiIncomplete?30*24*60*60*1000:wikiLoaded?2*60*60*1000:24*60*60*1000;if(imageReindexRequired||!lastWikiCheck||Date.now()-lastWikiCheck>=wikiInterval)await dgFetchWikiV6Catalog(true);else if(!wikiPacks.length&&Date.now()-Number(localStorage.getItem(DG_PACK_CHECK_KEY)||0)>24*60*60*1000)await dgFetchWikiPacksOnly(true);if(!importedCatalog.some(x=>x.source==='hotwheels-data'))await dgFetchExtendedCatalog();}});
 </script>
 <script>
 // Connection indicator describes browser connectivity, not server or cloud-sync status.
