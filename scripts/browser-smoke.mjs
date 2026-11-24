@@ -43,6 +43,21 @@ try {
  assert.ok(localPhotos.own.endsWith('/car-photos/wiki-v6-ferrari.webp'),'Verified local photo should outrank remote CDN');
  assert.ok(localPhotos.related.endsWith('/car-photos/wiki-v6-ferrari.webp'),'Only same-casting variants may supply fallback');
  assert.ok(localPhotos.unrelated.endsWith('/car-photos/wiki-v6-lambo.webp'),'Other casting must not inherit Ferrari image');
+ const studioPriority=await page.evaluate(()=>{
+  const previousStudio=dgShowroomPhotoManifest;
+  const previousLocal=dgLocalPhotoManifest;
+  const previousUsed=dgHeroUsedImages;
+  try{
+    dgShowroomPhotoManifest={'wiki-v6-lambo':'./showroom-photos/wiki-v6-lambo.webp'};
+    dgLocalPhotoManifest={'wiki-v6-lambo':'./car-photos/wiki-v6-lambo.webp'};
+    dgHeroUsedImages=new Set();
+    const car={release_id:'wiki-v6-lambo',image_url:'https://static.wikia.nocookie.net/hotwheels/images/1/10/lambo.jpg'};
+    return {first:dgImageCandidates(car,[car])[0],second:dgImageCandidates(car,[car])[1]};
+  }finally{dgShowroomPhotoManifest=previousStudio;dgLocalPhotoManifest=previousLocal;dgHeroUsedImages=previousUsed}
+ });
+ assert.ok(studioPriority.first.endsWith('/showroom-photos/wiki-v6-lambo.webp'),'Standardized dark studio photos must outrank raw source images');
+ assert.ok(studioPriority.second.endsWith('/car-photos/wiki-v6-lambo.webp'),'Unaltered source photo must remain available');
+
 
  const photoIdentity=await page.evaluate(()=>{
   const url1='https://static.wikia.nocookie.net/hotwheels/images/a/aa/f1.jpg/revision/latest?cb=123';
